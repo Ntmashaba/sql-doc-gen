@@ -4,6 +4,6 @@ Parsing is done by Microsoft ScriptDom through a small .NET helper (``sqldocgen/
 everything else (analysis, lineage, checks and every output) is standard-library Python.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 SCHEMA_VERSION = 1
 GENERATOR = "sql-doc-gen"
