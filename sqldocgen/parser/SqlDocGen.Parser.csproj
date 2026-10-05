@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    sqldocgen-parser: parses T-SQL with Microsoft ScriptDom and writes the syntax tree as JSON.
+    Python (sqldocgen/scriptdom.py) builds this project on first use and talks to it over stdin/stdout.
+
+    Normal build (needs nuget.org):   dotnet build -c Release
+    Offline build with a local DLL:   dotnet build -c Release -p:ScriptDomPath=C:\path\Microsoft.SqlServer.TransactSql.ScriptDom.dll -p:RestoreSources=<empty folder>
+    (SSMS, SqlPackage and Visual Studio SSDT installs ship that DLL.)
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <!-- run on any installed .NET runtime from 8 upwards -->
+    <RollForward>Major</RollForward>
+    <AssemblyName>sqldocgen-parser</AssemblyName>
+    <RootNamespace>SqlDocGen.Parser</RootNamespace>
+    <Version>1.0.0</Version>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <UseAppHost>false</UseAppHost>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(ScriptDomPath)' == ''">
+    <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="180.37.3" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(ScriptDomPath)' != ''">
+    <Reference Include="Microsoft.SqlServer.TransactSql.ScriptDom">
+      <HintPath>$(ScriptDomPath)</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

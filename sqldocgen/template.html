@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="sql-doc-gen">
+<title>__TITLE__ — Stored Procedure Documentation</title>
+<style>
+:root{
+  --bg:#F5F7FB; --panel:#FFFFFF; --panel2:#F1F4F9;
+  --ink:#0F172A; --ink2:#334155; --ink3:#475569;
+  --line:#CBD5E1; --line2:#E2E8F0;
+  --accent:#4F46E5; --accentSoft:#EEF2FF;
+  --src:#0F766E; --srcBg:#CCFBF1;
+  --snk:#B45309; --snkBg:#FEF3C7;
+  --mid:#4338CA; --midBg:#E0E7FF;
+  --ctl:#475569; --ctlBg:#E2E8F0;
+  --ext:#6D28D9; --extBg:#EDE9FE;
+  --ok:#047857; --okBg:#D1FAE5;
+  --warn:#B45309; --warnBg:#FEF3C7;
+  --bad:#BE123C; --badBg:#FFE4E6;
+  --info:#334155; --infoBg:#E2E8F0;
+  --mono:"Cascadia Code","Cascadia Mono",Consolas,"SFMono-Regular",Menlo,monospace;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --code:#0F172A; --codeInk:#E2E8F0; --codeLn:#64748B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5}
+a,.xl{color:var(--accent)}
+code{font-family:var(--mono);font-size:.86em;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:0 .25em;overflow-wrap:anywhere}
+.layout{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.layout>*{min-width:0}
+/* ---------------- nav rail ---------------- */
+nav{background:#0F172A;padding:1.1rem .8rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{font-size:.68rem;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;margin-bottom:.35rem}
+.doc-title{font-weight:600;font-size:1.02rem;line-height:1.25;margin-bottom:.3rem;word-break:break-word;color:#fff}
+.doc-sub{font-size:.72rem;color:#94A3B8;margin-bottom:1rem;font-family:var(--mono);overflow-wrap:anywhere}
+.nav-btn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;border:0;background:none;font:inherit;color:#CBD5E1;padding:.45rem .6rem;border-radius:6px;cursor:pointer;margin:.05rem 0}
+.nav-btn:hover{background:#1E293B;color:#fff}
+.nav-btn.active{background:#1E293B;color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #818CF8}
+.nav-btn:focus-visible{outline:2px solid #A5B4FC;outline-offset:1px}
+.nav-btn .n{font-family:var(--mono);font-size:.68rem;opacity:.85;background:#334155;border-radius:99px;padding:0 .45rem}
+.nav-btn .n.hot{background:#BE123C;color:#fff}
+.nav-foot{margin-top:1.4rem;font-size:.7rem;color:#64748B;line-height:1.4}
+.nav-foot b{color:#94A3B8;font-weight:600}
+/* ---------------- content ---------------- */
+main{padding:1.4rem 2rem 4rem;max-width:1320px;overflow-wrap:anywhere}
+.conveyor{display:flex;align-items:stretch;margin-bottom:1.4rem;font-family:var(--mono)}
+.conveyor .cell{flex:1;border:1.5px solid #1E293B;padding:.6rem .9rem;background:var(--panel)}
+.conveyor .cell:first-child{border-radius:8px 0 0 8px;border-right-width:0;box-shadow:inset 4px 0 0 var(--src)}
+.conveyor .cell:last-child{border-radius:0 8px 8px 0;border-left-width:0;box-shadow:inset -4px 0 0 var(--snk)}
+.conveyor .cell.mid{flex:1.35;background:#1E293B;color:#fff}
+.conveyor .joint{width:28px;display:flex;align-items:center;justify-content:center;border-top:1.5px solid #1E293B;border-bottom:1.5px solid #1E293B;background:var(--accentSoft);font-weight:700;color:var(--accent)}
+.conveyor .tag{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.conveyor .cell.mid .tag,.conveyor .cell.mid .sub{color:#CBD5E1}
+.conveyor .val{font-size:.88rem;font-weight:600;font-family:var(--sans);overflow-wrap:anywhere}
+.conveyor .sub{font-size:.7rem;color:var(--ink2)}
+.conveyor .partial{color:#FCD34D}
+h1{font-size:1.5rem;font-weight:650;letter-spacing:-.01em;margin-bottom:.2rem}
+h2{font-size:1.06rem;font-weight:650;margin:1.6rem 0 .6rem}
+h3{font-size:.93rem;font-weight:650;margin:1rem 0 .4rem}
+.sub{color:var(--ink2)}
+.lead{font-size:1rem;color:var(--ink);margin:.6rem 0 1rem;max-width:62rem}
+.lead code{font-size:.84em}
+.eyebrow{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem;box-shadow:0 1px 2px #0f172a0d,0 4px 12px #0f172a0a}
+.note{border-left:3px solid var(--warn)}
+.honesty{border-left:3px solid var(--snk)}
+.grid{display:grid;gap:.8rem}
+.grid>*{min-width:0}
+.grid.c6{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.grid.c3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.grid.c2{grid-template-columns:repeat(auto-fill,minmax(380px,1fr))}
+.stat{cursor:default}
+.stat .big{font-size:1.6rem;font-weight:650;font-variant-numeric:tabular-nums}
+.stat .lbl{font-size:.76rem;color:var(--ink2)}
+.stat[data-go]{cursor:pointer}.stat[data-go]:hover{border-color:var(--accent)}
+.table-wrap{overflow-x:auto;max-width:100%}
+table.t{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.83rem}
+table.t th{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line);background:#E9EEF5;white-space:nowrap}
+table.t td{padding:.44rem .7rem;border-bottom:1px solid var(--line2);vertical-align:top;overflow-wrap:anywhere}
+table.t tr:last-child td{border-bottom:0}
+table.t tr.sel td{background:var(--accentSoft)}
+table.t tr[data-go]{cursor:pointer}table.t tr[data-go]:hover td{background:#F8FAFC}
+.badge{display:inline-block;font-family:var(--mono);font-size:.64rem;letter-spacing:.04em;padding:.1rem .5rem;border-radius:999px;white-space:nowrap;text-transform:uppercase;vertical-align:baseline}
+.b-ok{background:var(--okBg);color:var(--ok)}.b-warn{background:var(--warnBg);color:var(--warn)}
+.b-bad{background:var(--badBg);color:var(--bad)}.b-info{background:var(--infoBg);color:var(--info)}
+.b-src{background:var(--srcBg);color:var(--src)}.b-snk{background:var(--snkBg);color:var(--snk)}
+.b-mid{background:var(--midBg);color:var(--mid)}.b-ext{background:var(--extBg);color:var(--ext)}
+.b-muted{background:var(--line2);color:var(--ink3)}
+.b-high{background:var(--badBg);color:var(--bad)}.b-medium{background:var(--warnBg);color:var(--warn)}
+.b-low{background:var(--infoBg);color:var(--info)}.b-info2{background:#F1F5F9;color:#475569}
+.pill-list{display:flex;flex-wrap:wrap;gap:.3rem}
+.chipref{display:inline-flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.74rem;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:.05rem .4rem;color:var(--ink);overflow-wrap:anywhere}
+.chipref.src{border-color:#99F6E4;background:#F0FDFA}.chipref.snk{border-color:#FDE68A;background:#FFFBEB}
+.chipref.mid{border-color:#C7D2FE;background:#EEF2FF}
+button.chipref{cursor:pointer}button.chipref:hover{border-color:var(--accent)}
+.xl{background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;text-align:left}
+.xl:focus-visible,.chip:focus-visible,.subtab:focus-visible,.primary-btn:focus-visible,.ghost-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.steplink{font-family:var(--mono);font-size:.74rem;background:var(--accentSoft);color:var(--accent);border:1px solid #C7D2FE;border-radius:5px;padding:0 .35rem;cursor:pointer;text-decoration:none;white-space:nowrap}
+.steplink:hover{background:#E0E7FF}
+.search{width:300px;max-width:100%;padding:.42rem .6rem;border:1px solid var(--line);border-radius:6px;font:inherit;background:var(--panel)}
+.search:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.filter-row{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.22rem .75rem;font-size:.78rem;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .n{opacity:.7;font-family:var(--mono);font-size:.7rem;margin-left:.2rem}
+.empty{border:1.5px dashed var(--line);border-radius:12px;padding:2rem;text-align:center;color:var(--ink2);background:var(--panel2)}
+.mut{color:var(--ink2);font-size:.8rem}
+.subtabs{display:flex;flex-wrap:wrap;gap:.2rem;border-bottom:1px solid var(--line);margin:-.2rem 0 1.1rem}
+.subtab{border:0;background:none;font:inherit;color:var(--ink2);padding:.55rem .85rem;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+.subtab:hover{color:var(--ink)}.subtab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--accent)}
+.subtab.disabled{opacity:.5;cursor:not-allowed}.subtab .n{font-size:.75rem;color:var(--ink2)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:1rem;align-items:start}
+.panel{position:sticky;top:1rem;max-height:calc(100vh - 2rem);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 2px #0f172a0d,0 4px 12px #0f172a0a}
+.panel h3:first-child{margin-top:0}
+.kvl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:.3rem .8rem}
+.kvl .k{color:var(--ink2);font-size:.8rem}
+details{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:.55rem}
+details>summary{cursor:pointer;padding:.6rem .9rem;font-weight:600;list-style:none;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"▸";color:var(--ink3);font-size:.8rem;transition:transform .12s}
+details[open]>summary::before{transform:rotate(90deg)}
+details>.body{padding:.3rem .9rem .9rem;border-top:1px solid var(--line2)}
+/* steps */
+.scopehdr{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;color:var(--ink2);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:.35rem .65rem;margin:.6rem 0 .3rem}
+.scopehdr .sk{font-weight:700;color:var(--ink)}
+.scopebody{border-left:2px solid var(--line);margin-left:.7rem;padding-left:.7rem}
+.scopebody.k-else{border-left-style:dashed}.scopebody.k-catch{border-left-color:#FDA4AF}
+.scopebody.k-loop{border-left-color:#A5B4FC}.scopebody.k-dynamic{border-left-color:#C4B5FD}.scopebody.k-call{border-left-color:#99F6E4}
+.act{border:1px solid var(--line2);border-radius:8px;margin:.3rem 0;background:var(--panel)}
+.act>summary{padding:.42rem .7rem;font-weight:500;font-size:.85rem;gap:.55rem;flex-wrap:nowrap;align-items:flex-start}
+.act>summary .sn{font-family:var(--mono);font-size:.72rem;color:var(--accent);min-width:2.4rem;padding-top:.1rem}
+.act>summary .sm{flex:1;min-width:0}
+.act>summary .ln{font-family:var(--mono);font-size:.68rem;color:var(--ink3);white-space:nowrap;padding-top:.15rem}
+.act.unreach{opacity:.6}
+.act>.body{padding:.5rem .8rem .8rem;font-size:.84rem}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:.25rem .8rem;margin:.3rem 0}
+.kv .k{color:var(--ink2);font-size:.8rem;padding-top:.1rem}
+.kind{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;padding:.08rem .4rem;border-radius:4px;background:var(--line2);color:var(--ink2);white-space:nowrap}
+.k-w{background:var(--snkBg);color:var(--snk)}.k-r{background:var(--srcBg);color:var(--src)}
+.k-c{background:var(--ctlBg);color:var(--ctl)}.k-x{background:var(--extBg);color:var(--ext)}
+.k-t{background:var(--midBg);color:var(--mid)}.k-e{background:var(--badBg);color:var(--bad)}
+.comment{font-style:italic;color:var(--ink2);font-size:.82rem;margin:.1rem 0 .4rem;white-space:pre-wrap}
+/* code */
+.code{font-family:var(--mono);font-size:.76rem;line-height:1.55;background:var(--code);color:var(--codeInk);border-radius:8px;padding:.5rem 0;overflow-x:auto;margin:.4rem 0}
+.code .cl{display:flex;white-space:pre-wrap;word-break:break-word;padding-right:.8rem}
+.code .cl.hit{background:#1E293B}
+.code .cl.focus{background:#312E81}
+.code .ln{color:var(--codeLn);min-width:3.6rem;padding:0 .7rem 0 .4rem;text-align:right;user-select:none;flex-shrink:0;border-right:1px solid #1E293B;margin-right:.6rem}
+.code .lc{flex:1;min-width:0}
+.code .sm-mark{color:#A5B4FC;font-size:.64rem;margin-left:.3rem;user-select:none}
+.c-kw{color:#93C5FD;font-weight:600}.c-type{color:#7DD3FC}.c-str{color:#FCD34D}.c-cmt{color:#94A3B8;font-style:italic}
+.c-num{color:#FDBA74}.c-var{color:#F9A8D4}.c-tmp{color:#86EFAC}.c-id{color:#E2E8F0}
+.m-w{background:#78350F;box-shadow:0 0 0 1px #F59E0B;border-radius:2px}
+.m-d{background:#3730A3;box-shadow:0 0 0 1px #818CF8;border-radius:2px}
+.m-i{background:#134E4A;box-shadow:0 0 0 1px #2DD4BF;border-radius:2px}
+.m-s{background:#1E3A8A}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:.78rem;color:var(--ink2);margin:.3rem 0 .5rem;align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.sw{display:inline-block;width:14px;height:10px;border-radius:3px}
+.sw.w{background:#78350F;box-shadow:0 0 0 1px #F59E0B}.sw.d{background:#3730A3;box-shadow:0 0 0 1px #818CF8}.sw.i{background:#134E4A;box-shadow:0 0 0 1px #2DD4BF}
+.codebar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.6rem}
+.codebar select{font:inherit;padding:.35rem .5rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);max-width:100%}
+.codefull{max-height:78vh;overflow:auto}
+/* trace */
+.trace-head{display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+.picker{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:1rem;align-items:start}
+.picklist{max-height:72vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.4rem;position:sticky;top:1rem}
+.picklist .grp{font-family:var(--mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);padding:.5rem .5rem .2rem}
+.picklist button{display:flex;justify-content:space-between;gap:.4rem;width:100%;text-align:left;border:0;background:none;font:inherit;font-size:.82rem;padding:.3rem .5rem;border-radius:6px;cursor:pointer;color:var(--ink);overflow-wrap:anywhere}
+.picklist button:hover{background:var(--panel2)}.picklist button.on{background:var(--accent);color:#fff}
+.picklist button.on .badge{background:#fff}
+.timeline{position:relative;margin-left:.4rem;padding-left:1.3rem;border-left:2px solid var(--line)}
+.tl{position:relative;margin:0 0 .8rem}
+.tl::before{content:"";position:absolute;left:-1.72rem;top:.9rem;width:12px;height:12px;border-radius:99px;background:#fff;border:2.5px solid var(--accent)}
+.tl.rows::before{border-color:var(--src)}.tl.cond::before{border-color:var(--ctl);border-radius:2px;transform:rotate(45deg)}
+.tl.value::before{background:var(--accent)}
+.tl .card{margin-bottom:0}
+.tl details.act{margin:0;background:var(--panel)}.tl details.act>summary{font-weight:400}
+.tl details.act>summary .sm{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.tl-head{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.3rem}
+.role{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;padding:.1rem .45rem;border-radius:4px}
+.role.value{background:var(--accent);color:#fff}.role.rows{background:var(--srcBg);color:var(--src)}.role.cond{background:var(--ctlBg);color:var(--ctl)}
+.writes{margin:.3rem 0;display:grid;gap:.25rem}
+.wline{font-size:.84rem}
+.wline .eq{font-family:var(--mono);font-size:.78rem;background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:.1rem .4rem;display:inline-block;max-width:100%;overflow-wrap:anywhere}
+.from{font-size:.8rem;color:var(--ink2);margin:.15rem 0}
+.vers{display:inline-flex;gap:.2rem;flex-wrap:wrap}
+.ver{font-family:var(--mono);font-size:.68rem;border:1px solid var(--line);border-radius:4px;padding:0 .3rem;background:var(--panel2);cursor:pointer;color:var(--ink2)}
+.ver:hover{border-color:var(--accent);color:var(--accent)}
+.ver.init{border-style:dashed}
+.callout{border-radius:8px;padding:.5rem .75rem;margin:.4rem 0;font-size:.84rem}
+.callout.warn{background:var(--warnBg);border:1px solid #FDE68A}
+.callout.bad{background:var(--badBg);border:1px solid #FECDD3}
+.callout.info{background:var(--panel2);border:1px solid var(--line2)}
+.history{display:flex;align-items:center;flex-wrap:wrap;gap:.25rem;font-size:.8rem;margin:.2rem 0}
+.history .arrow{color:var(--ink3)}
+.toolbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.primary-btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:.5rem 1rem;font:inherit;font-weight:600;cursor:pointer}
+.primary-btn:disabled{opacity:.5;cursor:not-allowed}
+.ghost-btn{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.4rem .8rem;font:inherit;font-size:.82rem;cursor:pointer}
+.ghost-btn:hover{border-color:var(--accent);color:var(--accent)}
+.toggle{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;color:var(--ink2);cursor:pointer}
+/* graphs */
+.graph{overflow:auto;max-height:76vh;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;margin:.4rem 0 1rem}
+.graph svg{display:block;font-family:var(--sans)}
+.g-col{font-size:11px;fill:var(--ink2);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+.g-node rect{fill:#fff;stroke:#94A3B8;stroke-width:1.2}
+.g-node .g-kind{font-size:9.5px;fill:var(--ink2);text-transform:uppercase;letter-spacing:.05em;font-family:var(--mono)}
+.g-node .g-label{font-size:12.5px;font-weight:600;fill:var(--ink)}
+.g-node .g-sub{font-size:10px;fill:var(--ink2)}
+.g-node[data-go]{cursor:pointer}
+.g-node[data-go]:hover rect,.g-node:focus rect{stroke:var(--accent);stroke-width:2}
+.g-node:focus{outline:none}
+.g-edge{fill:none;stroke:#94A3B8;stroke-width:1.5}
+.g-dim .g-node{opacity:.3}.g-dim .g-edge{opacity:.12}
+.g-dim .g-node.g-hot{opacity:1}.g-dim .g-edge.g-hot{opacity:1;stroke:var(--accent);stroke-width:2.2}
+.n-src rect{fill:#CCFBF1;stroke:#0F766E}.n-snk rect{fill:#FEF3C7;stroke:#B45309}.n-both rect{fill:#FEF3C7;stroke:#0F766E;stroke-width:2}
+.n-mid rect{fill:#EEF2FF;stroke:#6366F1}.n-var rect{fill:#FDF2F8;stroke:#DB2777}.n-res rect{fill:#FFFBEB;stroke:#B45309;stroke-dasharray:4 2}
+.n-local rect{fill:#F8FAFC;stroke:#64748B;stroke-dasharray:3 2}.n-focus rect{fill:#4F46E5;stroke:#312E81}
+.n-focus .g-label,.n-focus .g-kind,.n-focus .g-sub{fill:#fff}
+.n-unknown rect{fill:#FFE4E6;stroke:#BE123C;stroke-dasharray:5 3}.n-proc rect{fill:#E0E7FF;stroke:#4338CA}
+.n-fn rect{fill:#EDE9FE;stroke:#6D28D9}.n-dyn rect{fill:#FFE4E6;stroke:#BE123C;stroke-dasharray:5 3}
+.e-cond{stroke-dasharray:6 4}.e-dyn{stroke:#BE123C;stroke-dasharray:6 3}.e-ind{stroke:#2DD4BF;stroke-dasharray:4 3}
+.e-dir{stroke:#6366F1}
+.lg{display:inline-block;width:14px;height:10px;border-radius:3px;border:1.5px solid #94A3B8;background:#fff}
+.lg.n-src{background:#CCFBF1;border-color:#0F766E}.lg.n-snk{background:#FEF3C7;border-color:#B45309}.lg.n-mid{background:#EEF2FF;border-color:#6366F1}
+.lg.n-var{background:#FDF2F8;border-color:#DB2777}.lg.n-res{background:#FFFBEB;border-color:#B45309;border-style:dashed}.lg.n-local{border-style:dashed}
+.lg.n-focus{background:#4F46E5;border-color:#312E81}.lg.n-proc{background:#E0E7FF;border-color:#4338CA}.lg.n-fn{background:#EDE9FE;border-color:#6D28D9}
+.lg.n-dyn,.lg.n-unknown{background:#FFE4E6;border-color:#BE123C;border-style:dashed}
+.lg.e{height:0;border-width:2px 0 0;border-radius:0;width:22px;background:none}
+.lg.e-cond{border-top-style:dashed}.lg.e-dyn{border-color:#BE123C;border-top-style:dashed}.lg.e-ind{border-color:#2DD4BF;border-top-style:dashed}.lg.e-dir{border-color:#6366F1}
+/* control flow */
+.flow{display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.fstep{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:.28rem .6rem;font-size:.8rem;cursor:pointer;max-width:560px;text-align:left;font-family:inherit;color:var(--ink)}
+.fstep:hover{border-color:var(--accent)}
+.fstep .sn{font-family:var(--mono);font-size:.7rem;color:var(--accent)}
+.fstep.w{border-left:4px solid var(--snk)}.fstep.r{border-left:4px solid var(--src)}.fstep.t{border-left:4px solid var(--ext)}
+.fstep.e{border-left:4px solid var(--bad)}.fstep.x{border-left:4px solid var(--mid)}
+.fstep.iss{box-shadow:0 0 0 2px #FECDD3}
+.farrow{width:2px;height:12px;background:var(--line);margin-left:1.2rem}
+.fblock{border:1.5px solid var(--line);border-radius:10px;padding:.5rem .6rem;margin:.1rem 0;background:#FBFCFE}
+.fblock .fh{font-family:var(--mono);font-size:.7rem;color:var(--ink2);margin-bottom:.35rem;overflow-wrap:anywhere}
+.fblock .fh b{color:var(--ink)}
+.fbranches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.fbranch{border:1px dashed var(--line);border-radius:8px;padding:.4rem .5rem;min-width:0}
+.fbranch .bl{font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+.fbranch.then .bl{color:var(--ok)}.fbranch.else .bl{color:var(--ink2)}
+.fblock.loop{border-color:#A5B4FC}.fblock.loop .fh::before{content:"↻ ";color:var(--accent);font-weight:700}
+.fblock.try{border-color:#CBD5E1}.fblock.catch{border-color:#FDA4AF;background:#FFF7F8}
+.fblock.dyn{border-color:#C4B5FD;background:#FAF7FF}.fblock.call{border-color:#99F6E4;background:#F7FFFD}
+.frun{font-size:.78rem;color:var(--ink2);margin:.05rem 0}
+.frun summary{padding:.25rem .55rem;font-weight:500;font-size:.78rem}
+.frun>.body{padding:.2rem .5rem .5rem}
+/* issues */
+.issue{border-left:4px solid var(--line)}
+.issue.high{border-left-color:var(--bad)}.issue.medium{border-left-color:var(--warn)}.issue.low{border-left-color:#94A3B8}.issue.info{border-left-color:#CBD5E1}
+.issue-head{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:.3rem}
+.issue .why{color:var(--ink2);margin:.2rem 0}
+.issue .next{margin:.3rem 0 0}
+.issue .next b{color:var(--ink)}
+.matrix td.cell{text-align:center;font-family:var(--mono);font-weight:700}
+.matrix td.D{background:#E0E7FF;color:#3730A3}.matrix td.I{background:#CCFBF1;color:#0F766E}.matrix td.DI{background:linear-gradient(135deg,#E0E7FF 50%,#CCFBF1 50%);color:#1E293B}
+.matrix th.rot{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;vertical-align:bottom;max-height:220px;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:.74rem}
+.field{display:flex;flex-direction:column;gap:.25rem;font-size:.85rem;color:var(--ink2);margin:.4rem 0}
+.field input,.field textarea,.field select{font:inherit;color:var(--ink);padding:.45rem .6rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);max-width:100%}
+.details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.2rem 1rem}.details-grid .wide{grid-column:1/-1}
+.savebar{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.7rem 1rem;margin:.8rem 0}
+.savebar.dirty{border-color:var(--warn);background:var(--warnBg)}.savebar p{flex:1;margin:0}
+.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 4px #818CF8}100%{box-shadow:0 0 0 0 transparent}}
+.hide{display:none!important}
+.sr{position:absolute;left:-9999px}
+@media (max-width:1000px){.split,.picker{grid-template-columns:1fr}.panel,.picklist{position:static;max-height:none}.fbranches{grid-template-columns:1fr}.details-grid{grid-template-columns:1fr}}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav{position:static;height:auto;display:flex;flex-wrap:wrap;gap:.2rem}.doc-title,.brand,.doc-sub,.nav-foot{width:100%}.nav-btn{width:auto}main{padding:1rem}
+.conveyor{flex-direction:column}.conveyor .joint{width:auto;height:22px;border:1.5px solid #1E293B;border-top:0;border-bottom:0}
+.conveyor .cell:first-child{border-radius:8px 8px 0 0;border-right-width:1.5px}.conveyor .cell:last-child{border-radius:0 0 8px 8px;border-left-width:1.5px}
+table.t{display:block;overflow-x:auto}.kv,.kvl{grid-template-columns:1fr}.grid{grid-template-columns:1fr!important}.badge{white-space:normal}}
+@media print{nav{display:none}.layout{grid-template-columns:1fr}.codefull{max-height:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav id="nav" aria-label="Sections"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<!--__DETAILS__-->
+<script>
+const DATA = /*__DATA__*/null;
+/* ============================================================ helpers */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = n => (n ?? 0).toLocaleString();
+const plural = (n, w, p) => `${num(n)} ${n === 1 ? w : (p || w + "s")}`;
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const REL = {}; DATA.relations.forEach(r => REL[r.key] = r);
+const STEP = {}, STEP_IDX = {}; DATA.steps.forEach((s, i) => { STEP[s.id] = s; STEP_IDX[s.id] = i; });
+const NODES = DATA.nodes;
+const SCOPE = {}; DATA.scopes.forEach(s => SCOPE[s.id] = s);
+const OUT = {}; DATA.outputs.forEach(o => OUT[o.key] = o);
+const LOCAL = {}; (DATA.locals || []).forEach(l => LOCAL[l.key] = l);
+const TEXT = DATA.texts;
+const P = DATA.procedure;
+const ROWS = "(rows)";
+const _ids = new Map();
+const slug = s => { s = String(s); if (!_ids.has(s)) _ids.set(s, "i" + _ids.size); return _ids.get(s); };
+const go = (kind, arg, label, cls = "xl", title = "") =>
+  `<button class="${cls}" data-go="${kind}" data-arg="${esc(arg)}"${title ? ` title="${esc(title)}"` : ""}>${label}</button>`;
+function flash(id) {
+  const el = typeof id === "string" ? document.getElementById(id) : id;
+  if (!el) return;
+  el.scrollIntoView({block: "center"});
+  if (el.tagName === "DETAILS") el.open = true;
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+function relName(key) {
+  if (REL[key]) return REL[key].name;
+  const l = LOCAL[key];
+  if (l) return l.name + ({cte: " (CTE)", view: " (view)", function: " (function)", values: " (VALUES)", pivot: " (pivot)"}[l.kind] || " (derived)");
+  if (key.startsWith("system:")) return key.slice(7).toUpperCase();
+  if (key.startsWith("unresolved:")) return key.slice(11) + " (unresolved)";
+  if (key.startsWith("proc-result:")) return "result of " + key.slice(12);
+  return key;
+}
+function colName(rel, col) {
+  const r = REL[rel];
+  if (col === "value" && (!r || ["variable", "parameter", "return"].includes(r.kind) || rel.startsWith("system:"))) return relName(rel);
+  if (col === ROWS) return "rows of " + relName(rel);
+  if (col === "*") return relName(rel) + ".*";
+  return relName(rel) + "." + col;
+}
+const nodeLabel = id => colName(NODES[id].rel, NODES[id].col);
+function versionLabel(id) {
+  const n = NODES[id];
+  if (n.step == null) return n.op === "initial" ? "before the procedure" : "";
+  const s = STEP[n.step];
+  return s ? (n.op === "local" ? "inside step " : "after step ") + s.label : "";
+}
+function stepLink(id, label) {
+  const s = STEP[id];
+  if (!s) return "";
+  return `<button class="steplink" data-go="step" data-arg="${esc(id)}" title="${esc(s.summary)}">${esc(label || "step " + s.label)}</button>`;
+}
+const stepLinks = ids => (ids || []).map(id => stepLink(id)).join(" ");
+function relClass(key) {
+  const r = REL[key];
+  if (!r) return LOCAL[key] ? "mid" : "";
+  if (r.role === "input") return "src";
+  if (r.role === "output" || r.role === "both") return "snk";
+  if (r.role === "intermediate") return "mid";
+  return "";
+}
+const relChip = key => go("rel", key, esc(relName(key)), "chipref " + relClass(key));
+const KIND_CLASS = {"insert": "w", "update": "w", "delete": "w", "merge": "w", "truncate": "w", "select-into": "w",
+  "insert-exec": "w", "create-table": "w", "drop-table": "w", "alter-table": "w", "bulk-insert": "w", "declare-table": "w",
+  "select": "r", "select-assign": "r", "open-cursor": "r", "fetch": "r", "declare-cursor": "r",
+  "if": "c", "while": "c", "return": "e", "throw": "e", "raiserror": "e", "break": "c", "continue": "c", "goto": "c",
+  "begin-tran": "t", "commit": "t", "rollback": "t", "save-tran": "t", "exec": "x", "exec-dynamic": "x", "nested-end": "c"};
+const KIND_LABEL = {"select-into": "select into", "select-assign": "select @", "insert-exec": "insert exec", "exec-dynamic": "dynamic sql",
+  "create-table": "create table", "drop-table": "drop table", "declare-table": "table var", "declare-cursor": "cursor",
+  "open-cursor": "open cursor", "begin-tran": "begin tran", "set-option": "set option", "nested-end": "end", "alter-table": "alter table"};
+const kindBadge = k => `<span class="kind k-${KIND_CLASS[k] || ""}">${esc(KIND_LABEL[k] || k)}</span>`;
+const sevBadge = s => `<span class="badge b-${s === "info" ? "info2" : s}">${esc(s)}</span>`;
+const statusBadge = s => `<span class="badge ${s === "resolved" ? "b-ok" : s === "partial" ? "b-warn" : "b-bad"}">${esc(s)}</span>`;
+const lines = st => st && st.lines ? (st.lines[0] === st.lines[1] ? `line ${st.lines[0]}` : `lines ${st.lines[0]}–${st.lines[1]}`) : "";
+
+/* ============================================================ code rendering */
+const KW = new Set(("ADD ALL ALTER AND ANY APPLY AS ASC AUTHORIZATION BEGIN BETWEEN BREAK BULK BY CASCADE CASE CATCH CHECK " +
+  "CLOSE CLUSTERED COLLATE COLUMN COMMIT CONSTRAINT CONTINUE CREATE CROSS CURRENT CURSOR DATABASE DEALLOCATE DECLARE DEFAULT " +
+  "DELETE DESC DISTINCT DROP ELSE END ESCAPE EXCEPT EXEC EXECUTE EXISTS FETCH FOR FOREIGN FROM FULL FUNCTION GO GOTO GROUP HAVING " +
+  "IDENTITY IF IN INDEX INNER INSERT INTERSECT INTO IS JOIN KEY LEFT LIKE MATCHED MERGE NEXT NOCOUNT NOLOCK NONCLUSTERED NOT NULL " +
+  "OF OFF ON OPEN OPTION OR ORDER OUTER OUTPUT OVER PARTITION PERCENT PIVOT PRIMARY PRINT PROC PROCEDURE RAISERROR READONLY " +
+  "RECOMPILE REFERENCES RETURN RETURNS ROLLBACK ROWS SAVE SCHEMA SELECT SET SOURCE TABLE TARGET THEN THROW TO TOP TRAN TRANSACTION " +
+  "TRUNCATE TRY UNION UNIQUE UNPIVOT UPDATE USE USING VALUES VIEW WHEN WHERE WHILE WITH XACT_ABORT LOCAL FAST_FORWARD STATIC " +
+  "FORWARD_ONLY READ_ONLY OUT OUTPUT MAXRECURSION TIES OFFSET ROW ONLY FIRST LAST").split(" "));
+const TYPES = new Set(("INT BIGINT SMALLINT TINYINT BIT DECIMAL NUMERIC MONEY SMALLMONEY FLOAT REAL DATE DATETIME DATETIME2 " +
+  "SMALLDATETIME DATETIMEOFFSET TIME CHAR VARCHAR NCHAR NVARCHAR TEXT NTEXT BINARY VARBINARY IMAGE UNIQUEIDENTIFIER XML SYSNAME").split(" "));
+const TOKRE = /(--[^\n]*)|(\/\*[\s\S]*?(?:\*\/|$))|(N?'(?:[^']|'')*'?)|(\[(?:[^\]]|\]\])*\]?)|("(?:[^"]|"")*"?)|(@@?[A-Za-z_0-9$#@]+)|(##?[A-Za-z_0-9$#@]+)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z_0-9$]*)/g;
+function tokenize(text) {
+  const out = []; let m; TOKRE.lastIndex = 0;
+  while ((m = TOKRE.exec(text))) {
+    let c = "";
+    if (m[1] || m[2]) c = "c-cmt"; else if (m[3]) c = "c-str"; else if (m[4] || m[5]) c = "c-id";
+    else if (m[6]) c = "c-var"; else if (m[7]) c = "c-tmp"; else if (m[8]) c = "c-num";
+    else if (m[9]) { const u = m[9].toUpperCase(); c = KW.has(u) ? "c-kw" : (TYPES.has(u) ? "c-type" : ""); }
+    if (c) out.push({s: m.index, e: m.index + m[0].length, c});
+    if (m[0].length === 0) TOKRE.lastIndex++;
+  }
+  return out;
+}
+const _lineIdx = {}, _tokCache = {};
+function lineIndex(tid) {
+  if (_lineIdx[tid]) return _lineIdx[tid];
+  const t = TEXT[tid].text, out = []; let s = 0;
+  for (let i = 0; i <= t.length; i++) {
+    if (i === t.length || t[i] === "\n") { out.push({s, e: (i > s && t[i - 1] === "\r") ? i - 1 : i}); s = i + 1; }
+  }
+  return _lineIdx[tid] = out;
+}
+function tokensOf(tid) { return _tokCache[tid] || (_tokCache[tid] = tokenize(TEXT[tid].text)); }
+function lineOfOffset(tid, off) {
+  const L = lineIndex(tid); let lo = 0, hi = L.length - 1;
+  while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (L[mid].s <= off) lo = mid; else hi = mid - 1; }
+  return lo + 1;
+}
+/* Lines [from, to] (local, 1-based) of a text with syntax colours and marks [{s,e,cls}]. */
+function codeLines(tid, from, to, marks = [], opts = {}) {
+  const T = TEXT[tid]; if (!T) return "";
+  const L = lineIndex(tid);
+  from = Math.max(1, from | 0); to = Math.min(L.length, to | 0);
+  const toks = tokensOf(tid);
+  let ti = 0, html = "";
+  const marksSorted = marks.filter(m => m && m.e > m.s);
+  const hitLines = opts.hit || null;
+  while (ti < toks.length && toks[ti].e <= L[from - 1].s) ti++;
+  for (let ln = from; ln <= to; ln++) {
+    const ls = L[ln - 1].s, le = L[ln - 1].e;
+    const bp = new Set([ls, le]);
+    while (ti < toks.length && toks[ti].e <= ls) ti++;
+    for (let k = ti; k < toks.length && toks[k].s < le; k++) { bp.add(Math.max(ls, toks[k].s)); bp.add(Math.min(le, toks[k].e)); }
+    const lm = marksSorted.filter(m => m.e > ls && m.s < le);
+    lm.forEach(m => { bp.add(Math.max(ls, m.s)); bp.add(Math.min(le, m.e)); });
+    const pts = [...bp].sort((a, b) => a - b);
+    let k = ti, body = "";
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1]; if (b <= a) continue;
+      while (k < toks.length && toks[k].e <= a) k++;
+      const tc = (k < toks.length && toks[k].s <= a) ? toks[k].c : "";
+      const mc = lm.filter(m => m.s < b && m.e > a).map(m => m.cls).join(" ");
+      const txt = esc(T.text.slice(a, b));
+      body += (tc || mc) ? `<span class="${tc} ${mc}">${txt}</span>` : txt;
+    }
+    const abs = ln + (T.lineOffset || 0);
+    const cls = hitLines && hitLines.has(ln) ? " hit" : "";
+    const tag = opts.tags && opts.tags[ln] ? `<span class="sm-mark">${opts.tags[ln]}</span>` : "";
+    html += `<div class="cl${cls}"${opts.anchor ? ` id="L-${slug(tid)}-${abs}"` : ""}><span class="ln">${abs}</span><span class="lc">${body || " "}${tag}</span></div>`;
+  }
+  return html;
+}
+/* An excerpt around a span (text offsets), with marks. */
+function excerpt(tid, span, marks = [], pad = 0, maxLines = 40) {
+  if (!TEXT[tid] || !span) return "";
+  let a = lineOfOffset(tid, span[0]), b = lineOfOffset(tid, Math.max(span[0], span[1] - 1));
+  a = Math.max(1, a - pad); b = b + pad;
+  let more = "";
+  if (b - a + 1 > maxLines) { more = `<div class="cl"><span class="ln">…</span><span class="lc" style="color:#94A3B8">${b - a + 1 - maxLines} more lines — open the step in Code to see all</span></div>`; b = a + maxLines - 1; }
+  return `<div class="code">${codeLines(tid, a, b, marks)}${more}</div>`;
+}
+
+/* ============================================================ sections and views */
+const SECTIONS = [
+  {id: "overview", label: "Overview"},
+  {id: "data", label: "Data & sources"},
+  {id: "logic", label: "Logic & steps"},
+  {id: "trace", label: "Trace & impact"},
+  {id: "issues", label: "Review issues"},
+  {id: "details", label: "Procedure details"},
+];
+const ins = DATA.relations.filter(r => (r.role === "input" || r.role === "both") && !["variable", "parameter"].includes(r.kind));
+const outsRel = DATA.relations.filter(r => r.role === "output" || r.role === "both");
+const mids = DATA.relations.filter(r => r.role === "intermediate");
+const outCols = DATA.outputs.filter(o => o.col !== ROWS);
+const TABS = [
+  {id: "overview", section: "overview", label: "Overview", avail: () => true},
+  {id: "inputs", section: "data", label: "Inputs", avail: () => ins.length > 0, count: () => ins.length,
+   why: "This code reads no tables, views, functions or remote sources."},
+  {id: "outputs", section: "data", label: "Outputs", avail: () => outsRel.length > 0, count: () => outsRel.length,
+   why: "This code writes no tables and returns no result sets or output parameters."},
+  {id: "intermediates", section: "data", label: "Intermediates", avail: () => mids.length + (DATA.locals || []).length +
+     DATA.relations.filter(r => r.kind === "variable").length > 0,
+   count: () => mids.length + (DATA.locals || []).filter(l => l.kind === "cte").length,
+   why: "No temp tables, table variables, CTEs, cursors or variables."},
+  {id: "columns", section: "data", label: "Columns", avail: () => outCols.length > 0, count: () => outCols.length,
+   why: "No output columns were found."},
+  {id: "dataflow", section: "data", label: "Data flow", avail: () => DATA.relations.length > 0},
+  {id: "steps", section: "logic", label: "Steps", avail: () => DATA.steps.length > 0, count: () => DATA.counts.statements},
+  {id: "control", section: "logic", label: "Control flow", avail: () => DATA.steps.length > 0},
+  {id: "transforms", section: "logic", label: "Transformations", avail: () => DATA.transforms.length > 0,
+   count: () => DATA.transforms.length, why: "No expression changes a value: every column is copied as it is."},
+  {id: "code", section: "logic", label: "Code", avail: () => true},
+  {id: "trace", section: "trace", label: "Column trace", avail: () => DATA.outputs.length > 0,
+   why: "There is no output column to trace."},
+  {id: "lineage", section: "trace", label: "Lineage graph", avail: () => DATA.outputs.length > 0},
+  {id: "matrix", section: "trace", label: "Usage matrix", avail: () => outCols.length > 0 && DATA.matrixRelations.length > 0,
+   why: "No output column reads a source table."},
+  {id: "calls", section: "trace", label: "Call graph", avail: () => true, count: () => DATA.calls.length || null},
+  {id: "issues", section: "issues", label: "Review issues", avail: () => true, count: () => DATA.issues.length || null},
+  {id: "complexity", section: "issues", label: "Complexity", avail: () => true},
+  {id: "details", section: "details", label: "Procedure details", avail: () => true},
+];
+const LAST_VIEW = {};
+function buildNav() {
+  const nav = document.getElementById("nav");
+  const hi = DATA.summary.issues.high || 0;
+  let html = `<div class="brand">SQL Doc Gen</div><div class="doc-title">${esc(DATA.title).replace(/([._])/g, "$1<wbr>")}</div>
+    <div class="doc-sub">${esc(P.kind === "procedure" ? "stored procedure" : "script")}${P.database ? " · " + esc(P.database) : ""}</div>`;
+  for (const sec of SECTIONS) {
+    const n = sec.id === "issues" ? DATA.issues.filter(i => i.severity !== "info").length : null;
+    html += `<button class="nav-btn" id="sec-${sec.id}" data-go="section" data-arg="${sec.id}">${sec.label}${n ? `<span class="n${hi ? " hot" : ""}">${n}</span>` : ""}</button>`;
+  }
+  html += `<div class="nav-foot"><b>Static analysis.</b> Generated ${esc(DATA.generated)} from ${esc(P.source || "the code")}. Mode: ${esc(DATA.mode)}.</div>`;
+  nav.innerHTML = html;
+}
+function subtabs(sectionId, activeId) {
+  const views = TABS.filter(t => t.section === sectionId);
+  if (views.length < 2) return "";
+  return `<div class="subtabs" role="tablist">${views.map(t => {
+    const ok = t.avail(), c = ok && t.count ? t.count() : null;
+    return ok ? `<button class="subtab${t.id === activeId ? " active" : ""}" role="tab" aria-selected="${t.id === activeId}" data-go="view" data-arg="${t.id}">${esc(t.label)}${c ? ` <span class="n">${num(c)}</span>` : ""}</button>`
+              : `<button class="subtab disabled" title="${esc(t.why || "Not available for this input")}" aria-disabled="true" tabindex="-1">${esc(t.label)}</button>`;
+  }).join("")}</div>`;
+}
+function openSection(id) {
+  const views = TABS.filter(t => t.section === id && t.avail());
+  const target = views.find(t => t.id === LAST_VIEW[id]) || views[0];
+  if (target) switchTab(target.id);
+}
+let CURRENT = null; const VIEW_STATE = {};
+function switchTab(id, keepScroll) {
+  const tab = TABS.find(t => t.id === id);
+  if (!tab || !tab.avail()) return;
+  LAST_VIEW[tab.section] = id;
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    const on = b.id === "sec-" + tab.section;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  const main = document.getElementById("main");
+  if (CURRENT) VIEW_STATE[CURRENT] = {q: [...main.querySelectorAll("input.search")].map(i => i.value),
+    open: [...main.querySelectorAll("details[open][id]")].map(d => d.id)};
+  main.innerHTML = subtabs(tab.section, id) + RENDER[id]();
+  CURRENT = id;
+  const st = VIEW_STATE[id];
+  if (st) {
+    main.querySelectorAll("input.search").forEach((inp, i) => { if (st.q[i]) { inp.value = st.q[i]; inp.dispatchEvent(new Event("input")); } });
+    st.open.forEach(x => { const d = document.getElementById(x); if (d) d.open = true; });
+  }
+  if (AFTER[id]) AFTER[id]();
+  if (!keepScroll) window.scrollTo(0, 0);
+}
+const AFTER = {};
+
+/* ============================================================ navigation targets */
+let SEL_REL = null, TRACE_KEY = null, LIN_KEY = null, LIN_SRC = null, CODE_SEL = null, ISSUE_FILTER = "all", TF_FILTER = "", TF_KIND = "";
+let TRACE_INDIRECT = true, LIN_INDIRECT = false;
+const GO = {
+  section: openSection,
+  view: id => switchTab(id),
+  step: id => {
+    switchTab("steps");
+    requestAnimationFrame(() => {
+      const el = document.getElementById("st-" + slug(id));
+      if (!el) return;
+      let p = el.parentElement;
+      while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; }
+      el.open = true; flash(el);
+    });
+  },
+  code: arg => { const [tid, s, e, step] = arg.split("|"); CODE_SEL = {tid, s: +s, e: +e, step: step || null}; switchTab("code"); },
+  codestep: id => { const st = STEP[id]; if (!st) return; CODE_SEL = {tid: st.text, s: st.span ? st.span[0] : 0, e: st.span ? st.span[1] : 0, step: id}; switchTab("code"); },
+  trace: key => { TRACE_KEY = key; switchTab("trace"); },
+  tracepick: key => { TRACE_KEY = key; switchTab("trace", true); },
+  traceopt: () => { TRACE_INDIRECT = !TRACE_INDIRECT; switchTab("trace", true); },
+  linopt: () => { LIN_INDIRECT = !LIN_INDIRECT; switchTab("lineage", true); },
+  tlstep: id => { const el = document.getElementById("tl-" + slug(id)); if (!el) return; const d = el.querySelector("details"); if (d) d.open = true; flash(el); },
+  lineage: key => { LIN_KEY = key; LIN_SRC = null; switchTab("lineage"); },
+  linnode: id => { const n = NODES[+id]; if (!n) return; if (n.op === "initial") { LIN_SRC = +id; LIN_KEY = null; } else { const o = DATA.outputs.find(o => o.defs.includes(+id)); if (o) { LIN_KEY = o.key; LIN_SRC = null; } else { LIN_SRC = +id; LIN_KEY = null; } } switchTab("lineage", true); },
+  linsrc: id => { LIN_SRC = +id; LIN_KEY = null; switchTab("lineage", true); },
+  rel: key => {
+    SEL_REL = key;
+    const r = REL[key];
+    if (!r && LOCAL[key]) { switchTab("intermediates"); requestAnimationFrame(() => flash("loc-" + slug(key))); return; }
+    const view = r && (r.role === "output" || r.role === "both") ? "outputs" : (r && (r.role === "input") ? "inputs" : "intermediates");
+    switchTab(view);
+    requestAnimationFrame(() => { const row = document.getElementById("rel-" + slug(key)); if (row) row.scrollIntoView({block: "center"}); });
+  },
+  relpanel: key => { SEL_REL = key; renderPanel(); },
+  issues: sev => { ISSUE_FILTER = sev; switchTab("issues"); },
+  issue: id => { ISSUE_FILTER = "all"; switchTab("issues"); requestAnimationFrame(() => flash("iss-" + id)); },
+  isf: sev => { ISSUE_FILTER = sev; switchTab("issues", true); },
+  tff: key => { TF_FILTER = key; switchTab("transforms", true); },
+  tfk: k => { TF_KIND = TF_KIND === k ? "" : k; switchTab("transforms", true); },
+  dfnode: key => { SEL_REL = key; renderDfPanel(); },
+  exportmd: () => downloadTrace("md"),
+  exporthtml: () => downloadTrace("html"),
+  copycheck: () => copyChecklist(),
+  csv: name => downloadCsv(name),
+};
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-go]");
+  if (b && GO[b.dataset.go]) { ev.preventDefault(); GO[b.dataset.go](b.dataset.arg); }
+});
+document.addEventListener("keydown", ev => {
+  if ((ev.key === "Enter" || ev.key === " ") && ev.target.matches && ev.target.matches(".g-node[data-go]")) {
+    ev.preventDefault(); GO[ev.target.dataset.go](ev.target.dataset.arg);
+  }
+});
+
+/* ============================================================ lineage walks (same rules as sqldocgen/trace.py) */
+function backward(starts, indirect = true, limit = 20000) {
+  const seen = new Map(), q = [];
+  starts.forEach(s => { seen.set(s, {direct: true, depth: 0, role: "start", via: null}); q.push(s); });
+  const visit = (id, direct, depth, role, via) => {
+    if (NODES[id].op === "create") return;          // an empty table being created adds no rows or values
+    const cur = seen.get(id);
+    if (!cur) { if (seen.size >= limit) return; seen.set(id, {direct, depth, role, via}); q.push(id); }
+    else if (direct && !cur.direct) { Object.assign(cur, {direct: true, depth: Math.min(depth, cur.depth), role, via}); q.push(id); }
+  };
+  const doneSteps = new Set();
+  for (let qi = 0; qi < q.length; qi++) {
+    const id = q[qi], info = seen.get(id), n = NODES[id], d0 = info.depth + 1;
+    (n.uses || []).forEach(u => { if (!u.d && !indirect) return; u.defs.forEach(d => visit(d, info.direct && !!u.d, d0, u.role, id)); });
+    if (!indirect || n.step == null || n.op === "local" || doneSteps.has(n.step)) continue;
+    doneSteps.add(n.step);   // step-level reads are indirect for every column the step writes: walk them once
+    const st = STEP[n.step]; if (!st) continue;
+    st.uses.forEach(u => u.defs.forEach(d => visit(d, false, d0, u.role, id)));
+    st.conditions.forEach(c => { if (!c.step || !STEP[c.step]) return; STEP[c.step].uses.forEach(u => u.defs.forEach(d => visit(d, false, d0, "condition", id))); });
+  }
+  return seen;
+}
+let _fwd = null;
+function forwardIndex() {
+  if (_fwd) return _fwd;
+  const fwd = new Map(), byStep = {};
+  const add = (d, t, direct, role) => { if (!fwd.has(d)) fwd.set(d, []); fwd.get(d).push([t, direct, role]); };
+  NODES.forEach(n => { if (n.step != null) (byStep[n.step] = byStep[n.step] || []).push(n.id); });
+  NODES.forEach(n => (n.uses || []).forEach(u => u.defs.forEach(d => add(d, n.id, !!u.d, u.role))));
+  DATA.steps.forEach(st => {
+    const tg = byStep[st.id] || [];
+    st.uses.forEach(u => u.defs.forEach(d => tg.forEach(t => add(d, t, false, u.role))));
+    st.conditions.forEach(c => { if (c.step && STEP[c.step]) STEP[c.step].uses.forEach(u => u.defs.forEach(d => tg.forEach(t => add(d, t, false, "condition")))); });
+  });
+  return _fwd = fwd;
+}
+function forward(starts, limit = 20000) {
+  const fwd = forwardIndex(), seen = new Map(), q = [];
+  starts.forEach(s => { seen.set(s, {direct: true, depth: 0}); q.push(s); });
+  for (let qi = 0; qi < q.length && seen.size < limit; qi++) {
+    const id = q[qi], info = seen.get(id);
+    (fwd.get(id) || []).forEach(([t, direct]) => {
+      const dd = info.direct && direct, cur = seen.get(t);
+      if (!cur) { seen.set(t, {direct: dd, depth: info.depth + 1}); q.push(t); }
+      else if (dd && !cur.direct) { cur.direct = true; q.push(t); }
+    });
+  }
+  return seen;
+}
+const outputOf = id => DATA.outputs.filter(o => o.defs.includes(id));
+
+/* ============================================================ overview */
+function rOverview() {
+  const c = DATA.counts, s = DATA.summary;
+  const partial = DATA.outputs.filter(o => o.status !== "resolved" && o.col !== ROWS).length;
+  const banner = `<div class="conveyor" role="img" aria-label="inputs, procedure, outputs">
+    <div class="cell"><div class="tag">Inputs</div><div class="val">${plural(c.inputs, "object")} read</div><div class="sub">${plural(P.parameters.length, "parameter")} · design-time, statically derived</div></div>
+    <div class="joint">▸</div>
+    <div class="cell mid"><div class="tag">${P.kind === "procedure" ? "Procedure" : "Script"}</div><div class="val">${esc(P.name)}</div>
+      <div class="sub">${plural(c.statements, "statement")} · ${plural(c.temp, "temp object")} · ${plural(c.branches, "branch", "branches")}</div>
+      <div class="sub${partial ? " partial" : ""}">${partial ? plural(partial, "output column") + " partial or unresolved" : "every output column traced"}</div></div>
+    <div class="joint">▸</div>
+    <div class="cell"><div class="tag">Outputs</div><div class="val">${plural(outsRel.length, "output")}</div><div class="sub">${plural(c.outputColumns, "column")} written or returned</div></div>
+  </div>`;
+  const d = DETAILS;
+  const owner = d.owner || d.job ? `<p class="sub">${d.owner ? "Owner: <b>" + esc(d.owner) + "</b>. " : ""}${d.job ? "Runs from: <b>" + esc(d.job) + "</b>. " : ""}${d.runbook ? "Runbook: " + esc(d.runbook) : ""} ${go("section", "details", "Edit procedure details")}</p>`
+    : `<p class="sub">No owner, job or runbook recorded yet. ${go("section", "details", "Add procedure details")}</p>`;
+  const tiles = [["statements", "Statements", "steps"], ["inputs", "Inputs read", "inputs"], ["outputs", "Outputs", "outputs"],
+    ["outputColumns", "Output columns", "columns"], ["temp", "Temp tables & table variables", "intermediates"],
+    ["ctes", "CTEs", "intermediates"], ["branches", "IF / WHILE", "control"], ["dynamic", "Dynamic SQL", "steps"],
+    ["calls", "Procedure calls", "calls"]].filter(([k]) => k === "statements" || c[k])
+    .map(([k, l, v]) => `<div class="card stat" data-go="view" data-arg="${v}" tabindex="0"><div class="big">${num(c[k])}</div><div class="lbl">${l}</div></div>`).join("");
+  const params = P.parameters.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Direction</th><th>Used by</th></tr></thead><tbody>
+    ${P.parameters.map(p => { const key = "var:" + p.name.toLowerCase(); const r = REL[key];
+      const used = r ? [...new Set([...(r.reads || [])])] : [];
+      return `<tr><td><code>${esc(p.name)}</code></td><td><code>${esc(p.type)}</code></td><td>${p.default ? `<code>${esc(p.default)}</code>` : '<span class="mut">required</span>'}</td>
+      <td>${p.output ? '<span class="badge b-snk">output</span>' : p.readonly ? '<span class="badge b-info">readonly table</span>' : '<span class="badge b-src">input</span>'}</td>
+      <td>${used.length ? stepLinks(used.slice(0, 8)) + (used.length > 8 ? ` <span class="mut">+${used.length - 8}</span>` : "") : '<span class="mut">not read</span>'}</td></tr>`; }).join("")}
+    </tbody></table></div>` : `<p class="mut">No parameters.</p>`;
+  const rc = P.returnCodes.length ? `<p class="sub" style="margin-top:.5rem">Return codes: ${[...new Set(P.returnCodes)].map(v => `<code>${esc(v)}</code>`).join(" ")}</p>` : "";
+  const opts = P.options.length ? `<p class="sub">Options: ${P.options.map(o => `<code>${esc(o)}</code>`).join(" ")}</p>` : "";
+  const cov = `<div class="table-wrap"><table class="t"><thead><tr><th>Check</th><th>Result</th><th>Meaning</th></tr></thead><tbody>
+    ${DATA.coverage.map(r => `<tr><td>${esc(r.check)}</td><td><span class="badge b-${r.level === "ok" ? "ok" : r.level === "warn" ? "warn" : r.level === "bad" ? "bad" : "info"}">${esc(r.result)}</span></td><td>${esc(r.meaning)}</td></tr>`).join("")}
+    </tbody></table></div>`;
+  const top = DATA.issues.filter(i => i.severity === "high" || i.severity === "medium").slice(0, 6);
+  const review = top.length ? top.map(i => `<div class="card issue ${i.severity}"><div class="issue-head">${sevBadge(i.severity)}${i.certainty === "possible" ? '<span class="badge b-muted">possible</span>' : ""}<b>${md(i.title)}</b></div>
+      <div class="mut">${esc(i.next)}</div><div style="margin-top:.3rem">${stepLinks(i.steps.slice(0, 6))} ${go("issue", i.id, "details")}</div></div>`).join("")
+    + (DATA.issues.length > top.length ? `<p>${go("section", "issues", "All " + plural(DATA.issues.length, "review issue"))}</p>` : "")
+    : `<div class="empty"><b>No high or medium issues.</b> ${DATA.issues.length ? go("section", "issues", plural(DATA.issues.length, "lower-priority note")) : ""}</div>`;
+  const starts = outCols.slice(0, 12).map(o => go("trace", o.key, esc(colName(o.rel, o.col)), "chipref snk")).join(" ");
+  return `${banner}
+  <h1>${esc(DATA.title)}</h1>
+  <p class="sub">Generated ${esc(DATA.generated)} by sql-doc-gen ${esc(DATA.generatorVersion)} · mode: <b>${esc(DATA.mode)}</b> · ${esc(P.source || "")}${P.lines ? ` lines ${P.lines[0]}–${P.lines[1]}` : ""}</p>
+  <p class="lead">${md(DATA.what)}</p>
+  <div class="card honesty"><b>Design-time truth.</b> This document is derived statically from the procedure's code${DATA.mode !== "procedure" ? " and the definitions supplied with it" : ""}. It has no run history: it cannot say which branch ran, what a dynamic string held at run time, or whether a value is right — only every place that could make it wrong. A column with several possible sources lists all of them; <i>unresolved</i> means unknown, not absent.</div>
+  ${owner}
+  <div class="grid c6" style="margin-top:.8rem">${tiles}</div>
+  ${outCols.length ? `<h2>Trace a column</h2><p class="sub" style="margin-bottom:.5rem">Pick an output column to see every step that can affect it, in the order they run.</p><div class="pill-list">${starts}${outCols.length > 12 ? " " + go("view", "columns", `all ${num(outCols.length)} columns`) : ""}</div>` : ""}
+  <h2>Signature</h2>${params}${rc}${opts}
+  <h2>What this document can and cannot see</h2>${cov}
+  <h2>Review first</h2>${review}`;
+}
+
+/* ============================================================ data & sources */
+function colUsage(r) {
+  const cr = r.colReads || {};
+  const cols = Object.keys(cr).filter(c => c !== "value");
+  if (!cols.length) return '<span class="mut">—</span>';
+  return `<div class="pill-list">${cols.slice(0, 14).map(c => `<span class="chipref" title="read at ${esc(cr[c].map(s => STEP[s] ? STEP[s].label : s).join(", "))}">${esc(c)}</span>`).join("")}${cols.length > 14 ? `<span class="mut">+${cols.length - 14}</span>` : ""}</div>`;
+}
+function where(r) {
+  const ep = r.endpoint || {};
+  const bits = [ep.server, ep.database].filter(Boolean);
+  return bits.length ? `<span class="mut"> · ${esc(bits.join(" / "))}</span>` : "";
+}
+const KIND_NAMES = {"table": "table", "view": "view", "function": "function", "system": "system view", "remote": "remote / linked server",
+  "file": "file", "temp": "temp table", "global-temp": "global temp table", "table-variable": "table variable", "cursor": "cursor",
+  "result": "result set", "return": "return value", "parameter": "parameter", "variable": "variable", "table-parameter": "table-valued parameter",
+  "dynamic": "named at run time"};
+function relRow(r, cols) {
+  return `<tr id="rel-${slug(r.key)}" class="${SEL_REL === r.key ? "sel" : ""}" data-go="relpanel" data-arg="${esc(r.key)}">
+    ${cols.map(c => `<td>${c(r)}</td>`).join("")}</tr>`;
+}
+function relPanel(key) {
+  const r = REL[key];
+  if (!r) return `<div class="panel"><p class="mut">Select a row to see where it is read and written.</p></div>`;
+  const reads = r.reads || [], writes = r.writes || [];
+  const outs = DATA.outputs.filter(o => o.rel === key);
+  const cols = r.columns || [];
+  const keyTxt = (r.keys || []).length ? r.keys.map(k => "(" + k.join(", ") + ")").join(" ") : "";
+  return `<div class="panel"><div class="eyebrow">${esc(KIND_NAMES[r.kind] || r.kind)} · ${esc(r.role)}</div><h3>${esc(r.name)}</h3>
+    ${r.note ? `<p class="mut">${esc(r.note)}</p>` : ""}
+    <div class="kvl" style="margin:.5rem 0">
+      ${r.endpoint ? `<div class="k">Location</div><div>${esc([r.endpoint.server || "this server", r.endpoint.database || "current database", r.endpoint.schema, r.endpoint.object].filter(Boolean).join(" / "))}</div>` : ""}
+      <div class="k">Definition</div><div>${r.defined ? (r.definedIn ? "from " + esc(r.definedIn) : "created in this code") : '<span class="mut">not supplied: columns learned from use</span>'}</div>
+      ${keyTxt ? `<div class="k">Unique keys</div><div><code>${esc(keyTxt)}</code></div>` : ""}
+      ${(r.ops || []).length ? `<div class="k">Written by</div><div>${r.ops.map(o => `<span class="badge b-snk">${esc(o)}</span>`).join(" ")}</div>` : ""}
+      ${writes.length ? `<div class="k">Write steps</div><div>${stepLinks(writes)}</div>` : ""}
+      ${reads.length ? `<div class="k">Read steps</div><div>${stepLinks(reads)}</div>` : ""}
+    </div>
+    ${outs.length ? `<h3>Trace a column</h3><div class="pill-list">${outs.map(o => go("trace", o.key, esc(o.col === ROWS ? "which rows" : o.col), "chipref snk")).join("")}</div>` : ""}
+    ${cols.length ? `<h3>Columns</h3><div class="table-wrap"><table class="t"><thead><tr><th>Column</th><th>Type</th><th>Read at</th></tr></thead><tbody>
+      ${cols.slice(0, 200).map(c => { const rd = (r.colReads || {})[c.name] || []; return `<tr><td><code>${esc(c.name)}</code>${c.identity ? ' <span class="badge b-muted">identity</span>' : ""}${c.computed ? ' <span class="badge b-muted">computed</span>' : ""}</td><td><code>${esc(c.type || "")}</code>${c.nullable === false ? ' <span class="mut">not null</span>' : ""}</td><td>${stepLinks(rd.slice(0, 6))}</td></tr>`; }).join("")}
+      </tbody></table></div>` : ""}
+  </div>`;
+}
+function renderPanel() {
+  const p = document.getElementById("relpanel");
+  if (p) p.innerHTML = relPanel(SEL_REL);
+  document.querySelectorAll("tr[id^='rel-']").forEach(tr => tr.classList.toggle("sel", tr.id === "rel-" + slug(SEL_REL)));
+}
+function filterRows(inputId, sel) {
+  return `<input class="search" id="${inputId}" placeholder="Filter…" oninput="(function(q){q=q.toLowerCase();document.querySelectorAll('${sel}').forEach(tr=>tr.classList.toggle('hide',!tr.textContent.toLowerCase().includes(q)))})(this.value)">`;
+}
+function rInputs() {
+  if (!SEL_REL || !REL[SEL_REL] || !ins.includes(REL[SEL_REL])) SEL_REL = ins[0] ? ins[0].key : null;
+  const rows = ins.map(r => relRow(r, [
+    r => `${relChip(r.key)}${where(r)}${r.note ? `<div class="mut">${esc(r.note)}</div>` : ""}`,
+    r => `<span class="badge ${r.kind === "remote" || r.kind === "file" ? "b-ext" : "b-src"}">${esc(KIND_NAMES[r.kind] || r.kind)}</span>${r.role === "both" ? ' <span class="badge b-snk">also written</span>' : ""}`,
+    colUsage,
+    r => stepLinks((r.reads || []).slice(0, 8)) + ((r.reads || []).length > 8 ? ` <span class="mut">+${r.reads.length - 8}</span>` : ""),
+    r => r.defined ? '<span class="badge b-ok">defined</span>' : '<span class="badge b-muted">not supplied</span>'])).join("");
+  return `<h1>Inputs</h1><p class="sub">Every table, view, function, remote or file source the code reads, with the columns it uses and the steps that read them.</p>
+  <div class="filter-row">${filterRows("q-in", "#tb-in tr")} ${go("csv", "inputs", "Download CSV", "ghost-btn")}</div>
+  <div class="split"><div class="table-wrap"><table class="t"><thead><tr><th>Object</th><th>Kind</th><th>Columns used</th><th>Read by</th><th>Definition</th></tr></thead><tbody id="tb-in">${rows}</tbody></table></div><div id="relpanel">${relPanel(SEL_REL)}</div></div>`;
+}
+function rOutputs() {
+  if (!SEL_REL || !REL[SEL_REL] || !outsRel.includes(REL[SEL_REL])) SEL_REL = outsRel[0] ? outsRel[0].key : null;
+  const rows = outsRel.map(r => {
+    const cols = DATA.outputs.filter(o => o.rel === r.key && o.col !== ROWS);
+    const bad = cols.filter(o => o.status !== "resolved").length;
+    return relRow(r, [
+      r => `${relChip(r.key)}${where(r)}${r.note ? `<div class="mut">${esc(r.note)}</div>` : ""}`,
+      r => `<span class="badge b-snk">${esc(KIND_NAMES[r.kind] || r.kind)}</span>`,
+      r => (r.ops || []).map(o => `<span class="badge b-snk">${esc(o)}</span>`).join(" ") || (r.kind === "result" ? '<span class="badge b-info">SELECT</span>' : r.kind === "parameter" ? '<span class="badge b-info">OUTPUT</span>' : r.kind === "return" ? '<span class="badge b-info">RETURN</span>' : ""),
+      r => `${num(cols.length)}${bad ? ` <span class="badge b-warn">${bad} partial</span>` : ""}`,
+      r => stepLinks((r.writes || []).slice(0, 8))]);
+  }).join("");
+  return `<h1>Outputs</h1><p class="sub">Tables written (INSERT, UPDATE, MERGE, DELETE, TRUNCATE, SELECT INTO), result sets returned, OUTPUT parameters, OUTPUT clauses and return values.</p>
+  <div class="filter-row">${filterRows("q-out", "#tb-out tr")} ${go("csv", "outputs", "Download CSV", "ghost-btn")}</div>
+  <div class="split"><div class="table-wrap"><table class="t"><thead><tr><th>Output</th><th>Kind</th><th>How</th><th>Columns</th><th>Written by</th></tr></thead><tbody id="tb-out">${rows}</tbody></table></div><div id="relpanel">${relPanel(SEL_REL)}</div></div>`;
+}
+function rIntermediates() {
+  const temps = mids.filter(r => r.kind !== "variable");
+  const vars = DATA.relations.filter(r => r.kind === "variable");
+  const locs = (DATA.locals || []).filter(l => ["cte", "derived", "view", "function", "pivot"].includes(l.kind) && l.columns.length);
+  const writtenBy = key => [...new Set(NODES.filter(n => n.rel === key && n.step && n.op !== "local").map(n => n.step))];
+  const tRows = temps.map(r => `<tr id="rel-${slug(r.key)}"><td>${relChip(r.key)}</td><td><span class="badge b-mid">${esc(KIND_NAMES[r.kind] || r.kind)}</span></td>
+    <td>${r.columns.length ? `<div class="pill-list">${r.columns.slice(0, 12).map(c => `<span class="chipref">${esc(c.name)}</span>`).join("")}${r.columns.length > 12 ? `<span class="mut">+${r.columns.length - 12}</span>` : ""}</div>` : '<span class="mut">unknown</span>'}${r.starFrom ? `<div class="mut">filled with SELECT * from ${r.starFrom.map(k => esc(relName(k))).join(", ")}</div>` : ""}</td>
+    <td>${stepLinks((r.created || []).slice(0, 3))}</td><td>${stepLinks(writtenBy(r.key).slice(0, 8))}</td><td>${stepLinks((r.reads || []).slice(0, 8))}</td><td>${stepLinks((r.dropped || []).slice(0, 2))}</td></tr>`).join("");
+  const lRows = locs.map(l => `<tr id="loc-${slug(l.key)}"><td><span class="chipref mid">${esc(l.name)}</span></td><td><span class="badge b-mid">${esc(l.kind === "cte" ? "CTE" : l.kind)}</span></td>
+    <td><div class="pill-list">${l.columns.slice(0, 12).map(c => `<span class="chipref">${esc(c.name)}</span>`).join("")}</div></td><td>${stepLink(l.step)}</td></tr>`).join("");
+  const vRows = vars.map(r => `<tr id="rel-${slug(r.key)}"><td><code>${esc(r.name)}</code></td><td><code>${esc(r.dataType || "")}</code></td>
+    <td>${stepLinks(writtenBy(r.key).slice(0, 10))}</td><td>${stepLinks((r.reads || []).slice(0, 10))}</td></tr>`).join("");
+  return `<h1>Intermediates</h1><p class="sub">Temp tables, table variables, cursors and CTEs the procedure stages data through, and the variables that carry values between steps.</p>
+  ${temps.length ? `<h2>Temp tables, table variables and cursors</h2><div class="table-wrap"><table class="t"><thead><tr><th>Name</th><th>Kind</th><th>Columns</th><th>Created</th><th>Filled / changed</th><th>Read</th><th>Dropped</th></tr></thead><tbody>${tRows}</tbody></table></div>` : ""}
+  ${locs.length ? `<h2>CTEs and derived tables</h2><p class="sub">They exist only inside the statement that defines them.</p><div class="table-wrap"><table class="t"><thead><tr><th>Name</th><th>Kind</th><th>Columns</th><th>Step</th></tr></thead><tbody>${lRows}</tbody></table></div>` : ""}
+  ${vars.length ? `<h2>Variables</h2><div class="table-wrap"><table class="t"><thead><tr><th>Variable</th><th>Type</th><th>Assigned</th><th>Read</th></tr></thead><tbody>${vRows}</tbody></table></div>` : ""}`;
+}
+function rColumns() {
+  const rows = outCols.map(o => {
+    const dsrc = o.direct.map(([r, c]) => `<span class="chipref src">${esc(colName(r, c))}</span>`).join(" ") || '<span class="mut">no column: constants, system values or row counts</span>';
+    const conds = o.conditions.map(c => `<span class="badge b-info" title="${esc(c.text)}">${esc(c.branch === "catch" ? "in CATCH" : (c.branch === "else" ? "not " : "") + c.text).slice(0, 60)}</span>`).join(" ");
+    return `<tr data-go="trace" data-arg="${esc(o.key)}" title="Open the column trace"><td><b>${esc(colName(o.rel, o.col))}</b></td><td>${dsrc}</td>
+      <td>${stepLinks(o.steps.slice(0, 8))}${o.steps.length > 8 ? ` <span class="mut">+${o.steps.length - 8}</span>` : ""}</td><td>${conds || '<span class="mut">always</span>'}</td><td>${statusBadge(o.status)}</td></tr>`;
+  }).join("");
+  return `<h1>Columns</h1><p class="sub">One row per output column: the values it is computed from directly, the steps that write it, the branch conditions those steps depend on, and how completely it could be traced. Select a row to open its trace.</p>
+  <div class="filter-row">${filterRows("q-cols", "#tb-cols tr")} ${go("csv", "columns", "Download CSV", "ghost-btn")}</div>
+  <div class="table-wrap"><table class="t"><thead><tr><th>Output column</th><th>Direct sources</th><th>Written by</th><th>Conditions</th><th>Status</th></tr></thead><tbody id="tb-cols">${rows}</tbody></table></div>`;
+}
+
+/* ============================================================ graph drawing */
+function layout(nodes, edges, opt = {}) {
+  const W = opt.w || 190, H = opt.h || 46, GX = opt.gx || 70, GY = opt.gy || 14, PAD = 16;
+  const ids = nodes.map(n => n.id), byId = {};
+  nodes.forEach(n => byId[n.id] = n);
+  const out = {}, inn = {};
+  ids.forEach(i => { out[i] = []; inn[i] = []; });
+  edges.forEach(e => { if (out[e.from] && inn[e.to] && e.from !== e.to) { out[e.from].push(e.to); inn[e.to].push(e.from); } });
+  // break cycles with an iterative DFS
+  const state = {}, back = new Set();
+  ids.forEach(root => {
+    if (state[root]) return;
+    const stack = [[root, 0]]; state[root] = 1;
+    while (stack.length) {
+      const top = stack[stack.length - 1], v = top[0];
+      if (top[1] < out[v].length) {
+        const w = out[v][top[1]++];
+        if (state[w] === 1) back.add(v + "\u0000" + w);
+        else if (!state[w]) { state[w] = 1; stack.push([w, 0]); }
+      } else { state[v] = 2; stack.pop(); }
+    }
+  });
+  const fwd = e => !back.has(e.from + "\u0000" + e.to) && e.from !== e.to;
+  const layer = {};
+  const indeg = {}; ids.forEach(i => indeg[i] = 0);
+  edges.filter(fwd).forEach(e => { if (indeg[e.to] !== undefined && byId[e.from]) indeg[e.to]++; });
+  const queue = ids.filter(i => indeg[i] === 0); queue.forEach(i => layer[i] = 0);
+  for (let qi = 0; qi < queue.length; qi++) {
+    const v = queue[qi];
+    edges.filter(e => e.from === v && fwd(e) && byId[e.to]).forEach(e => {
+      layer[e.to] = Math.max(layer[e.to] || 0, layer[v] + 1);
+      if (--indeg[e.to] === 0) queue.push(e.to);
+    });
+  }
+  ids.forEach(i => { if (layer[i] === undefined) layer[i] = 0; });
+  if (opt.fix) ids.forEach(i => { const f = opt.fix(byId[i], layer[i]); if (f !== undefined && f !== null) layer[i] = f; });
+  let maxL = Math.max(0, ...ids.map(i => layer[i]));
+  if (opt.sinkLast) ids.forEach(i => { if (opt.sinkLast(byId[i])) layer[i] = maxL; });
+  if (opt.reverse) ids.forEach(i => layer[i] = maxL - layer[i]);
+  maxL = Math.max(0, ...ids.map(i => layer[i]));
+  const cols = [];
+  for (let l = 0; l <= maxL; l++) cols.push(ids.filter(i => layer[i] === l));
+  const pos = {};
+  cols.forEach(c => c.forEach((id, k) => pos[id] = k));
+  for (let sweep = 0; sweep < 4; sweep++) {
+    const order = sweep % 2 === 0 ? cols.map((c, i) => i) : cols.map((c, i) => cols.length - 1 - i);
+    order.forEach(li => {
+      const c = cols[li];
+      const bary = id => { const nb = (sweep % 2 === 0 ? inn[id] : out[id]).filter(x => layer[x] !== layer[id]); return nb.length ? nb.reduce((s, x) => s + pos[x], 0) / nb.length : pos[id]; };
+      c.sort((a, b) => bary(a) - bary(b) || (byId[a].label || "").localeCompare(byId[b].label || ""));
+      c.forEach((id, k) => pos[id] = k);
+    });
+  }
+  const maxRows = Math.max(1, ...cols.map(c => c.length));
+  const xy = {};
+  cols.forEach((c, l) => {
+    const off = ((maxRows - c.length) * (H + GY)) / 2;
+    c.forEach((id, k) => xy[id] = {x: PAD + l * (W + GX), y: PAD + 24 + off + k * (H + GY)});
+  });
+  return {xy, W, H, width: PAD * 2 + (maxL + 1) * W + maxL * GX, height: PAD * 2 + 24 + maxRows * (H + GY), cols, layer};
+}
+function svgGraph(nodes, edges, opt = {}) {
+  if (!nodes.length) return `<div class="empty">Nothing to draw.</div>`;
+  const L = layout(nodes, edges, opt), {xy, W, H} = L;
+  const trunc = (s, n) => s && s.length > n ? s.slice(0, n - 1) + "…" : (s || "");
+  let svg = `<svg class="graphsvg" width="${L.width}" height="${L.height}" viewBox="0 0 ${L.width} ${L.height}" role="img" aria-label="${esc(opt.label || "diagram")}">
+  <defs><marker id="ar-${opt.id || "g"}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94A3B8"/></marker></defs>`;
+  if (opt.colTitles) L.cols.forEach((c, l) => { const t = opt.colTitles(l, L.cols.length); if (t && c.length) svg += `<text class="g-col" x="${16 + l * (W + (opt.gx || 70))}" y="22">${esc(t)}</text>`; });
+  edges.forEach(e => {
+    const a = xy[e.from], b = xy[e.to]; if (!a || !b) return;
+    let d;
+    if (b.x > a.x) { const x1 = a.x + W, y1 = a.y + H / 2, x2 = b.x, y2 = b.y + H / 2, mx = (x1 + x2) / 2; d = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`; }
+    else { const x1 = a.x + W / 2, y1 = a.y, x2 = b.x + W / 2, y2 = b.y, top = Math.min(y1, y2) - 26; d = `M${x1},${y1} C${x1},${top} ${x2},${top} ${x2},${y2}`; }
+    svg += `<path class="g-edge ${e.cls || ""}" data-a="${esc(e.from)}" data-b="${esc(e.to)}" d="${d}" marker-end="url(#ar-${opt.id || "g"})"><title>${esc(e.title || "")}</title></path>`;
+  });
+  nodes.forEach(n => {
+    const p = xy[n.id]; if (!p) return;
+    svg += `<g class="g-node ${n.cls || ""}" data-id="${esc(n.id)}" ${n.go ? `data-go="${n.go[0]}" data-arg="${esc(n.go[1])}" tabindex="0" role="button"` : ""} transform="translate(${p.x},${p.y})">
+      <title>${esc(n.title || n.label)}</title><rect width="${W}" height="${H}" rx="7"/>
+      <text class="g-kind" x="9" y="13">${esc(trunc(n.kind || "", 30))}</text>
+      <text class="g-label" x="9" y="29">${esc(trunc(n.label, Math.floor(W / 7.3)))}</text>
+      ${n.sub ? `<text class="g-sub" x="9" y="${H - 6}">${esc(trunc(n.sub, Math.floor(W / 5.8)))}</text>` : ""}</g>`;
+  });
+  return svg + "</svg>";
+}
+document.addEventListener("mouseover", ev => {
+  const g = ev.target.closest && ev.target.closest(".g-node");
+  const svg = ev.target.closest && ev.target.closest("svg.graphsvg");
+  if (!svg) return;
+  svg.querySelectorAll(".g-hot").forEach(x => x.classList.remove("g-hot"));
+  if (!g) { svg.classList.remove("g-dim"); return; }
+  const id = g.dataset.id; svg.classList.add("g-dim"); g.classList.add("g-hot");
+  svg.querySelectorAll(".g-edge").forEach(e => {
+    if (e.dataset.a === id || e.dataset.b === id) {
+      e.classList.add("g-hot");
+      const other = e.dataset.a === id ? e.dataset.b : e.dataset.a;
+      svg.querySelectorAll(".g-node").forEach(n => { if (n.dataset.id === other) n.classList.add("g-hot"); });
+    }
+  });
+});
+document.addEventListener("mouseout", ev => {
+  const svg = ev.target.closest && ev.target.closest("svg.graphsvg");
+  if (svg && !svg.contains(ev.relatedTarget)) { svg.classList.remove("g-dim"); svg.querySelectorAll(".g-hot").forEach(x => x.classList.remove("g-hot")); }
+});
+
+/* ============================================================ data flow */
+function dataflowGraph() {
+  const keep = r => !["variable", "parameter", "system"].includes(r.kind) || r.output;
+  const edges = new Map();
+  const relsOf = st => {
+    const reads = new Set(st.reads.filter(k => REL[k]));
+    st.uses.forEach(u => { if (REL[u.rel] && u.col === ROWS) reads.add(u.rel); });
+    st.nodes.forEach(nid => (NODES[nid].uses || []).forEach(u => { if (REL[u.rel] && u.rel !== NODES[nid].rel) reads.add(u.rel); }));
+    return reads;
+  };
+  DATA.steps.forEach(st => {
+    const writes = new Set(st.writes.filter(k => REL[k]));
+    if (!writes.size) return;
+    relsOf(st).forEach(a => writes.forEach(b => {
+      if (a === b) return;
+      const k = a + "\u0000" + b;
+      if (!edges.has(k)) edges.set(k, {from: a, to: b, steps: [], cond: true, dyn: false});
+      const e = edges.get(k); e.steps.push(st.id);
+      if (!st.conditions.length) e.cond = false;
+      if (st.origin === "dynamic") e.dyn = true;
+    }));
+  });
+  // variables only when they carry values between tables
+  let es = [...edges.values()];
+  const varKeep = new Set();
+  DATA.relations.filter(r => r.kind === "variable").forEach(r => {
+    const inT = es.some(e => e.to === r.key && REL[e.from] && REL[e.from].kind !== "variable");
+    const outT = es.some(e => e.from === r.key && REL[e.to] && !["variable", "parameter"].includes(REL[e.to].kind));
+    if (inT && outT) varKeep.add(r.key);
+  });
+  const used = new Set();
+  es = es.filter(e => (keep(REL[e.from]) || varKeep.has(e.from)) && (keep(REL[e.to]) || varKeep.has(e.to)));
+  es.forEach(e => { used.add(e.from); used.add(e.to); });
+  DATA.relations.forEach(r => { if ((r.role === "input" || r.role === "output" || r.role === "both") && keep(r)) used.add(r.key); });
+  const cls = r => r.kind === "variable" ? "n-var" : r.kind === "result" || r.kind === "return" || r.kind === "parameter" ? "n-res" :
+    r.kind === "dynamic" ? "n-dyn" : r.role === "input" ? "n-src" : r.role === "both" ? "n-both" : r.role === "output" ? "n-snk" : "n-mid";
+  const nodes = [...used].filter(k => REL[k]).map(k => { const r = REL[k];
+    return {id: k, label: r.name, kind: KIND_NAMES[r.kind] || r.kind, sub: r.kind === "result" ? plural((r.columns || []).length, "column") : (r.ops || []).join(" · "),
+      cls: cls(r) + (SEL_REL === k ? " n-focus" : ""), go: ["dfnode", k], title: r.name}; });
+  const gedges = es.map(e => ({from: e.from, to: e.to, cls: (e.dyn ? "e-dyn " : "") + (e.cond ? "e-cond" : ""),
+    title: `${relName(e.from)} → ${relName(e.to)}: step${e.steps.length > 1 ? "s" : ""} ${e.steps.map(s => STEP[s].label).join(", ")}${e.cond ? " (conditional)" : ""}`}));
+  return {nodes, edges: gedges};
+}
+function dfPanel() {
+  const key = SEL_REL;
+  if (!key || !REL[key]) return `<p class="mut">Select a box to see its columns, the steps that read and write it, and links to trace each column.</p>`;
+  return relPanel(key).replace('class="panel"', 'class="panel" style="position:static;max-height:none"');
+}
+function renderDfPanel() {
+  const p = document.getElementById("dfpanel"); if (p) p.innerHTML = dfPanel();
+  document.querySelectorAll(".g-node").forEach(g => g.classList.toggle("n-focus", g.dataset.id === SEL_REL));
+}
+function rDataflow() {
+  const g = dataflowGraph();
+  const legend = `<div class="legend"><span><i class="lg n-src"></i>input</span><span><i class="lg n-mid"></i>temp table / table variable / cursor</span><span><i class="lg n-snk"></i>output table</span><span><i class="lg n-res"></i>result set / output parameter</span><span><i class="lg n-var"></i>variable carrying a value</span><span><i class="lg e"></i>data moves (hover for steps)</span><span><i class="lg e e-cond"></i>only inside a branch or loop</span><span><i class="lg e e-dyn"></i>dynamic SQL</span></div>`;
+  return `<h1>Data flow</h1><p class="sub">Inputs on the left, staging in the middle, outputs on the right. Each arrow is one or more steps moving data; hover a box to highlight its connections, select it for its columns.</p>${legend}
+  <div class="graph">${svgGraph(g.nodes, g.edges, {id: "df", w: 200, label: "data flow diagram",
+     fix: (n) => REL[n.id] && REL[n.id].role === "input" ? 0 : null,
+     sinkLast: n => REL[n.id] && (REL[n.id].role === "output" || REL[n.id].role === "both"),
+     colTitles: (l, n) => l === 0 ? "inputs" : (l === n - 1 ? "outputs" : "staging")})}</div><div id="dfpanel">${dfPanel()}</div>`;
+}
+
+/* ============================================================ steps */
+function stepCard(st) {
+  const iss = st.issues.map(i => DATA.issues[i]).filter(Boolean);
+  const badges = iss.length ? iss.slice(0, 3).map(i => `<span class="badge b-${i.severity === "info" ? "info2" : i.severity}" title="${esc(i.title)}">${esc(i.severity)}</span>`).join(" ") : "";
+  const conds = st.conditions.length ? `<div class="kv"><div class="k">Runs when</div><div>${st.conditions.map(c => `${c.step ? stepLink(c.step) : ""} <span class="mut">${c.branch === "else" ? "NOT" : c.branch === "loop" ? "loop while" : c.branch === "catch" ? "" : ""}</span> <code>${esc(c.text)}</code>`).join("<br>")}</div></div>` : "";
+  const writes = st.nodes.map(id => NODES[id]).filter(n => n.op !== "local" && n.col !== ROWS);
+  const wrows = writes.length ? `<div class="table-wrap"><table class="t" style="margin:.4rem 0"><thead><tr><th>Writes</th><th>Value</th><th>From</th></tr></thead><tbody>
+    ${writes.slice(0, 60).map(n => `<tr><td><b>${esc(nodeLabel(n.id))}</b>${n.keeps ? ' <span class="badge b-warn" title="Rows not matched keep their earlier value">some rows</span>' : ""}${n.st ? " " + statusBadge(n.st) : ""}</td>
+      <td><code>${esc(n.expr || "")}</code>${(n.tf || []).filter(t => t !== "constant").map(t => ` <span class="badge b-mid">${esc(t)}</span>`).join("")}${n.note ? `<div class="mut">${esc(n.note)}</div>` : ""}</td>
+      <td>${(n.uses || []).filter(u => u.d).map(u => `<span class="chipref src">${esc(colName(u.rel, u.col))}</span>`).join(" ")}</td></tr>`).join("")}
+    ${writes.length > 60 ? `<tr><td colspan="3" class="mut">${writes.length - 60} more columns</td></tr>` : ""}</tbody></table></div>` : "";
+  const reads = st.reads.filter(k => REL[k] || LOCAL[k]);
+  const io = `${reads.length ? `<div class="kv"><div class="k">Reads</div><div class="pill-list">${reads.map(relChip).join("")}</div></div>` : ""}
+    ${st.writes.length ? `<div class="kv"><div class="k">Writes</div><div class="pill-list">${st.writes.filter(k => REL[k]).map(relChip).join("")}</div></div>` : ""}`;
+  const marks = [];
+  writes.forEach(n => { if (n.span && !n.text) marks.push({s: n.span[0], e: n.span[1], cls: "m-w"}); });
+  const code = st.span ? excerpt(st.text, st.head || st.span, marks) : "";
+  const dyn = st.kind === "exec-dynamic" ? (DATA.dynamic.find(d => d.step === st.label) || null) : null;
+  const dynInfo = dyn ? `<div class="callout ${dyn.status === "resolved" ? "info" : dyn.status === "partial" ? "warn" : "bad"}">Dynamic SQL: <b>${esc(dyn.status)}</b>${dyn.placeholders && dyn.placeholders.length ? ` · run-time values: ${dyn.placeholders.map(p => `<code>${esc(p)}</code>`).join(" ")}` : ""}${dyn.parsed ? " · the rebuilt statement is analysed as the nested steps below" : ""}${(dyn.errors || []).length ? `<div class="mut">${esc(dyn.errors[0])}</div>` : ""}</div>` : "";
+  const isslist = iss.length ? `<div class="kv"><div class="k">Review</div><div>${iss.map(i => `${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))}`).join("<br>")}</div></div>` : "";
+  const traceable = writes.filter(n => outputOf(n.id).length);
+  const traceLinks = traceable.length ? `<div class="kv"><div class="k">Trace</div><div class="pill-list">${[...new Set(traceable.map(n => outputOf(n.id)[0].key))].slice(0, 10).map(k => go("trace", k, esc(colName(OUT[k].rel, OUT[k].col)), "chipref snk")).join("")}</div></div>` : "";
+  return `<details class="act${st.reachable ? "" : " unreach"}" id="st-${slug(st.id)}"><summary><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span class="sm">${md(st.summary)}${!st.reachable ? ' <span class="badge b-muted">never runs</span>' : ""}</span>${badges}<span class="ln">${esc(lines(st))}</span></summary>
+    <div class="body">${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${io}${dynInfo}${isslist}${traceLinks}${wrows}${code}
+    <div class="toolbar">${st.span ? go("codestep", st.id, "Open in code", "ghost-btn") : ""}</div></div></details>`;
+}
+function scopeHtml(sid, depth = 0) {
+  const sc = SCOPE[sid];
+  let html = "";
+  sc.items.forEach(([kind, id]) => {
+    if (kind === "step") { const st = STEP[id]; if (st) html += stepCard(st); }
+    else {
+      const s = SCOPE[id];
+      const lbl = {then: "IF", else: "ELSE", loop: "LOOP", try: "TRY", catch: "CATCH", dynamic: "DYNAMIC SQL", call: "CALL"}[s.kind] || s.kind.toUpperCase();
+      const head = s.kind === "then" ? s.label.replace(/^IF /, "") : s.label;
+      const own = s.step ? stepLink(s.step) : "";
+      html += `<div class="scopehdr"><span class="sk">${esc(lbl)}</span> ${own} <span>${esc(head)}</span></div><div class="scopebody k-${s.kind}">${scopeHtml(id, depth + 1)}</div>`;
+    }
+  });
+  return html;
+}
+function rSteps() {
+  const n = DATA.counts.statements;
+  return `<h1>Steps</h1><p class="sub">${plural(n, "statement")} in the order they appear, grouped by IF / ELSE, loops, TRY / CATCH and the code they run (dynamic SQL, expanded calls). Each step lists what it reads and writes, its code and a plain-language summary.</p>
+  <div class="filter-row"><input class="search" placeholder="Filter steps…" oninput="filterSteps(this.value)"> <button class="ghost-btn" onclick="document.querySelectorAll('details.act').forEach(d=>d.open=true)">Expand all</button> <button class="ghost-btn" onclick="document.querySelectorAll('details.act').forEach(d=>d.open=false)">Collapse all</button> ${go("csv", "steps", "Download CSV", "ghost-btn")}</div>
+  <div id="stepsroot">${scopeHtml("root")}</div>`;
+}
+function filterSteps(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll("#stepsroot details.act").forEach(d => d.classList.toggle("hide", !!q && !d.textContent.toLowerCase().includes(q)));
+}
+
+/* ============================================================ control flow */
+function fstep(st) {
+  const k = KIND_CLASS[st.kind] || "";
+  const iss = st.issues.some(i => DATA.issues[i] && (DATA.issues[i].severity === "high" || DATA.issues[i].severity === "medium"));
+  const txt = st.summary.replace(/`/g, "");
+  return `<button class="fstep ${k}${iss ? " iss" : ""}" data-go="step" data-arg="${esc(st.id)}" title="${esc(txt)}"><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span>${esc(txt.length > 80 ? txt.slice(0, 78) + "…" : txt)}</span></button>`;
+}
+const PLAIN = new Set(["insert", "update", "delete", "merge", "select", "select-into", "select-assign", "set", "declare", "declare-table", "create-table", "drop-table", "truncate", "print", "set-option", "fetch", "open-cursor", "close-cursor", "deallocate-cursor", "declare-cursor", "insert-exec", "alter-table", "create-index", "other", "label"]);
+function flowSeq(sid) {
+  const sc = SCOPE[sid], items = sc.items;
+  const out = [];
+  let run = [];
+  const flush = () => {
+    if (run.length > 5) {
+      out.push(fstep(run[0]));
+      const mid = run.slice(1, -1);
+      out.push(`<details class="frun"><summary>… ${mid.length} more statements (steps ${esc(mid[0].label)}–${esc(mid[mid.length - 1].label)})</summary><div class="body flow">${mid.map(fstep).join('<div class="farrow"></div>')}</div></details>`);
+      out.push(fstep(run[run.length - 1]));
+    } else run.forEach(s => out.push(fstep(s)));
+    run = [];
+  };
+  for (let i = 0; i < items.length; i++) {
+    const [kind, id] = items[i];
+    if (kind === "step") {
+      const st = STEP[id];
+      const owned = items.filter(([k, x]) => k === "scope" && SCOPE[x].step === id).map(([, x]) => SCOPE[x]);
+      if (st.kind === "if") {
+        flush();
+        const then = owned.find(s => s.kind === "then"), els = owned.find(s => s.kind === "else");
+        out.push(`<div class="fblock"><div class="fh">${stepLink(id)} <b>IF</b> ${esc(st.detail.predicate || "")}</div><div class="fbranches">
+          <div class="fbranch then"><div class="bl">then</div><div class="flow">${then ? flowSeq(then.id) : '<span class="mut">nothing</span>'}</div></div>
+          <div class="fbranch else"><div class="bl">${els ? "else" : "otherwise"}</div><div class="flow">${els ? flowSeq(els.id) : '<span class="mut">continues</span>'}</div></div></div></div>`);
+      } else if (st.kind === "while") {
+        flush();
+        const body = owned.find(s => s.kind === "loop");
+        out.push(`<div class="fblock loop"><div class="fh">${stepLink(id)} <b>WHILE</b> ${esc(st.detail.predicate || "")}</div><div class="flow">${body ? flowSeq(body.id) : ""}</div></div>`);
+      } else if (owned.length && (st.kind === "exec" || st.kind === "exec-dynamic" || st.kind === "insert-exec")) {
+        flush();
+        out.push(fstep(st));
+        owned.forEach(s => out.push(`<div class="fblock ${s.kind === "dynamic" ? "dyn" : "call"}"><div class="fh"><b>${esc(s.label)}</b></div><div class="flow">${flowSeq(s.id)}</div></div>`));
+      } else if (PLAIN.has(st.kind) && !st.issues.length) {
+        run.push(st);
+      } else { flush(); out.push(fstep(st)); }
+    } else {
+      const s = SCOPE[id];
+      if (s.step) continue;
+      flush();
+      if (s.kind === "try") {
+        const nxt = items[i + 1] && items[i + 1][0] === "scope" && SCOPE[items[i + 1][1]].kind === "catch" ? SCOPE[items[i + 1][1]] : null;
+        out.push(`<div class="fblock try"><div class="fbranches"><div class="fbranch"><div class="bl">try</div><div class="flow">${flowSeq(s.id)}</div></div>
+          <div class="fbranch" style="border-color:#FDA4AF"><div class="bl" style="color:var(--bad)">catch · on any error in try</div><div class="flow">${nxt ? flowSeq(nxt.id) : ""}</div></div></div></div>`);
+        if (nxt) i++;
+      } else out.push(`<div class="fblock"><div class="fh"><b>${esc(s.label)}</b></div><div class="flow">${flowSeq(s.id)}</div></div>`);
+    }
+  }
+  flush();
+  return out.join('<div class="farrow"></div>');
+}
+function rControl() {
+  const ret = DATA.steps.filter(s => s.kind === "return" && !s.parent).length;
+  const tr = DATA.steps.filter(s => ["begin-tran", "commit", "rollback"].includes(s.kind)).length;
+  return `<h1>Control flow</h1><p class="sub">The order statements can run in: both arms of every IF, loops, TRY / CATCH, transactions and early RETURNs. Runs of ordinary statements are folded; select any box to open the step.</p>
+  <div class="legend"><span><i class="lg" style="border-left:4px solid var(--snk)"></i>writes data</span><span><i class="lg" style="border-left:4px solid var(--src)"></i>reads data</span><span><i class="lg" style="border-left:4px solid var(--ext)"></i>transaction</span><span><i class="lg" style="border-left:4px solid var(--mid)"></i>calls code</span><span><i class="lg" style="border-left:4px solid var(--bad)"></i>return / error</span><span><i class="lg" style="box-shadow:0 0 0 2px #FECDD3"></i>has a review issue</span></div>
+  <p class="mut">${plural(DATA.counts.branches, "IF / WHILE")} · ${plural(ret, "RETURN")} · ${plural(tr, "transaction statement")}</p>
+  <div class="card"><div class="flow">${flowSeq("root")}</div><div class="farrow"></div><span class="badge b-muted">end</span></div>`;
+}
+
+/* ============================================================ transformations */
+function rTransforms() {
+  let list = DATA.transforms;
+  let note = "";
+  if (TF_FILTER && OUT[TF_FILTER]) {
+    const sl = backward(OUT[TF_FILTER].defs, false);
+    list = list.filter(t => sl.has(t.node));
+    note = `Showing the expressions that compute <b>${esc(colName(OUT[TF_FILTER].rel, OUT[TF_FILTER].col))}</b> directly.`;
+  }
+  const kinds = {};
+  list.forEach(t => t.kinds.forEach(k => { const g = k.split(" ")[0]; kinds[g] = (kinds[g] || 0) + 1; }));
+  if (TF_KIND) list = list.filter(t => t.kinds.some(k => k.split(" ")[0] === TF_KIND));
+  const opts = `<option value="">every column</option>` + outCols.map(o => `<option value="${esc(o.key)}"${o.key === TF_FILTER ? " selected" : ""}>${esc(colName(o.rel, o.col))}</option>`).join("");
+  const rows = list.map(t => { const n = NODES[t.node]; return `<tr><td>${stepLink(t.step)}</td><td><b>${esc(nodeLabel(t.node))}</b></td><td><code>${esc(n.expr || "")}</code></td><td>${t.kinds.map(k => `<span class="badge b-mid">${esc(k)}</span>`).join(" ")}</td></tr>`; }).join("");
+  return `<h1>Transformations</h1><p class="sub">Every expression that changes a value on its way through: CASE, arithmetic, CAST / CONVERT, string and date functions, aggregates, window functions and ISNULL / COALESCE defaults.</p>
+  <div class="filter-row"><label class="field" style="margin:0;flex-direction:row;align-items:center;gap:.4rem">Output column <select onchange="GO.tff(this.value)">${opts}</select></label>
+  ${Object.entries(kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<button class="chip${TF_KIND === k ? " on" : ""}" data-go="tfk" data-arg="${esc(k)}">${esc(k)}<span class="n">${n}</span></button>`).join("")}</div>
+  ${note ? `<p class="sub">${note}</p>` : ""}
+  ${list.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Step</th><th>Column written</th><th>Expression</th><th>What it does</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty">No transformations match.</div>`}`;
+}
+
+/* ============================================================ code */
+function rCode() {
+  const tids = Object.keys(TEXT);
+  if (!CODE_SEL || !TEXT[CODE_SEL.tid]) CODE_SEL = {tid: "main", s: 0, e: 0, step: null};
+  const tid = CODE_SEL.tid, T = TEXT[tid], L = lineIndex(tid);
+  const marks = [];
+  if (CODE_SEL.e > CODE_SEL.s) marks.push({s: CODE_SEL.s, e: CODE_SEL.e, cls: "m-s"});
+  const hit = new Set();
+  if (CODE_SEL.e > CODE_SEL.s) { const a = lineOfOffset(tid, CODE_SEL.s), b = lineOfOffset(tid, CODE_SEL.e - 1); for (let i = a; i <= b; i++) hit.add(i); }
+  const tags = {};
+  DATA.steps.filter(s => s.text === tid && s.span).forEach(s => { const l = lineOfOffset(tid, s.span[0]); tags[l] = (tags[l] ? tags[l] + " " : "") + "◂ " + s.label; });
+  const sel = tids.length > 1 ? `<select onchange="CODE_SEL={tid:this.value,s:0,e:0};switchTab('code')">${tids.map(t => `<option value="${esc(t)}"${t === tid ? " selected" : ""}>${esc(TEXT[t].label || t)}</option>`).join("")}</select>` : "";
+  return `<h1>Code</h1><p class="sub">${esc(T.path || T.label || "")} · ${plural(L.length, "line")}. Step numbers are marked at the line each step starts; links elsewhere highlight the statement here. Secrets are masked with *.</p>
+  <div class="codebar">${sel}${CODE_SEL.step ? `<span class="mut">Showing</span> ${stepLink(CODE_SEL.step)} <span class="mut">${esc(STEP[CODE_SEL.step].summary.replace(/`/g, ""))}</span>` : ""}</div>
+  <div class="code codefull" id="codefull">${codeLines(tid, 1, L.length, marks, {hit, tags, anchor: true})}</div>`;
+}
+AFTER.code = () => {
+  if (!CODE_SEL || !(CODE_SEL.e > CODE_SEL.s)) return;
+  const l = lineOfOffset(CODE_SEL.tid, CODE_SEL.s) + (TEXT[CODE_SEL.tid].lineOffset || 0);
+  const el = document.getElementById(`L-${slug(CODE_SEL.tid)}-${l}`);
+  const box = document.getElementById("codefull");
+  if (el && box) { box.scrollTop = el.offsetTop - box.offsetTop - 80; el.scrollIntoView({block: "center"}); }
+};
+
+/* ============================================================ column trace */
+function traceModel(key, indirect) {
+  const o = OUT[key];
+  const sl = backward(o.defs, indirect);
+  const steps = new Map();
+  const ensure = sid => { if (!steps.has(sid)) steps.set(sid, {sid, nodes: [], role: "rows", cond: false}); return steps.get(sid); };
+  sl.forEach((info, id) => {
+    const n = NODES[id];
+    if (n.step == null) return;
+    const e = ensure(n.step);
+    e.nodes.push({id, direct: info.direct});
+    if (info.direct) e.role = "value";
+  });
+  // IF / WHILE steps whose condition decides a step in the slice
+  [...steps.keys()].forEach(sid => (STEP[sid].conditions || []).forEach(c => { if (c.step && STEP[c.step] && indirect && !steps.has(c.step)) { const e = ensure(c.step); e.role = "cond"; e.cond = true; } }));
+  const ordered = [...steps.values()].sort((a, b) => STEP_IDX[a.sid] - STEP_IDX[b.sid]);
+  const cols = new Set([...sl.keys()].map(id => NODES[id].rel + "|" + NODES[id].col));
+  const bases = [], decided = [];
+  sl.forEach((info, id) => { const n = NODES[id]; if (n.op === "initial") (info.direct && n.col !== ROWS ? bases : decided).push(id); });
+  return {o, sl, ordered, bases, decided, cols};
+}
+function versionChips(defs) {
+  return `<span class="vers">${defs.map(d => { const n = NODES[d]; return n.step ? `<button class="ver" data-go="tlstep" data-arg="${esc(n.step)}" title="${esc(nodeLabel(d))} ${esc(versionLabel(d))}">${esc(STEP[n.step] ? (n.op === "local" ? "in " : "@") + STEP[n.step].label : "")}</button>` : `<span class="ver init" title="${esc(n.note || "before the procedure")}">before</span>`; }).join("")}</span>`;
+}
+function useLine(u) {
+  return `<span class="chipref ${u.d ? "src" : ""}">${esc(colName(u.rel, u.col))}</span>${u.defs.length ? " " + versionChips(u.defs) : (u.local == null && !u.rel.startsWith("system:") ? ' <span class="badge b-warn">no earlier value</span>' : "")}${u.st && u.st !== "resolved" ? " " + statusBadge(u.st) : ""}`;
+}
+const ROLE_TEXT = {join: "join", filter: "filter (WHERE)", group: "grouping", having: "HAVING", top: "TOP / OFFSET", rows: "rows of", order: "ORDER BY (with TOP)",
+  merge: "MERGE condition", condition: "condition", dynamic: "dynamic SQL text", argument: "argument", subquery: "subquery", case: "CASE / IIF choice", window: "window PARTITION / ORDER", value: "value"};
+function tlEntry(e, model) {
+  const st = STEP[e.sid];
+  const sliceCols = model.cols;
+  const nodes = e.nodes.map(x => ({...NODES[x.id], direct: x.direct}));
+  const roleLbl = e.role === "value" ? "writes the value" : e.role === "cond" ? "decides the branch" : "decides which rows";
+  const marks = [];
+  let html = "";
+  const written = nodes.filter(n => n.col !== ROWS && n.op !== "local" && (e.role !== "value" || n.direct));
+  const locals = nodes.filter(n => n.op === "local" && n.col !== ROWS && n.direct);
+  if (e.role === "value") written.forEach(n => {
+    if (n.span && !n.text) marks.push({s: n.span[0], e: n.span[1], cls: "m-w"});
+    const direct = (n.uses || []).filter(u => u.d);
+    const ind = (n.uses || []).filter(u => !u.d);
+    direct.forEach(u => { if (u.span) marks.push({s: u.span[0], e: u.span[1], cls: "m-d"}); });
+    ind.forEach(u => { if (u.span) marks.push({s: u.span[0], e: u.span[1], cls: "m-i"}); });
+    html += `<div class="wline">Writes <b>${esc(nodeLabel(n.id))}</b> = <span class="eq">${esc(n.expr || "?")}</span>
+      ${(n.tf || []).filter(t => t !== "constant").map(t => ` <span class="badge b-mid">${esc(t)}</span>`).join("")}
+      ${n.keeps ? `<div class="callout warn">Only some rows are changed here; the rest keep the earlier value${n.note ? " (" + esc(n.note) + ")" : ""}.</div>` : (n.note ? `<div class="mut">${esc(n.note)}</div>` : "")}
+      ${direct.length ? `<div class="from">from ${direct.map(useLine).join(", ")}</div>` : `<div class="from">from no column: a constant, a system value or a row count</div>`}
+      ${ind.length ? `<div class="from">choice decided by ${ind.map(u => `${esc(ROLE_TEXT[u.role] || u.role)} ${useLine(u)}`).join(", ")}</div>` : ""}</div>`;
+  });
+  if (locals.length) html += `<div class="from">Inside this statement: ${locals.map(n => `<b>${esc(nodeLabel(n.id))}</b> = <code>${esc(n.expr || "")}</code>`).join("; ")}</div>`;
+  const rowUses = TRACE_INDIRECT ? st.uses : [];
+  rowUses.forEach(u => { if (u.span && u.role !== "rows") marks.push({s: u.span[0], e: u.span[1], cls: "m-i"}); });
+  if (e.role !== "value") written.forEach(n => { if (n.span && !n.text) marks.push({s: n.span[0], e: n.span[1], cls: "m-i"}); });
+  const groups = {};
+  rowUses.forEach(u => { (groups[u.role] = groups[u.role] || []).push(u); });
+  const d = st.detail || {};
+  let rowsHtml = "";
+  if (rowUses.length && e.role !== "cond") {
+    const bits = [];
+    if (d.where) bits.push(`WHERE <code>${esc(d.where)}</code>`);
+    if (d.on) bits.push(`ON <code>${esc(d.on)}</code>`);
+    Object.entries(groups).filter(([r]) => r !== "rows").forEach(([r, us]) => bits.push(`${esc(ROLE_TEXT[r] || r)}: ${[...new Set(us.map(u => colName(u.rel, u.col)))].slice(0, 12).map(x => `<span class="chipref">${esc(x)}</span>`).join(" ")}`));
+    if (groups.rows) bits.push(`rows of ${[...new Set(groups.rows.map(u => u.rel))].map(k => `<span class="chipref">${esc(relName(k))}</span>`).join(" ")}`);
+    rowsHtml = `<div class="from"><b>Rows chosen by</b>: ${bits.join("; ")}</div>`;
+  }
+  if (e.role === "cond") html += `<div class="from">The steps under this ${st.kind === "while" ? "loop" : "branch"} run only when <code>${esc(d.predicate || "")}</code>${st.kind === "if" ? " (or only when it is false, for ELSE)" : ""}.</div>`;
+  const conds = st.conditions.length ? `<div class="from">Runs only when ${st.conditions.map(c => `${c.step ? stepLink(c.step) : ""} ${c.branch === "else" ? "NOT " : ""}<code>${esc(c.text)}</code>`).join(" and ")}</div>` : "";
+  // only the review issues that concern this column's path
+  const iss = st.issues.map(i => DATA.issues[i]).filter(i => i && (!(i.columns || []).length || i.columns.some(c => sliceCols.has(c))));
+  const issHtml = iss.map(i => `<div class="callout ${i.severity === "high" ? "bad" : i.severity === "medium" ? "warn" : "info"}">${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))}<div class="mut">${esc(i.next)}</div></div>`).join("");
+  const code = st.span ? excerpt(st.text, st.head || st.span, marks) : "";
+  const head = `${stepLink(e.sid, "Step " + st.label)}<span class="role ${e.role}">${roleLbl}</span>${kindBadge(st.kind)}<span class="mut">${esc(lines(st))}</span>${iss.length ? iss.map(i => sevBadge(i.severity)).join("") : ""}`;
+  if (e.role === "value") {
+    return `<div class="tl value" id="tl-${slug(e.sid)}"><div class="card"><div class="tl-head">${head}</div>
+      <div>${md(st.summary)}</div>${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${html}${rowsHtml}${issHtml}${code}</div></div>`;
+  }
+  return `<div class="tl ${e.role}" id="tl-${slug(e.sid)}"><details class="act"${iss.length ? " open" : ""}><summary><span class="sm">${head} <span>${md(st.summary)}</span></span></summary>
+    <div class="body">${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${html}${rowsHtml}${issHtml}${code}</div></details></div>`;
+}
+function historyOf(model) {
+  // versions of every column on the direct path, so overwrites are visible
+  const byCol = new Map();
+  model.sl.forEach((info, id) => {
+    const n = NODES[id];
+    if (!info.direct || n.op === "local" || n.col === ROWS) return;
+    const k = n.rel + "|" + n.col;
+    if (!byCol.has(k)) byCol.set(k, new Set());
+    NODES.forEach(m => { if (m.rel === n.rel && m.col === n.col && m.op !== "local" && (m.step != null || model.sl.has(m.id))) byCol.get(k).add(m.id); });
+  });
+  const rows = [];
+  byCol.forEach((ids, k) => {
+    const list = [...ids].sort((a, b) => (NODES[a].step == null ? -1 : STEP_IDX[NODES[a].step]) - (NODES[b].step == null ? -1 : STEP_IDX[NODES[b].step]));
+    if (list.filter(i => NODES[i].step).length < 2) return;
+    const [rel, col] = k.split("|");
+    const chip = i => { const n = NODES[i]; const inSlice = model.sl.has(i);
+      return n.step ? `<button class="ver" data-go="tlstep" data-arg="${esc(n.step)}" style="${inSlice ? "" : "opacity:.5"}" title="${esc(n.expr || "")}">${esc(n.op)} @${esc(STEP[n.step].label)}${n.keeps ? " (some rows)" : ""}</button>` : `<span class="ver init">before</span>`; };
+    const shown = list.length > 7 ? [...list.slice(0, 3).map(chip), `<span class="mut">… ${list.length - 5} more …</span>`, ...list.slice(-2).map(chip)] : list.map(chip);
+    rows.push(`<div class="history"><b>${esc(colName(rel, col))}</b>: ${shown.join('<span class="arrow">→</span>')}</div>`);
+  });
+  return rows.join("");
+}
+function defaultTraceKey() {
+  // the widest output table (the main target), then its column with the longest history
+  const tables = outCols.filter(o => REL[o.rel] && ["table", "view", "remote", "global-temp", "temp"].includes(REL[o.rel].kind));
+  const pool = tables.length ? tables : outCols.length ? outCols : DATA.outputs;
+  const width = {};
+  pool.forEach(o => width[o.rel] = (width[o.rel] || 0) + 1);
+  const main = Object.keys(width).sort((a, b) => width[b] - width[a] || relName(a).localeCompare(relName(b)))[0];
+  return pool.filter(o => o.rel === main).sort((a, b) => b.steps.length - a.steps.length)[0].key;
+}
+function pickList() {
+  const order = r => { const k = (REL[r] || {}).kind; return ["table", "view", "remote", "global-temp", "temp", "dynamic"].includes(k) ? 0 : k === "result" ? 1 : 2; };
+  const groups = {};
+  DATA.outputs.forEach(o => (groups[o.rel] = groups[o.rel] || []).push(o));
+  const rels = Object.keys(groups).sort((a, b) => order(a) - order(b) || relName(a).localeCompare(relName(b)));
+  const singles = rels.filter(r => order(r) === 2);
+  const btn = (o, label) => `<button class="${o.key === TRACE_KEY ? "on" : ""}" data-go="tracepick" data-arg="${esc(o.key)}" data-q="${esc((relName(o.rel) + "." + o.col).toLowerCase())}"><span>${esc(label)}</span>${o.status !== "resolved" ? statusBadge(o.status) : ""}</button>`;
+  let html = `<input class="search" style="width:100%;margin:.2rem 0 .3rem" placeholder="Find a column…" oninput="(function(q){q=q.toLowerCase();document.querySelectorAll('.picklist button[data-q]').forEach(b=>b.classList.toggle('hide',!!q&&!b.dataset.q.includes(q)))})(this.value)">`;
+  rels.filter(r => order(r) < 2).forEach(r => { html += `<div class="grp">${esc(relName(r))}</div>` + groups[r].map(o => btn(o, o.col === ROWS ? "(which rows)" : o.col)).join(""); });
+  if (singles.length) html += `<div class="grp">Output parameters and return value</div>` + singles.map(r => groups[r].map(o => btn(o, relName(r))).join("")).join("");
+  return html;
+}
+function rTrace() {
+  if (!TRACE_KEY || !OUT[TRACE_KEY]) TRACE_KEY = defaultTraceKey();
+  const model = traceModel(TRACE_KEY, TRACE_INDIRECT);
+  const o = model.o;
+  const nVal = model.ordered.filter(e => e.role === "value").length, nRows = model.ordered.length - nVal;
+  const bases = [...new Set(model.bases.map(nodeLabel))];
+  const decided = [...new Set(model.decided.map(id => NODES[id].col === ROWS ? "rows of " + relName(NODES[id].rel) : nodeLabel(id)))];
+  const head = `<div class="trace-head"><div><div class="eyebrow">Column trace</div><h1>${esc(colName(o.rel, o.col))}</h1>
+    <p class="sub">${statusBadge(o.status)} · ${plural(nVal, "step writes", "steps write")} the value${TRACE_INDIRECT ? ` · ${plural(nRows, "step decides", "steps decide")} which rows or which branch (folded)` : ""} · in the order they run</p></div>
+    <div class="toolbar"><label class="toggle"><input type="checkbox" ${TRACE_INDIRECT ? "checked" : ""} data-go="traceopt"> include joins, filters and conditions</label>
+    <button class="ghost-btn" data-go="copycheck">Copy checklist</button><button class="ghost-btn" data-go="exportmd">Download .md</button><button class="ghost-btn" data-go="exporthtml">Download .html</button>${go("lineage", TRACE_KEY, "Lineage graph", "ghost-btn")}</div></div>`;
+  const chips = (list, cls) => list.map(b => `<span class="chipref ${cls}">${esc(b)}</span>`).join("");
+  const decidedHtml = decided.length > 14 ? `${chips(decided.slice(0, 14), "")}<details class="frun" style="display:inline-block;border:0;background:none;margin:0"><summary>${decided.length - 14} more</summary><div class="pill-list">${chips(decided.slice(14), "")}</div></details>` : chips(decided, "");
+  const pathIssues = DATA.issues.filter(i => (i.columns || []).some(c => model.cols.has(c)) && (i.severity === "high" || i.severity === "medium"));
+  const sum = `<div class="card"><div class="kv"><div class="k">Computed from</div><div class="pill-list">${chips(bases, "src") || '<span class="mut">no column of an input: constants, system values or row counts</span>'}</div></div>
+    ${TRACE_INDIRECT ? `<div class="kv"><div class="k">Decided by</div><div class="pill-list">${decidedHtml || '<span class="mut">nothing outside the procedure</span>'}</div></div>` : ""}
+    ${o.conditions.length ? `<div class="kv"><div class="k">Branches</div><div>${o.conditions.map(c => `${c.step ? stepLink(c.step) : ""} ${c.branch === "else" ? "NOT " : c.branch === "catch" ? "error path: " : ""}<code>${esc(c.text)}</code>`).join("<br>")}</div></div>` : ""}
+    ${pathIssues.length ? `<div class="kv"><div class="k">Check first</div><div>${pathIssues.map(i => `<div class="callout ${i.severity === "high" ? "bad" : "warn"}">${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))} ${i.steps.map(sid => `<button class="ver" data-go="tlstep" data-arg="${esc(sid)}">@${esc(STEP[sid] ? STEP[sid].label : sid)}</button>`).join(" ")}</div>`).join("")}</div></div>` : ""}
+    ${o.status !== "resolved" ? `<div class="callout warn">Some sources of this column are unknown (Partial / Unresolved): supply table definitions or the called code to resolve them. Unknown is not absent.</div>` : ""}</div>`;
+  const hist = historyOf(model);
+  const legend = `<div class="legend"><span><i class="sw w"></i>the value written</span><span><i class="sw d"></i>columns it is computed from</span><span><i class="sw i"></i>joins, filters and conditions that choose rows</span></div>`;
+  const tl = model.ordered.length ? `<div class="timeline">${model.ordered.map(e => tlEntry(e, model)).join("")}</div>` : `<div class="empty">Nothing writes this column.</div>`;
+  return `<div class="picker"><div class="picklist" role="listbox" aria-label="Output columns">${pickList()}</div><div>${head}${sum}
+    ${hist ? `<h3>Versions</h3><div class="card">${hist}</div>` : ""}<h3>Steps, in execution order</h3>${legend}${tl}</div></div>`;
+}
+function checklistMd(key) {
+  const model = traceModel(key, TRACE_INDIRECT), o = model.o;
+  const strip = s => String(s || "").replace(/\s+/g, " ").trim();
+  let out = `# Column trace: ${colName(o.rel, o.col)}\n\n${DATA.title} · generated ${DATA.generated} by sql-doc-gen · status: ${o.status}\n\n`;
+  out += `Computed from: ${[...new Set(model.bases.map(nodeLabel))].join(", ") || "no input column"}\n\n## Checklist\n\n`;
+  model.ordered.forEach(e => {
+    const st = STEP[e.sid];
+    out += `- [ ] **Step ${st.label}** (${lines(st)}) — ${e.role === "value" ? "writes the value" : e.role === "cond" ? "decides the branch" : "decides which rows"}: ${strip(st.summary)}\n`;
+    e.nodes.map(x => NODES[x.id]).filter(n => n.col !== ROWS && n.op !== "local").forEach(n => { out += `  - ${nodeLabel(n.id)} = \`${strip(n.expr)}\`${n.keeps ? " (only some rows)" : ""}\n`; });
+    if (st.detail.where) out += `  - rows where \`${strip(st.detail.where)}\`\n`;
+    if (st.detail.on) out += `  - matched on \`${strip(st.detail.on)}\`\n`;
+    st.conditions.forEach(c => { out += `  - only when ${c.branch === "else" ? "NOT " : ""}\`${strip(c.text)}\`\n`; });
+    st.issues.map(i => DATA.issues[i]).filter(Boolean).forEach(i => { out += `  - check: ${strip(i.title)} — ${strip(i.next)}\n`; });
+  });
+  return out;
+}
+function copyChecklist() {
+  const txt = checklistMd(TRACE_KEY);
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {});
+  const b = document.querySelector('[data-go="copycheck"]'); if (b) { b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy checklist", 1500); }
+}
+function downloadTrace(kind) {
+  const o = OUT[TRACE_KEY]; const base = (colName(o.rel, o.col)).replace(/[^A-Za-z0-9_.-]+/g, "_");
+  let blob;
+  if (kind === "md") blob = new Blob([checklistMd(TRACE_KEY)], {type: "text/markdown;charset=utf-8"});
+  else {
+    const css = [...document.querySelectorAll("style")].map(s => s.textContent).join("\n");
+    const body = document.querySelector(".picker > div:last-child").innerHTML.replace(/<button[^>]*class="ghost-btn"[\s\S]*?<\/button>/g, "");
+    blob = new Blob([`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Trace: ${esc(colName(o.rel, o.col))}</title><style>${css}</style></head><body><main style="max-width:1100px;margin:auto">${body}<p class="mut">From ${esc(DATA.title)} · ${esc(DATA.generated)} · sql-doc-gen</p></main></body></html>`], {type: "text/html;charset=utf-8"});
+  }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `trace-${base}.${kind}`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ============================================================ lineage graph */
+function rLineage() {
+  if (!LIN_KEY && LIN_SRC == null) LIN_KEY = TRACE_KEY && OUT[TRACE_KEY] ? TRACE_KEY : defaultTraceKey();
+  let sl, title, focus;
+  if (LIN_SRC != null) { sl = forward([LIN_SRC]); title = `Everything ${nodeLabel(LIN_SRC)} feeds`; focus = new Set([LIN_SRC]); }
+  else { sl = backward(OUT[LIN_KEY].defs, LIN_INDIRECT); title = `Where ${colName(OUT[LIN_KEY].rel, OUT[LIN_KEY].col)} comes from`; focus = new Set(OUT[LIN_KEY].defs); }
+  let ids = [...sl.keys()].filter(id => NODES[id].col !== ROWS || focus.has(id));
+  const limit = 140;
+  let note = "";
+  if (ids.length > limit) { ids.sort((a, b) => sl.get(a).depth - sl.get(b).depth); note = `Showing the ${limit} closest of ${ids.length} versions.`; ids = ids.slice(0, limit); }
+  const keep = new Set(ids);
+  const edges = [];
+  ids.forEach(id => (NODES[id].uses || []).forEach(u => u.defs.forEach(d => { if (keep.has(d)) edges.push({from: d, to: id, cls: u.d ? "e-dir" : "e-ind", title: `${nodeLabel(d)} → ${nodeLabel(id)} (${ROLE_TEXT[u.role] || u.role})`}); })));
+  if (LIN_INDIRECT || LIN_SRC != null) ids.forEach(id => { const n = NODES[id]; if (n.step == null || n.op === "local") return; const st = STEP[n.step];
+    st.uses.forEach(u => u.defs.forEach(d => { if (keep.has(d) && NODES[d].col !== ROWS) edges.push({from: d, to: id, cls: "e-ind", title: `${nodeLabel(d)} decides rows of ${nodeLabel(id)} (${ROLE_TEXT[u.role] || u.role})`}); })); });
+  const seenE = new Set();
+  const uniq = edges.filter(e => { const k = e.from + ">" + e.to + e.cls; if (seenE.has(k)) return false; seenE.add(k); return true; });
+  const nodes = ids.map(id => { const n = NODES[id]; const r = REL[n.rel];
+    const cls = focus.has(id) ? "n-focus" : n.op === "initial" ? "n-src" : n.op === "local" ? "n-local" : r && (r.role === "output" || r.role === "both") ? "n-snk" : r && r.kind === "variable" ? "n-var" : "n-mid";
+    return {id, label: nodeLabel(id), kind: versionLabel(id), sub: n.expr ? n.expr : (n.note || ""), cls, go: ["linnode", id], title: `${nodeLabel(id)} ${versionLabel(id)}\n${n.expr || ""}`}; });
+  const srcs = NODES.filter(n => n.op === "initial" && n.col !== ROWS && REL[n.rel] && REL[n.rel].kind !== "variable");
+  const opts = `<option value="">— pick an output column —</option>` + DATA.outputs.map(o => `<option value="o:${esc(o.key)}"${o.key === LIN_KEY ? " selected" : ""}>${esc(colName(o.rel, o.col))}</option>`).join("");
+  const sopts = `<option value="">— or a source column —</option>` + srcs.map(n => `<option value="${n.id}"${n.id === LIN_SRC ? " selected" : ""}>${esc(nodeLabel(n.id))}</option>`).join("");
+  const affected = LIN_SRC != null ? DATA.outputs.filter(o => o.defs.some(d => sl.has(d))) : [];
+  return `<h1>Lineage graph</h1><p class="sub">${esc(title)}. Each box is one version of a column (a temp table column after step 7 is a different box from the same column after step 12). Solid arrows carry the value; dashed arrows decide which rows or which branch. Select a box to re-centre on it.</p>
+  <div class="filter-row"><select onchange="if(this.value){LIN_KEY=this.value.slice(2);LIN_SRC=null;switchTab('lineage',true)}">${opts}</select><select onchange="if(this.value){GO.linsrc(this.value)}">${sopts}</select>${LIN_KEY ? `<label class="toggle"><input type="checkbox" ${LIN_INDIRECT ? "checked" : ""} data-go="linopt"> include joins, filters and conditions</label> ` + go("trace", LIN_KEY, "Open column trace", "ghost-btn") : ""}</div>
+  ${affected.length ? `<div class="card"><b>Feeds ${plural(affected.length, "output column")}:</b> <div class="pill-list" style="margin-top:.3rem">${affected.map(o => go("trace", o.key, esc(colName(o.rel, o.col)), "chipref snk")).join("")}</div></div>` : ""}
+  <div class="legend"><span><i class="lg n-src"></i>value before the procedure</span><span><i class="lg n-mid"></i>staged version</span><span><i class="lg n-local"></i>inside one statement (CTE, derived)</span><span><i class="lg n-snk"></i>output</span><span><i class="lg n-focus"></i>selected</span><span><i class="lg e e-dir"></i>value</span><span><i class="lg e e-ind"></i>rows / branch</span></div>
+  ${note ? `<p class="mut">${note}</p>` : ""}<div class="graph">${svgGraph(nodes, uniq, {id: "lin", w: 210, h: 50, gx: 60, label: "column lineage", reverse: false})}</div>`;
+}
+
+/* ============================================================ usage matrix */
+function rMatrix() {
+  const rels = DATA.matrixRelations;
+  const head = rels.map(r => `<th class="rot" title="${esc(relName(r))}">${esc(relName(r))}</th>`).join("");
+  const rows = outCols.map(o => `<tr><td>${go("trace", o.key, esc(colName(o.rel, o.col)))}</td>${rels.map(r => { const v = o.matrix[r] || ""; return `<td class="cell ${v}" title="${v === "D" ? "computed from it" : v === "I" ? "rows or branch decided by it" : v === "DI" ? "both" : ""}">${v === "DI" ? "D·I" : v}</td>`; }).join("")}</tr>`).join("");
+  return `<h1>Usage matrix</h1><p class="sub">Output columns against the inputs that reach them. <b>D</b>: the value is computed from a column of that input. <b>I</b>: the input decides which rows or which branch (joins, filters, conditions).</p>
+  <div class="filter-row">${go("csv", "matrix", "Download CSV", "ghost-btn")}</div>
+  <div class="table-wrap"><table class="t matrix"><thead><tr><th>Output column</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ============================================================ call graph */
+function rCalls() {
+  const me = "me";
+  const nodes = [{id: me, label: P.name, kind: P.kind, cls: "n-focus", sub: plural(DATA.counts.statements, "statement")}];
+  const edges = [];
+  DATA.callers.forEach((c, i) => { const id = "caller" + i; nodes.push({id, label: c.name, kind: "calls this", cls: "n-proc", sub: c.file || "", go: c.href ? null : null}); edges.push({from: id, to: me, title: `${c.name} calls ${P.name}`}); });
+  DATA.calls.forEach((c, i) => {
+    const id = "c" + i;
+    const cls = c.kind === "dynamic" ? "n-dyn" : !c.supplied && !c.system ? "n-unknown" : c.kind === "function" ? "n-fn" : c.kind === "view" ? "n-src" : "n-proc";
+    const st = c.expanded ? "expanded" : c.kind === "dynamic" ? "dynamic" : c.system ? "system" : c.supplied ? "supplied" : "not supplied";
+    nodes.push({id, label: c.name, kind: `${c.kind} · ${st}`, cls, sub: "step " + c.steps.map(s => STEP[s] ? STEP[s].label : s).join(", "), go: ["step", c.steps[0]]});
+    edges.push({from: me, to: id, cls: c.kind === "dynamic" ? "e-dyn" : "", title: `${P.name} → ${c.name}`});
+  });
+  const rows = DATA.calls.map(c => `<tr><td><code>${esc(c.name)}</code></td><td>${esc(c.kind)}${c.insertExec ? " (INSERT … EXEC)" : ""}</td><td>${stepLinks(c.steps)}</td>
+    <td>${c.expanded ? '<span class="badge b-ok">expanded</span>' : c.kind === "dynamic" ? '<span class="badge b-warn">dynamic</span>' : c.system ? '<span class="badge b-muted">system</span>' : c.supplied ? '<span class="badge b-info">supplied</span>' : '<span class="badge b-bad">opaque</span>'}</td></tr>`).join("");
+  return `<h1>Call graph</h1><p class="sub">Procedures, functions and views this code uses, and (with project input) the procedures that call it. Opaque calls were not supplied: what they do is unknown, not absent. Dynamic EXEC is marked.</p>
+  <div class="legend"><span><i class="lg n-focus"></i>this procedure</span><span><i class="lg n-proc"></i>procedure</span><span><i class="lg n-fn"></i>function</span><span><i class="lg n-src"></i>view</span><span><i class="lg n-unknown"></i>not supplied</span><span><i class="lg e e-dyn"></i>dynamic SQL</span></div>
+  <div class="graph">${svgGraph(nodes, edges, {id: "cg", w: 230, label: "call graph", fix: n => n.id.startsWith("caller") ? 0 : n.id === me ? (DATA.callers.length ? 1 : 0) : null})}</div>
+  ${rows ? `<div class="table-wrap"><table class="t"><thead><tr><th>Called</th><th>Kind</th><th>Steps</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty">This code calls no procedures, functions or views.</div>`}
+  ${DATA.callers.length ? `<h2>Called by</h2><ul class="plain">${DATA.callers.map(c => `<li>${c.href ? `<a href="${esc(c.href)}">${esc(c.name)}</a>` : `<code>${esc(c.name)}</code>`} <span class="mut">${esc(c.file || "")}</span></li>`).join("")}</ul>` : ""}`;
+}
+
+/* ============================================================ review issues */
+function rIssues() {
+  const counts = {high: 0, medium: 0, low: 0, info: 0};
+  DATA.issues.forEach(i => counts[i.severity] = (counts[i.severity] || 0) + 1);
+  const list = DATA.issues.filter(i => ISSUE_FILTER === "all" || i.severity === ISSUE_FILTER);
+  const chips = ["all", "high", "medium", "low", "info"].map(s => `<button class="chip${ISSUE_FILTER === s ? " on" : ""}" data-go="isf" data-arg="${s}">${s}<span class="n">${s === "all" ? DATA.issues.length : counts[s] || 0}</span></button>`).join("");
+  const cards = list.map(i => {
+    const marks = (i.spans || []).slice(0, 1).map(s => ({s: s[0], e: s[1], cls: "m-s"}));
+    const code = i.spans && i.spans.length && TEXT[i.text] ? excerpt(i.text, i.spans[0], marks, 1, 12) : "";
+    return `<div class="card issue ${i.severity}" id="iss-${i.id}"><div class="issue-head">${sevBadge(i.severity)}${i.certainty === "possible" ? '<span class="badge b-muted" title="Depends on data or definitions the code does not show">possible</span>' : ""}<span class="mut">${esc(i.rule)}</span></div>
+      <b>${md(i.title)}</b><p class="why">${esc(i.why)}</p><p class="next"><b>Next step:</b> ${esc(i.next)}</p>
+      <div style="margin-top:.4rem">${stepLinks(i.steps.slice(0, 10))} ${(i.columns || []).filter(k => OUT[k]).slice(0, 6).map(k => go("trace", k, "trace " + esc(colName(OUT[k].rel, OUT[k].col)), "chipref snk")).join(" ")}</div>${code}</div>`;
+  }).join("");
+  return `<h1>Review issues</h1><p class="sub">Ranked findings, each with why it matters and what to do next. <i>Possible</i> findings depend on data or definitions the code does not show.</p>
+  <div class="filter-row">${chips} ${go("csv", "issues", "Download CSV", "ghost-btn")}</div>${cards || `<div class="empty"><b>Nothing to show.</b></div>`}`;
+}
+function rComplexity() {
+  const c = DATA.complexity;
+  const tiles = [["statements", "Statements"], ["lines", "Lines"], ["codeLines", "Lines of code"], ["nesting", "Deepest nesting"], ["cyclomatic", "Cyclomatic complexity"], ["maxJoins", "Most joins in one statement"]]
+    .map(([k, l]) => `<div class="card stat"><div class="big">${num(c[k])}</div><div class="lbl">${l}</div></div>`).join("");
+  const dec = Object.entries(c.decisions || {}).filter(([, v]) => v).map(([k, v]) => `<span class="badge b-info">${esc(k)} ${v}</span>`).join(" ");
+  const longest = c.longest.filter(x => x.lines > 1).map(x => `<tr><td>${stepLink(x.step)}</td><td>${num(x.lines)}</td><td>${md(STEP[x.step].summary)}</td></tr>`).join("");
+  const scopes = c.scopes.filter(s => s.steps).sort((a, b) => b.steps - a.steps).slice(0, 25).map(s => `<tr><td>${esc(s.kind)}</td><td>${esc(s.label)}</td><td>${num(s.steps)}</td><td>${s.lines ? `${s.lines[0]}–${s.lines[1]}` : ""}</td></tr>`).join("");
+  return `<h1>Complexity</h1><p class="sub">Size and branching. Cyclomatic complexity is 1 + the decision points (IF, WHILE, CASE WHEN, IIF, CATCH); above 50 a procedure is hard to test thoroughly.</p>
+  <div class="grid c6">${tiles}</div><p style="margin:.6rem 0">${dec}</p>
+  ${longest ? `<h2>Longest statements</h2><div class="table-wrap"><table class="t"><thead><tr><th>Step</th><th>Lines</th><th>Summary</th></tr></thead><tbody>${longest}</tbody></table></div>` : ""}
+  <h2>Statements per scope</h2><div class="table-wrap"><table class="t"><thead><tr><th>Kind</th><th>Scope</th><th>Statements</th><th>Lines</th></tr></thead><tbody>${scopes}</tbody></table></div>`;
+}
+
+/* ============================================================ procedure details */
+const DETAILS_ID = "sql-documentation-details";
+const DETAIL_FIELDS = {owner: "Owner or team", job: "SQL Agent job / schedule", server: "Server and database", environment: "Environment (e.g. Production)",
+  runbook: "Runbook or support page", sourceLocation: "Source location (repository, branch)", folder: "Home page group (e.g. Finance / Nightly)", notes: "Notes"};
+function readDetails() {
+  const el = document.getElementById(DETAILS_ID);
+  let v = {};
+  try { v = el ? JSON.parse(el.textContent) || {} : (DATA.details || {}); } catch (e) { v = DATA.details || {}; }
+  const out = {}; Object.keys(DETAIL_FIELDS).forEach(k => out[k] = typeof v[k] === "string" ? v[k] : ""); return out;
+}
+const DETAILS = readDetails();
+let SAVED_DETAILS = JSON.stringify(DETAILS);
+const SECRET_RE = /\b(password|pwd|secret|accountkey|sharedaccesskey|sig|token|api[_-]?key)\s*=\s*[^;\s'"]+/i;
+function captureDetails() {
+  Object.keys(DETAIL_FIELDS).forEach(k => { const el = document.getElementById("det-" + k); if (el) DETAILS[k] = el.value; });
+  const bar = document.getElementById("det-savebar"), status = document.getElementById("det-status"), btn = document.getElementById("det-save");
+  if (!bar) return;
+  const bad = Object.keys(DETAILS).filter(k => SECRET_RE.test(DETAILS[k]));
+  const dirty = JSON.stringify(DETAILS) !== SAVED_DETAILS;
+  bar.classList.toggle("dirty", dirty);
+  if (bad.length) { status.textContent = "Remove what looks like a password, key or token: record where the secret lives instead."; btn.disabled = true; }
+  else { status.textContent = dirty ? "Unsaved changes. Download the updated HTML and replace the original file to keep them." : "These details are stored in this file."; btn.disabled = !dirty; }
+}
+function saveDetailsHtml() {
+  captureDetails();
+  const clone = document.documentElement.cloneNode(true);
+  const block = clone.querySelector("#" + DETAILS_ID);
+  const json = JSON.stringify(DETAILS).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
+  if (block) block.textContent = json;
+  const main = clone.querySelector("#main"); if (main) main.innerHTML = "";
+  const nav = clone.querySelector("#nav"); if (nav) nav.innerHTML = "";
+  const blob = new Blob(["<!DOCTYPE html>\n" + clone.outerHTML], {type: "text/html;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = DATA.documentationFilename || "procedure.html"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  SAVED_DETAILS = JSON.stringify(DETAILS); captureDetails();
+  document.getElementById("det-status").textContent = "Downloaded. Replace the original HTML with the downloaded file to keep these details.";
+}
+function rDetails() {
+  const field = k => k === "notes"
+    ? `<label class="field wide"><span>${esc(DETAIL_FIELDS[k])}</span><textarea id="det-${k}" rows="4" oninput="captureDetails()">${esc(DETAILS[k])}</textarea></label>`
+    : `<label class="field"><span>${esc(DETAIL_FIELDS[k])}</span><input id="det-${k}" value="${esc(DETAILS[k])}" oninput="captureDetails()"></label>`;
+  const texts = Object.values(TEXT);
+  return `<h1>Procedure details</h1>
+  <p class="sub">Who owns this procedure, where and when it runs, and how to support it. These details are kept in this file, survive regeneration over the same file, and are shown on the library home page. Record references only: never passwords, keys or tokens.</p>
+  ${DATA.published ? `<div class="card kvl">${Object.keys(DETAIL_FIELDS).map(k => `<div class="k">${esc(DETAIL_FIELDS[k])}</div><div>${esc(DETAILS[k] || "Not recorded")}</div>`).join("")}</div>`
+    : `<div class="card details-grid">${Object.keys(DETAIL_FIELDS).map(field).join("")}</div>
+  <div id="det-savebar" class="savebar"><p id="det-status" role="status"></p><button class="primary-btn" id="det-save" onclick="saveDetailsHtml()">Download updated HTML</button></div>`}
+  <h2>How this document was generated</h2>
+  <div class="card kvl">
+    <div class="k">Generated</div><div>${esc(DATA.generated)} by ${esc(DATA.generator)} ${esc(DATA.generatorVersion)} (payload version ${esc(DATA.schemaVersion)})</div>
+    <div class="k">Parser</div><div>Microsoft ScriptDom ${esc(DATA.parser.scriptDom || "")} · ${esc(DATA.parser.parser || "")}${DATA.parser.passes > 1 ? " · second pass for rebuilt dynamic SQL" : ""}</div>
+    <div class="k">Mode</div><div>${esc(DATA.mode)}</div>
+    <div class="k">Source</div><div>${esc(P.source || "")}${P.lines ? `, lines ${P.lines[0]}–${P.lines[1]}` : ""}</div>
+    <div class="k">Secrets withheld</div><div>${num(DATA.redactions || 0)}</div>
+    <div class="k">Run history</div><div class="mut">Not available: this document is generated from code, not from executions.</div>
+  </div>
+  ${texts.length > 1 ? `<h2>Code included</h2><div class="table-wrap"><table class="t"><thead><tr><th>Text</th><th>From</th></tr></thead><tbody>${texts.map(t => `<tr><td>${esc(t.label || t.id)}</td><td class="mut">${esc(t.path || "rebuilt by sql-doc-gen")}</td></tr>`).join("")}</tbody></table></div>` : ""}`;
+}
+AFTER.details = () => requestAnimationFrame(captureDetails);
+
+/* ============================================================ CSV */
+function csvCell(v) { v = v == null ? "" : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function downloadCsv(name) {
+  let rows = [];
+  if (name === "inputs") rows = [["object", "kind", "columns_used", "read_by_steps"], ...ins.map(r => [r.name, r.kind, Object.keys(r.colReads || {}).join(" "), (r.reads || []).map(s => STEP[s].label).join(" ")])];
+  else if (name === "outputs") rows = [["output", "kind", "operations", "written_by_steps"], ...outsRel.map(r => [r.name, r.kind, (r.ops || []).join(" "), (r.writes || []).map(s => STEP[s].label).join(" ")])];
+  else if (name === "columns") rows = [["output", "column", "status", "direct_sources", "steps", "conditions"], ...outCols.map(o => [relName(o.rel), o.col, o.status, o.direct.map(([r, c]) => colName(r, c)).join("; "), o.steps.map(s => STEP[s].label).join(" "), o.conditions.map(c => (c.branch === "else" ? "NOT " : "") + c.text).join("; ")])];
+  else if (name === "steps") rows = [["step", "kind", "first_line", "last_line", "summary", "reads", "writes"], ...DATA.steps.map(s => [s.label, s.kind, s.lines ? s.lines[0] : "", s.lines ? s.lines[1] : "", s.summary.replace(/`/g, ""), s.reads.map(relName).join("; "), s.writes.map(relName).join("; ")])];
+  else if (name === "issues") rows = [["severity", "certainty", "rule", "title", "why", "next_step", "steps"], ...DATA.issues.map(i => [i.severity, i.certainty, i.rule, i.title, i.why, i.next, i.steps.map(s => STEP[s] ? STEP[s].label : s).join(" ")])];
+  else if (name === "matrix") rows = [["output_column", ...DATA.matrixRelations.map(relName)], ...outCols.map(o => [colName(o.rel, o.col), ...DATA.matrixRelations.map(r => o.matrix[r] || "")])];
+  const blob = new Blob(["\ufeff" + rows.map(r => r.map(csvCell).join(",")).join("\r\n")], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${(P.name || "procedure").replace(/[^A-Za-z0-9_.-]+/g, "_")}-${name}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ============================================================ boot */
+const RENDER = {overview: rOverview, inputs: rInputs, outputs: rOutputs, intermediates: rIntermediates, columns: rColumns, dataflow: rDataflow,
+  steps: rSteps, control: rControl, transforms: rTransforms, code: rCode, trace: rTrace, lineage: rLineage, matrix: rMatrix, calls: rCalls,
+  issues: rIssues, complexity: rComplexity, details: rDetails};
+buildNav();
+(function start() {
+  const h = (location.hash || "").slice(1);
+  const m = /^trace=(.+)$/.exec(h);
+  if (m && OUT[decodeURIComponent(m[1])]) { TRACE_KEY = decodeURIComponent(m[1]); switchTab("trace"); return; }
+  if (TABS.find(t => t.id === h)) { switchTab(h); return; }
+  switchTab("overview");
+})();
+
+/* ============================================================ library viewer bridge
+   bi-doc-viewer protocol v1. Active only when this page is framed (by the library shell).
+   Messages are accepted only from the parent window, with an exact shape; they carry a
+   per-load channel, the revision ID and a registered view ID with string arguments,
+   never HTML, scripts or URLs. */
+const VIEWER_VIEWS = {
+  "sql.overview": () => { switchTab("overview"); return true; },
+  "sql.step": a => { const st = DATA.steps.find(s => s.label === a.step || s.id === a.step); if (!st) return false; GO.step(st.id); return true; },
+  "sql.column": a => { const o = DATA.outputs.find(o => (relName(o.rel).toLowerCase() === String(a.relation || "").toLowerCase() || o.rel === a.relation) && o.col.toLowerCase() === String(a.column || "").toLowerCase()); if (!o) return false; GO.trace(o.key); return true; },
+  "sql.object": a => { const r = DATA.relations.find(r => r.name.toLowerCase() === String(a.object || "").toLowerCase() || r.key === a.object); if (!r) return false; GO.rel(r.key); return true; },
+  "sql.issue": a => { const i = DATA.issues.find(i => String(i.id) === String(a.issue) || i.rule === a.issue); if (!i) return false; GO.issue(i.id); return true; },
+};
+(function () {
+  if (window.parent === window || !window.addEventListener) return;
+  let channel = null, revision = null;
+  const str = v => typeof v === "string" && v.length > 0 && v.length <= 512;
+  const reply = msg => window.parent.postMessage(Object.assign({protocol: "bi-doc-viewer", version: 1, channel, revision_id: revision}, msg), "*");
+  window.addEventListener("message", ev => {
+    if (ev.source !== window.parent) return;
+    const m = ev.data;
+    if (!m || typeof m !== "object" || m.protocol !== "bi-doc-viewer" || m.version !== 1) return;
+    if (m.type === "hello") {
+      if (channel !== null || !str(m.channel) || !str(m.revision_id)) return;
+      channel = m.channel; revision = m.revision_id;
+      reply({type: "viewer-ready", views: Object.keys(VIEWER_VIEWS)});
+      return;
+    }
+    if (m.type !== "navigate-object" || m.channel !== channel || m.revision_id !== revision) return;
+    if (!str(m.view_id) || !Object.prototype.hasOwnProperty.call(VIEWER_VIEWS, m.view_id)) return;
+    const args = {};
+    if (m.args && typeof m.args === "object") for (const [k, v] of Object.entries(m.args)) {
+      if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") { const s = String(v); if (s.length <= 512) args[k] = s; }
+    }
+    let exact = false;
+    try { exact = !!VIEWER_VIEWS[m.view_id](args); } catch (e) { exact = false; }
+    reply({type: "navigated", object_id: str(m.object_id) ? m.object_id : null, exact});
+  });
+})();
+</script>
+</body>
+</html>

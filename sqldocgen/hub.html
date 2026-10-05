@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="sql-documentation-hub" content="1">
+<title>Stored procedure documentation</title>
+<style>
+:root{--bg:#F5F7FB;--panel:#FFFFFF;--panel2:#F1F4F9;--ink:#0F172A;--ink2:#334155;--line:#CBD5E1;--line2:#E2E8F0;
+  --accent:#4F46E5;--accentSoft:#EEF2FF;--ok:#047857;--okBg:#D1FAE5;--warn:#B45309;--warnBg:#FEF3C7;--bad:#BE123C;--badBg:#FFE4E6;
+  --src:#0F766E;--srcBg:#CCFBF1;--snk:#B45309;--snkBg:#FEF3C7;--info:#334155;--infoBg:#E2E8F0;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;--mono:"Cascadia Code",Consolas,"SFMono-Regular",Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+nav{background:#0F172A;color:#fff;padding:26px 16px;position:sticky;top:0;height:100vh}
+.brand{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;margin:0 10px 6px}
+.brand2{font-weight:650;font-size:17px;margin:0 10px 26px}
+nav button{display:flex;justify-content:space-between;width:100%;text-align:left;border:0;background:none;color:#CBD5E1;font:inherit;padding:10px 12px;border-radius:8px;margin:3px 0;cursor:pointer}
+nav button:hover{background:#1E293B;color:#fff}
+nav button[aria-current=page]{background:#1E293B;color:#fff;box-shadow:inset 3px 0 #818CF8}
+nav button:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #A5B4FC;outline-offset:2px}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:18px max(4vw,20px)}
+header h1{margin:2px 0 4px;font-size:clamp(22px,3vw,30px)}header p{margin:0;color:var(--ink2);max-width:780px}
+main{padding:20px max(4vw,20px) 60px;max-width:1300px}
+input[type=search]{width:100%;max-width:520px;padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--panel)}
+.group{margin:22px 0 8px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px #0f172a0d,0 4px 12px #0f172a0a}
+.card h2{margin:0 0 4px;font-size:1.02rem;font-family:var(--mono)}.card a{color:var(--accent)}
+.what{font-size:.86rem;color:var(--ink2);margin:.35rem 0}
+.mut{color:var(--ink2);font-size:.85rem}
+code{font-family:var(--mono);font-size:.85em;background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:0 .25em}
+.badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.08rem .5rem;border-radius:999px;margin:2px 2px 0 0;white-space:nowrap}
+.b-ok{background:var(--okBg);color:var(--ok)}.b-warn{background:var(--warnBg);color:var(--warn)}.b-bad{background:var(--badBg);color:var(--bad)}
+.b-info{background:var(--infoBg);color:var(--info)}.b-src{background:var(--srcBg);color:var(--src)}.b-snk{background:var(--snkBg);color:var(--snk)}
+.stats{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0;font-size:.84rem;color:var(--ink2)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.88rem}
+th,td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line2);vertical-align:top}
+th{background:#E9EEF5;color:var(--ink2);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.table-wrap{overflow-x:auto}
+.empty{border:1.5px dashed var(--line);border-radius:12px;padding:2rem;text-align:center;color:var(--ink2)}
+[hidden]{display:none!important}
+@media(max-width:800px){.shell{grid-template-columns:1fr}nav{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}.brand,.brand2{width:100%;margin-bottom:8px}nav button{width:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav aria-label="Documentation home"><div class="brand">SQL Doc Gen</div><div class="brand2">Procedure library</div>
+  <button data-view="procs" aria-current="page">Procedures</button>
+  <button data-view="objects">Shared objects</button>
+  <button data-view="runs">Last batch run</button>
+</nav>
+<div>
+<header><small class="mut">Stored procedure documentation</small><h1 id="title">Procedures</h1>
+<p id="lead"></p></header>
+<main id="main"></main>
+</div></div>
+<script>
+const DOCS = /*__DOCS__*/[];
+const BATCH = /*__BATCH__*/null;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+let VIEW = "procs", Q = "";
+const MODE = {procedure: ["b-info", "procedure only"], schema: ["b-ok", "with schema"], project: ["b-ok", "project"]};
+function hay(d) { return [d.title, d.file, d.database, d.schema, d.what, ...Object.values(d.details || {}), ...(d.objects || []).map(o => o.name), ...(d.calls || [])].join(" ").toLowerCase(); }
+function card(d) {
+  if (d.error) return `<div class="card"><h2>${esc(d.title)}</h2><span class="badge b-bad">unreadable</span><p class="mut">${esc(d.error)}</p></div>`;
+  const det = d.details || {}, c = d.counts || {}, i = d.issues || {}, m = MODE[d.mode] || ["b-info", d.mode];
+  const who = [det.environment, det.owner, det.job].filter(Boolean).join(" · ");
+  return `<div class="card"><h2><a href="${d.href}">${esc(d.title)}</a></h2>
+    ${who ? `<div>${esc(who)}</div>` : `<div class="mut">No owner recorded</div>`}
+    <p class="what">${md(d.what || "")}</p>
+    <div class="stats"><span>${c.statements} statements</span><span>${c.inputs} inputs</span><span>${c.outputs} outputs</span><span>${c.temp} temp objects</span>${c.dynamic ? `<span>${c.dynamic} dynamic SQL</span>` : ""}</div>
+    <span class="badge ${m[0]}">${esc(m[1])}</span>
+    ${i.high ? `<span class="badge b-bad">${i.high} high</span>` : ""}${i.medium ? `<span class="badge b-warn">${i.medium} medium</span>` : ""}${i.low ? `<span class="badge b-info">${i.low} low</span>` : ""}
+    ${d.unresolved ? `<span class="badge b-warn">${d.unresolved} unresolved columns</span>` : ""}
+    <p class="mut" style="margin:.5rem 0 0">${esc(d.source || d.file)} · generated ${esc(d.generated)}</p>
+    ${det.runbook ? `<p class="mut" style="margin:.2rem 0 0">Runbook: ${esc(det.runbook)}</p>` : ""}</div>`;
+}
+function rProcs() {
+  if (!DOCS.length) return `<div class="empty"><b>No procedure documents found in this folder.</b><br>Generate some with <code>sql-doc-gen &lt;folder&gt; --output-dir &lt;this folder&gt;</code>.</div>`;
+  const shown = DOCS.filter(d => !Q || hay(d).includes(Q));
+  const groups = {};
+  for (const d of shown) { const g = (d.details && d.details.folder) || [d.database, d.schema].filter(Boolean).join(" / ") || "Ungrouped"; (groups[g] = groups[g] || []).push(d); }
+  const names = Object.keys(groups).sort((a, b) => (a === "Ungrouped") - (b === "Ungrouped") || a.localeCompare(b));
+  return search("Search procedures, owners, tables or what they do")
+    + (names.length ? names.map(g => `<div class="group">${esc(g)} (${groups[g].length})</div><div class="cards">${groups[g].map(card).join("")}</div>`).join("") : `<p class="mut">No procedure matches.</p>`);
+}
+function rObjects() {
+  const objs = {};
+  for (const d of DOCS) for (const o of d.objects || []) {
+    const k = [o.server, (o.database || "").toLowerCase(), o.name.toLowerCase()].join("|");
+    const row = objs[k] = objs[k] || {name: o.name, server: o.server, database: o.database, kind: o.kind, readers: [], writers: []};
+    if (o.read) row.readers.push(d);
+    if (o.written) row.writers.push({d, ops: o.ops});
+  }
+  const rows = Object.values(objs).filter(r => !Q || [r.name, r.server, r.database, ...r.readers.map(d => d.title), ...r.writers.map(x => x.d.title)].join(" ").toLowerCase().includes(Q))
+    .sort((a, b) => (b.readers.length + b.writers.length) - (a.readers.length + a.writers.length) || a.name.localeCompare(b.name));
+  return search("Search tables, views, servers or procedures")
+    + `<p class="mut">Which procedures read and which write each table, so you can see who shares an object. The same name in different databases or on different servers is listed separately.</p>`
+    + (rows.length ? `<div class="table-wrap"><table><thead><tr><th>Object</th><th>Written by</th><th>Read by</th></tr></thead><tbody>${rows.map(r => `<tr>
+      <td><code>${esc(r.name)}</code><div class="mut">${esc([r.kind, r.server, r.database].filter(Boolean).join(" · "))}</div></td>
+      <td>${r.writers.map(x => `<div><a href="${x.d.href}">${esc(x.d.title)}</a> ${(x.ops || []).map(o => `<span class="badge b-snk">${esc(o)}</span>`).join("")}</div>`).join("") || '<span class="mut">—</span>'}</td>
+      <td>${r.readers.map(d => `<div><a href="${d.href}">${esc(d.title)}</a></div>`).join("") || '<span class="mut">—</span>'}</td></tr>`).join("")}</tbody></table></div>`
+      : `<p class="mut">No objects match.</p>`);
+}
+function rRuns() {
+  if (!BATCH) return `<div class="empty"><b>No batch results in this folder.</b><br>This page lists the documents it found; a batch run also records which procedures failed.</div>`;
+  const rows = BATCH.documents.map(r => `<tr><td><code>${esc(r.procedure)}</code><div class="mut">${esc(r.input)}</div></td><td>${r.status === "ok" ? '<span class="badge b-ok">documented</span>' : '<span class="badge b-bad">failed</span>'}</td>
+    <td>${r.output ? `<a href="${encodeURIComponent(r.output)}">${esc(r.output)}</a>` : ""}<div class="mut">${esc(r.error || "")}</div></td></tr>`).join("");
+  const failed = BATCH.documents.filter(r => r.status !== "ok").length;
+  return `<p>${esc(BATCH.started || "")} · ${esc(BATCH.generator || "")} · mode ${esc(BATCH.mode || "")} · ${BATCH.documents.length} procedure(s), ${failed ? `<b>${failed} failed</b>` : "none failed"}.</p>
+  <div class="table-wrap"><table><thead><tr><th>Procedure</th><th>Result</th><th>Document</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function search(ph) { return `<p><input type="search" id="q" placeholder="${esc(ph)}" aria-label="${esc(ph)}" value="${esc(Q)}"></p>`; }
+const VIEWS = {procs: [rProcs, "Procedures", "Every stored procedure documented in this folder. Open one for its full documentation and column traces, or search across owners, tables and what they do."],
+  objects: [rObjects, "Shared objects", "The tables and views procedures read and write, so you can see which procedures share an object before you change it."],
+  runs: [rRuns, "Last batch run", "What the last generation produced, including any procedure that could not be documented."]};
+function show(v) {
+  VIEW = v; const [fn, title, lead] = VIEWS[v];
+  document.getElementById("title").textContent = title; document.getElementById("lead").textContent = lead;
+  document.querySelectorAll("nav button").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  document.getElementById("main").innerHTML = fn();
+  const q = document.getElementById("q");
+  if (q) q.addEventListener("input", () => { Q = q.value.trim().toLowerCase(); const pos = q.selectionStart; show(VIEW); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(pos, pos); });
+}
+document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => show(b.dataset.view)));
+show("procs");
+</script>
+</body>
+</html>

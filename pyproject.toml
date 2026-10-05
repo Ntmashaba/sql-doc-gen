@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sql-doc-gen"
+dynamic = ["version"]
+description = "Living documentation and column lineage for T-SQL stored procedures (Microsoft ScriptDom + Python)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+sql-doc-gen = "sqldocgen.cli:main"
+
+[tool.setuptools]
+packages = ["sqldocgen"]
+
+[tool.setuptools.dynamic]
+version = {attr = "sqldocgen.__version__"}
+
+[tool.setuptools.package-data]
+sqldocgen = ["template.html", "hub.html", "parser/*.cs", "parser/*.csproj"]

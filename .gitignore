@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+sqldocgen/parser/bin/
+sqldocgen/parser/obj/
+sql-docs/
+documentation/
+tests/.public/
+tests/out/
+*.docx
