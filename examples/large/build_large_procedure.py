@@ -268,6 +268,12 @@ def log(step: str, indent: str = "    ") -> str:
             f"{indent}VALUES (@ProcName, @BatchId, N'{step}', @Rows, SYSDATETIME(), 'OK');\n")
 
 
+# Column lists for the debug snapshots. They live outside the f-string below because a
+# backslash inside an f-string expression needs Python 3.12, and the package supports 3.9.
+SNAP_PRICING = "               SUM(o.GrossAmount)    AS GrossAmount,\n               SUM(o.DiscountAmount) AS DiscountAmount,\n               SUM(o.NetAmount)      AS NetAmount"
+SNAP_CONVERSION = "               SUM(o.GrossAmountZAR) AS GrossAmountZAR,\n               SUM(o.NetAmountZAR)   AS NetAmountZAR,\n               SUM(o.TaxZAR)         AS TaxZAR"
+SNAP_MARGIN = "               SUM(o.CostZAR)        AS CostZAR,\n               SUM(o.MarginZAR)      AS MarginZAR"
+
 PROC = f"""/*
 ================================================================================================
  etl.usp_LoadFactRevenue
@@ -611,7 +617,7 @@ BEGIN
        SET TaxAmount = ROUND(NetAmount * ISNULL(TaxRate, 0), 2);
 
 {log("4 pricing")}
-{debug_snapshot("after pricing", "               SUM(o.GrossAmount)    AS GrossAmount,\n               SUM(o.DiscountAmount) AS DiscountAmount,\n               SUM(o.NetAmount)      AS NetAmount")}
+{debug_snapshot("after pricing", SNAP_PRICING)}
     /* ==========================================================================================
        5. Conversion to rand
        ========================================================================================== */
@@ -645,7 +651,7 @@ BEGIN
      WHERE FxRate IS NULL;
 
 {log("5.2 default rates")}
-{debug_snapshot("after conversion", "               SUM(o.GrossAmountZAR) AS GrossAmountZAR,\n               SUM(o.NetAmountZAR)   AS NetAmountZAR,\n               SUM(o.TaxZAR)         AS TaxZAR")}
+{debug_snapshot("after conversion", SNAP_CONVERSION)}
     /* ==========================================================================================
        6. Returns
        ========================================================================================== */
@@ -758,7 +764,7 @@ BEGIN
     -- 8.6 Payment provider fees reduce the margin
 {payment_fee_blocks()}
 {log("8 margin")}
-{debug_snapshot("after margin", "               SUM(o.CostZAR)        AS CostZAR,\n               SUM(o.MarginZAR)      AS MarginZAR")}
+{debug_snapshot("after margin", SNAP_MARGIN)}
     /* ==========================================================================================
        9. Commission
        ========================================================================================== */
