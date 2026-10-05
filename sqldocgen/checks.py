@@ -12,9 +12,14 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from .engine import Ctx, norm
 from .model import ROWS, VALUE, Issue
-from .program import ENTRY, EXIT, reverse_postorder
+from .program import ENTRY, EXIT, is_dynamic_exec, reverse_postorder
 from .syntax import ident, obj_name, parts, typ, unparen, walk
+from .textutil import scan_tokens
 from .trace import output_relations
+
+# a literal or NULL: a placeholder or a reset rather than a computed value
+_CONSTANT = re.compile(r"^\s*\(*\s*(?:NULL|N?'(?:[^']|'')*'|[-+]?\d+(?:\.\d+)?|0x[0-9A-F]*|"
+                       r"CAST\s*\(\s*NULL\s+AS\s+[^)]*\))\s*\)*\s*$", re.IGNORECASE)
 
 SEVERITY_ORDER = {"high": 0, "medium": 1, "low": 2, "info": 3}
 
@@ -92,14 +97,52 @@ class Checker:
                 self.add("check-failed", "info", f"A review check could not run ({fn.__name__})",
                          f"{type(exc).__name__}: {exc}", "Report this with the procedure if you can.")
         def own(issue):
+            # an issue that lives entirely inside an expanded callee belongs to the callee's document
+            keys = list(issue.relations) + [c.split("|")[0] for c in issue.columns]
+            if keys and all("/" in k for k in keys):
+                return False                 # only the callee's namespaced variables or tables
             if not issue.steps:
                 return True
             return any(not (self.ctx.step_by_id[s].origin or "").startswith("call:")
                        for s in issue.steps if s in self.ctx.step_by_id)
-        self.issues = [i for i in self.issues if own(i)]
+        unique, seen = [], set()
+        for i in self.issues:
+            key = (i.rule, i.title, tuple(i.steps))
+            if key not in seen:
+                seen.add(key)
+                unique.append(i)
+        self.issues = self._merge_variants([i for i in unique if own(i)])
         self.issues.sort(key=lambda i: (SEVERITY_ORDER.get(i.severity, 9), i.certainty != "definite",
                                         self._first_step(i)))
         return self.issues
+
+    def _merge_variants(self, issues: List[Issue]) -> List[Issue]:
+        """One finding per statement: the variants of a rebuilt dynamic statement repeat the same
+        code, and so would their findings."""
+        out: List[Issue] = []
+        by_key: Dict[tuple, Issue] = {}
+        label_rx = re.compile(r"\bsteps? [0-9][0-9.]*(?:, [0-9][0-9.]*)*")
+        for i in issues:
+            st = self.ctx.step_by_id.get(i.steps[0]) if i.steps else None
+            if st is None or not st.parent or len(i.steps) != 1:
+                out.append(i)
+                continue
+            parent = self.ctx.step_by_id.get(st.parent)
+            if parent is None or not (parent.kind == "exec-dynamic" or is_dynamic_exec(parent.node)):
+                out.append(i)
+                continue
+            code = " ".join(self.ctx.texts[st.text_id].squeeze(st.node, 400).split())
+            key = (i.rule, label_rx.sub("", i.title), parent.id, code)
+            first = by_key.get(key)
+            if first is None:
+                by_key[key] = i
+                out.append(i)
+                continue
+            first.steps.append(i.steps[0])             # spans stay those of the first variant's text
+            labels = [self.label(s) for s in first.steps]
+            shown = ", ".join(labels[:4]) + (f" and {len(labels) - 4} more" if len(labels) > 4 else "")
+            first.title = label_rx.sub(f"steps {shown}", first.title, count=1)
+        return out
 
     def _first_step(self, issue: Issue) -> int:
         idx = {s.id: i for i, s in enumerate(self.ctx.steps)}
@@ -110,7 +153,7 @@ class Checker:
         ctx = self.ctx
         grouped: Dict[Tuple[str, str], List[int]] = defaultdict(list)
         for n in ctx.nodes:
-            if n.step is None or n.op in ("local", "initial", "default", "create", "declare", "bind", "result",
+            if n.step is None or n.op in ("local", "initial", "default", "alter-add", "create", "declare", "bind", "result",
                                           "exec-output", "exec-return", "return", "truncate", "delete"):
                 continue
             if n.col in (ROWS, "*") or n.id in self.read_defs:
@@ -135,21 +178,57 @@ class Checker:
                 read_keys.add((u.rel, u.col))
         for (rk, col), ids in grouped.items():
             rel = ctx.relations[rk]
-            n0 = ctx.nodes[ids[0]]
-            killer = self._killer(n0)
             what = f"{rel.name}" if col == VALUE else f"{rel.name}.{col}"
-            steps = [ctx.nodes[i].step for i in ids]
             if (rk, col) not in read_keys and (rel.kind == "variable" or (rk, "*") not in read_keys):
                 if rel.kind in ("temp", "table-variable"):
                     continue           # reported by the temp-column check
+                steps = [ctx.nodes[i].step for i in ids]
                 self.add("assigned-never-read", "low", f"{what} is assigned but never read",
                          "Nothing in this code reads it, so the statements that assign it are dead code (or a "
                          "later statement uses a different variable by mistake).",
                          "Remove it, or check which statement was meant to use it.",
                          steps=steps, spans=[ctx.nodes[i].span for i in ids], columns=[f"{rk}|{col}"], relations=[rk])
                 continue
+            # a placeholder (NULL, '', 0) that a later statement fills in is how the code is meant to work
+            ids = [i for i in ids if not _CONSTANT.match(ctx.nodes[i].expr or "")]
+            if not ids:
+                continue
+            steps = [ctx.nodes[i].step for i in ids]
+            killer = self._killer(ctx.nodes[ids[0]])
+            if rel.kind == "temp" and (rel.name.lower() in self._literal_temp_names() or
+                                       self._reach(steps, True) & self._reach([killer], False) & self._opaque_steps()):
+                continue          # dynamic SQL or a called procedure in between may read it
+            at = f"step {', '.join(self.label(s) for s in steps)}"
+            kst = ctx.step_by_id.get(killer)
+            if kst is not None and kst.kind in ("delete", "truncate", "drop-table"):
+                self.add("overwritten-before-read", "low", f"{what} is written at {at} and never read",
+                         f"Nothing reads the value before step {self.label(killer)} removes the rows, so the write "
+                         f"is wasted work (or a later statement was meant to use it).",
+                         "Remove the write, or check which statement was meant to read it.",
+                         steps=steps + [killer], spans=[ctx.nodes[i].span for i in ids], columns=[f"{rk}|{col}"],
+                         relations=[rk])
+                continue
+            if rel.kind in ("variable", "parameter"):
+                self.add("overwritten-before-read", "low", f"{what} is set at {at} and set again before anything reads it",
+                         "The first value is never used: a later statement assigns the variable again first. "
+                         "Either the first assignment is dead code, or a statement in between was meant to use it.",
+                         f"Check what should happen between that step and step {self.label(killer)}.",
+                         steps=steps + [killer], spans=[ctx.nodes[i].span for i in ids], columns=[f"{rk}|{col}"],
+                         relations=[rk])
+                continue
+            filled = all(ctx.nodes[i].op in ("insert", "select-into", "merge-insert", "output-into") for i in ids)
+            if filled:
+                self.add("overwritten-before-read", "low",
+                         f"{what} is written at {at} and replaced before anything reads it",
+                         f"The value inserted there is never used: step {self.label(killer)} overwrites it on every "
+                         f"row first. Harmless if the insert only fills a required column, wasted work otherwise.",
+                         f"Insert NULL (or a constant) there and let step {self.label(killer)} compute it, or check "
+                         f"whether step {self.label(killer)} was meant to update only some rows.",
+                         steps=steps + [killer], spans=[ctx.nodes[i].span for i in ids], columns=[f"{rk}|{col}"],
+                         relations=[rk])
+                continue
             self.add("overwritten-before-read", "medium",
-                     f"{what} is written at step {', '.join(self.label(s) for s in steps)} and replaced before anything reads it",
+                     f"{what} is written at {at} and replaced before anything reads it",
                      "The value written there never reaches an output: a later statement overwrites every row "
                      "first. Either that write is dead code, or the later one was meant to update only some rows.",
                      f"Check step {self.label(killer)}: should it have a WHERE clause or a join that limits it? "
@@ -174,6 +253,65 @@ class Checker:
                     return st.id
         return None
 
+    # ------------------------------------------------------------------ what the analysis cannot see
+    def _opaque_steps(self) -> Set[str]:
+        """Steps that may read or fill a temp table without the analysis seeing it: dynamic SQL that
+        was not fully read, and procedures that were called but not expanded (both see the caller's
+        temp tables)."""
+        if getattr(self, "_opaque", None) is None:
+            out = set()
+            for st in self.ctx.steps:
+                if st.kind == "exec-dynamic" or (st.kind == "insert-exec" and is_dynamic_exec(st.node)):
+                    info = self.dynamic.get(st.label) or {}
+                    if not info.get("parsed") or info.get("status") != "resolved":
+                        out.add(st.id)
+                elif st.kind in ("exec", "insert-exec") and not self.ctx.expanded.get(st.id):
+                    callee = (st.detail.get("callee") or "").lower()
+                    if not (callee.startswith(("xp_", "sys.", "master.sys.")) or callee in ("sp_executesql",)):
+                        out.add(st.id)
+            self._opaque = out
+        return self._opaque
+
+    def _literal_temp_names(self) -> Set[str]:
+        """#names written inside string literals: dynamic SQL may use those tables."""
+        if getattr(self, "_lit_names", None) is None:
+            names = set()
+            for text in self.ctx.texts.values():
+                src = text.text
+                for kind, a, b in scan_tokens(src):
+                    if kind == "string" and "#" in src[a:b]:
+                        names.update(m.group(0).lower() for m in re.finditer(r"#{1,2}[A-Za-z0-9_@$#]+", src[a:b]))
+            self._lit_names = names
+        return self._lit_names
+
+    def _reach(self, starts, forward: bool) -> Set[str]:
+        if forward:
+            graph = self.succ
+        else:
+            if getattr(self, "_pred", None) is None:
+                self._pred = defaultdict(set)
+                for a, bs in self.succ.items():
+                    for b in bs:
+                        self._pred[b].add(a)
+            graph = self._pred
+        seen, stack = set(), list(starts)
+        while stack:
+            x = stack.pop()
+            for y in graph.get(x, ()):
+                if y not in seen:
+                    seen.add(y)
+                    stack.append(y)
+        return seen
+
+    def _hidden_use(self, rel, steps, forward: bool) -> bool:
+        """Could a temp table be used where the analysis cannot see (before or after these steps)?"""
+        if rel.kind != "temp":
+            return False                    # table variables are invisible to callees and dynamic SQL
+        if rel.name.lower() in self._literal_temp_names():
+            return True
+        opaque = self._opaque_steps()
+        return bool(opaque) and bool(self._reach(steps, forward) & opaque)
+
     def unread_temp(self):
         ctx = self.ctx
         for rk, rel in ctx.relations.items():
@@ -181,6 +319,8 @@ class Checker:
                 continue
             writes = [n for n in ctx.nodes if n.rel == rk and n.step and n.op not in ("create", "local")]
             if not writes:
+                continue
+            if self._hidden_use(rel, {n.step for n in writes}, forward=True):
                 continue
             if rk not in self.read_rels:
                 self.add("temp-never-read", "medium", f"{rel.name} is filled but never read",
@@ -215,6 +355,8 @@ class Checker:
                     continue
                 ops = {ctx.nodes[d].op for d in u.defs}
                 if u.defs and ops <= {"create", "truncate", "delete"} and st.id in self.flow["reachable"]:
+                    if self._hidden_use(rel, {st.id}, forward=False):
+                        continue                # filled by dynamic SQL or a called procedure, maybe
                     seen.add(u.rel)
                     self.add("reads-empty-table", "high", f"Step {st.label} reads {rel.name} while it is still empty",
                              "On every path to this step nothing has been inserted into the table since it was "
@@ -275,6 +417,10 @@ class Checker:
                 why = f"Comparing {fl} with {fr} forces an implicit conversion of one side for every row."
             if col_side is None or col_side.get("kind") not in ("column",):
                 continue
+            if sev == "medium" and str(col_side.get("rel", "")).startswith(("temp:", "tvar:")):
+                # a staging table is scanned anyway: only the conversion error risk is left
+                sev = "low"
+                why = why.replace("so an index on it cannot be used, and a value", "and a value")
             key = (c["step"], c["text"])
             if key in done:
                 continue
@@ -349,9 +495,19 @@ class Checker:
                 top = q.get("TopRowFilter")
                 if not top or in_exists or q.get("OrderByClause"):
                     continue
-                if top.get("Percent") and str((top.get("Expression") or {}).get("Value", "")) == "100":
+                count = str((unparen(top.get("Expression")) or {}).get("Value", ""))
+                if top.get("Percent") and count == "100":
                     continue
+                tables = (q.get("FromClause") or {}).get("TableReferences") or []
+                if not tables:
+                    continue          # no FROM: one row, TOP changes nothing
                 text = self.ctx.texts[st.text_id]
+                if count == "1" and not top.get("Percent"):
+                    self.add("top-without-order-by", "low", f"TOP 1 without ORDER BY at step {st.label}",
+                             "If several rows match, which one is used is not defined and can change between runs.",
+                             "If more than one row can match, add an ORDER BY that picks the intended one.",
+                             steps=[st.id], spans=[text.span(top)], text_id=st.text_id, certainty="possible")
+                    continue
                 self.add("top-without-order-by", "medium",
                          f"TOP without ORDER BY at step {st.label}",
                          "Which rows TOP keeps is not defined without ORDER BY; it can change between runs, "
@@ -370,8 +526,10 @@ class Checker:
                     fn = side.get("fn", "")
                     if fn in ("CAST", "CONVERT", "TRY_CAST", "TRY_CONVERT") and family(side.get("type", "")) == "date":
                         continue          # CAST(column AS date) can still seek
-                    if all(r.startswith(("temp:", "tvar:")) for r in side.get("wraps", [])):
-                        continue          # staging tables are scanned anyway
+                    if all(r.startswith(("temp:", "tvar:")) or
+                           (self.ctx.relations.get(r) is not None and self.ctx.relations[r].kind in ("system", "dynamic"))
+                           for r in side.get("wraps", [])):
+                        continue          # staging tables and system views are scanned anyway
                     if (c["step"], c["text"]) in done:
                         continue
                     done.add((c["step"], c["text"]))
@@ -455,53 +613,122 @@ class Checker:
                 continue
             stars = [x for x in walk(st.node, stop=lambda y: typ(y) == "ExistsPredicate") if typ(x) == "SelectStarExpression"]
             if stars:
+                # the * expands to the columns of the tables it reads; the procedure's own temp tables
+                # cannot change behind its back
+                if self._star_stable(st):
+                    continue
                 text = self.ctx.texts[st.text_id]
-                self.add("select-star-into-table", "medium", f"SELECT * writes {target.name} (step {st.label})",
+                self.add("select-star-into-table", "medium" if st.kind == "insert" else "low",
+                         f"SELECT * writes {target.name} (step {st.label})",
                          "The columns written depend on the source table's current definition: adding or reordering a "
                          "column there silently changes, or breaks, what lands in this table.",
                          "List the columns explicitly.", steps=[st.id], spans=[text.span(stars[0])],
                          relations=[target.key], text_id=st.text_id)
 
+    def _star_stable(self, st, depth: int = 0) -> bool:
+        """SELECT * that reads only the procedure's own temp tables, themselves defined with explicit
+        columns, cannot change when a permanent table changes."""
+        sources = {u.rel for u in st.uses} | {u.rel for nid in st.nodes for u in self.ctx.nodes[nid].uses}
+        rels = [self.ctx.relations[r] for r in sources if r in self.ctx.relations]
+        if not rels or depth > 4:
+            return False
+        for rel in rels:
+            if rel.kind in ("variable", "parameter"):
+                continue
+            if rel.kind not in ("temp", "table-variable"):
+                return False
+            for sid in rel.created:
+                cst = self.ctx.step_by_id.get(sid)
+                if cst is None:
+                    continue
+                starred = any(typ(x) == "SelectStarExpression" for x in walk(cst.node))
+                if starred and not self._star_stable(cst, depth + 1):
+                    return False
+        return True
+
     def insert_without_columns(self):
+        by_target: Dict[str, list] = defaultdict(list)
         for st in self.ctx.steps:
             if st.kind not in ("insert", "insert-exec") or st.detail.get("column_list", True):
                 continue
             target = self.ctx.relations.get(st.detail.get("target") or "")
-            if target is None:
-                continue
+            if target is not None:
+                by_target[target.key].append(st)
+        for key, steps in by_target.items():
+            target = self.ctx.relations[key]
             permanent = target.kind in ("table", "view", "remote", "global-temp")
+            n = len(steps)
+            at = f"step {steps[0].label}" if n == 1 else \
+                f"{n} statements, steps {', '.join(st.label for st in steps[:5])}{', …' if n > 5 else ''}"
             self.add("insert-without-column-list", "medium" if permanent else "low",
-                     f"INSERT into {target.name} without a column list (step {st.label})",
+                     f"INSERT into {target.name} without a column list ({at})",
                      "Values are matched to columns by position, so a change to the table's column order or a new "
                      "column breaks the load or puts values in the wrong columns.",
-                     "Name the target columns in the INSERT.", steps=[st.id], spans=[st.span], relations=[target.key],
-                     text_id=st.text_id)
+                     "Name the target columns in the INSERT.", steps=[st.id for st in steps],
+                     spans=[steps[0].span], relations=[key], text_id=steps[0].text_id)
 
     def dynamic_sql(self):
+        partial: Dict[tuple, list] = {}
         for label, info in self.dynamic.items():
             st = next((s for s in self.ctx.steps if s.label == label), None)
             if st is None:
                 continue
+            unsafe = info.get("unsafe") or []
+            if unsafe and st.namespace == "":
+                one = len(unsafe) == 1
+                names = " and ".join(unsafe) if len(unsafe) <= 2 else ", ".join(unsafe[:-1]) + " and " + unsafe[-1]
+                self.add("sql-injection-risk", "high",
+                         f"{names} {'is' if one else 'are'} pasted into dynamic SQL at step {label} without quoting",
+                         f"{'This parameter is' if one else 'These parameters are'} text chosen by whoever calls the "
+                         f"procedure, and the text becomes part of the statement, so a value like x'; DROP TABLE … -- "
+                         f"runs as SQL with the procedure's permissions (SQL injection).",
+                         "Pass values as sp_executesql parameters instead of concatenating them; wrap object names in "
+                         "QUOTENAME() and check them against sys.objects first.",
+                         steps=[st.id], spans=[st.span], certainty="possible", text_id=st.text_id)
             if info["status"] == "unresolved" or not info["parsed"]:
-                self.add("dynamic-sql-unresolved", "high", f"Dynamic SQL at step {label} cannot be read",
+                self.add("dynamic-sql-unresolved", "medium", f"Dynamic SQL at step {label} cannot be read",
                          "The statement is built at run time from values this document cannot see, so what it reads "
                          "and writes is unknown, not absent. Lineage stops here.",
                          "Read the code that builds the string; consider logging the generated SQL, or replacing it "
                          "with static SQL if the variations are few.", steps=[st.id], spans=[st.span],
                          text_id=st.text_id)
             elif info["status"] == "partial":
-                self.add("dynamic-sql-partial", "medium",
-                         f"Dynamic SQL at step {label} depends on run-time values ({', '.join(info['placeholders'][:3])})",
-                         "The statement's shape was rebuilt, but some names or values come from variables, so the "
-                         "objects it touches may differ at run time.",
-                         "Check the values those variables can take; validate object names with QUOTENAME and a lookup.",
-                         steps=[st.id], spans=[st.span], certainty="possible", text_id=st.text_id)
+                partial.setdefault(tuple(info["placeholders"][:3]), []).append(st)
+        for values, steps in partial.items():
+            n = len(steps)
+            at = f"step {steps[0].label}" if n == 1 else \
+                f"{n} statements (steps {', '.join(st.label for st in steps[:5])}{', …' if n > 5 else ''})"
+            self.add("dynamic-sql-partial", "low",
+                     f"Dynamic SQL at {at} depends on run-time values ({', '.join(values)})",
+                     "The statement's shape was rebuilt, but some names or values come from variables, so the "
+                     "objects it touches may differ at run time.",
+                     "Check the values those variables can take; validate object names with QUOTENAME and a lookup.",
+                     steps=[st.id for st in steps], spans=[steps[0].span], certainty="possible",
+                     text_id=steps[0].text_id)
 
     def nolock(self):
+        # dirty reads matter for business data; on system views, DMVs and the procedure's own temp
+        # tables NOLOCK is harmless (and usual in diagnostic procedures)
+        harmless = ("system", "temp", "global-temp", "table-variable")
         by_step = defaultdict(list)
         for h in self.ctx.hints:
-            if h["hint"] in ("NoLock", "ReadUncommitted"):
+            rel = self.ctx.relations.get(h["relation"])
+            if h["hint"] in ("NoLock", "ReadUncommitted") and not (rel is not None and rel.kind in harmless):
                 by_step[h["step"]].append(h)
+        def reads_user_tables(after):
+            # SET TRANSACTION ISOLATION LEVEL lasts until the end of its batch (procedure or dynamic SQL)
+            seen = False
+            for st in self.ctx.steps:
+                if st.id == after.id:
+                    seen = True
+                    continue
+                if not seen or st.text_id != after.text_id or st.namespace != after.namespace:
+                    continue
+                for u in st.uses:
+                    rel = self.ctx.relations.get(u.rel)
+                    if rel is not None and rel.kind in ("table", "view", "remote"):
+                        return True
+            return False
         for sid, hs in by_step.items():
             names = sorted({self.name(h["relation"]) for h in hs})
             self.add("nolock", "medium", f"NOLOCK on {', '.join(names)} (step {self.label(sid)})",
@@ -510,7 +737,7 @@ class Checker:
                      "Remove the hint, or use READ COMMITTED SNAPSHOT / SNAPSHOT isolation if blocking was the reason.",
                      steps=[sid], spans=[h["span"] for h in hs])
         for st in self.ctx.steps:
-            if st.detail.get("isolation") == "ReadUncommitted":
+            if st.detail.get("isolation") == "ReadUncommitted" and reads_user_tables(st):
                 self.add("nolock", "medium", f"READ UNCOMMITTED isolation (step {st.label})",
                          "Every following read behaves as if it had NOLOCK.",
                          "Use the default isolation level or snapshot isolation.", steps=[st.id], spans=[st.span])
@@ -615,45 +842,131 @@ class Checker:
             for q, in_exists in self._queries(st):
                 if in_exists or q.get("GroupByClause") or q.get("UniqueRowFilter") == "Distinct":
                     continue
-                self._check_joins(st, q.get("FromClause") or {}, text, st.kind == "update", q)
+                if self._aggregates_only(q):
+                    continue          # SELECT SUM(...) over the join: counting the matches is the point
+                self._check_joins(st, q.get("FromClause") or {}, text, False, q)
             if st.kind in ("update", "merge"):
                 spec = st.node.get("UpdateSpecification") or st.node.get("MergeSpecification") or {}
                 if st.kind == "update":
-                    self._check_joins(st, spec.get("FromClause") or {}, text, True)
+                    target = obj_name((spec.get("Target") or {}).get("SchemaObject"))
+                    self._check_joins(st, spec.get("FromClause") or {}, text, True,
+                                      target=norm(target.name) if target.name else None)
                 else:
                     src = spec.get("TableReference")
                     if typ(src) == "NamedTableReference":
                         self._check_join_side(st, src, spec.get("SearchCondition"), text, True, merge=True)
 
-    def _check_joins(self, st, from_clause, text, update, query=None):
+    @staticmethod
+    def _aggregates_only(q) -> bool:
+        elements = q.get("SelectElements", []) or []
+        if not elements:
+            return False
+        for el in elements:
+            found = False
+            for x in walk(el, stop=lambda y: typ(y) in ("ScalarSubquery", "QueryDerivedTable")):
+                if typ(x) == "FunctionCall" and ((x.get("FunctionName") or {}).get("Value") or "").upper() in \
+                        ("SUM", "COUNT", "COUNT_BIG", "MIN", "MAX", "AVG", "STRING_AGG", "STDEV", "VAR") \
+                        and not x.get("OverClause"):
+                    found = True
+                    break
+            if not found:
+                return False
+        return True
+
+    def _from_aliases(self, st, from_clause) -> Dict[str, object]:
+        """alias -> relation for the tables and table variables named in a FROM clause."""
+        out = {}
+        for t in walk(from_clause, stop=lambda x: typ(x) in ("QueryDerivedTable", "ScalarSubquery", "ExistsPredicate")):
+            if typ(t) == "NamedTableReference":
+                on = obj_name(t.get("SchemaObject"))
+                if on.name:
+                    out[norm(ident(t.get("Alias")) or on.name)] = self.ctx.table_relation(on)
+            elif typ(t) == "VariableTableReference":
+                name = (t.get("Variable") or {}).get("Name") or ""
+                rel = self.ctx.relations.get(f"tvar:{st.namespace}{norm(name)}")
+                if rel is not None:
+                    out[norm(ident(t.get("Alias")) or name)] = rel
+        return out
+
+    def _keys_of(self, rel) -> List[List[str]]:
+        keys = list(self.ctx.keys.get(rel.key, []))
+        if rel.catalog is not None:
+            keys += rel.catalog.keys
+        return keys + [[c] for c in self._sequence_columns().get(rel.key, [])]
+
+    def _sequence_columns(self) -> Dict[str, List[str]]:
+        """Temp-table and table-variable columns only ever filled from NEXT VALUE FOR: unique in practice."""
+        if getattr(self, "_seq_cols", None) is None:
+            seen: Dict[Tuple[str, str], bool] = {}
+            for n in self.ctx.nodes:
+                if n.step is None or n.col in (ROWS, VALUE) or n.op in ("create", "declare", "initial", "local", "drop"):
+                    continue
+                if not n.rel.startswith(("temp:", "tvar:")):
+                    continue
+                ok = bool(re.match(r"\s*NEXT\s+VALUE\s+FOR\b", n.expr or "", re.IGNORECASE))
+                seen[(n.rel, n.col)] = seen.get((n.rel, n.col), True) and ok
+            self._seq_cols = defaultdict(list)
+            for (rel, col), ok in seen.items():
+                if ok:
+                    self._seq_cols[rel].append(col)
+        return self._seq_cols
+
+    def _check_joins(self, st, from_clause, text, update, query=None, target=None):
+        aliases = self._from_aliases(st, from_clause)
         for j in walk(from_clause, stop=lambda x: typ(x) in ("QueryDerivedTable", "ScalarSubquery", "ExistsPredicate")):
             if typ(j) == "QualifiedJoin" and j.get("QualifiedJoinType") in ("Inner", "LeftOuter"):
                 side = j.get("SecondTableReference")
                 if typ(side) == "NamedTableReference":
-                    self._check_join_side(st, side, j.get("SearchCondition"), text, update, query=query)
+                    self._check_join_side(st, side, j.get("SearchCondition"), text, update, query=query,
+                                          aliases=aliases, target=target)
 
-    def _check_join_side(self, st, side, cond, text, update, merge=False, query=None):
+    def _check_join_side(self, st, side, cond, text, update, merge=False, query=None, aliases=None, target=None):
         on = obj_name(side.get("SchemaObject"))
         if not on.name:
             return
         rel = self.ctx.table_relation(on)
-        keys = list(self.ctx.keys.get(rel.key, []))
-        if rel.catalog is not None:
-            keys += rel.catalog.keys
+        keys = self._keys_of(rel)
         if not keys:
             return
         alias = norm(ident(side.get("Alias")) or on.name)
+        if update and target and alias == target:
+            return               # the rows being updated: each is still updated once
         covered = set()
+        other: Dict[str, Set[str]] = defaultdict(set)      # the other side's columns, by alias
         for term in self._and_terms(cond):
+            if typ(term) == "InPredicate" and not term.get("NotDefined") and not term.get("Subquery"):
+                # tb.index_id IN (0, 1): the key column is pinned to the listed values
+                x = unparen(term.get("Expression"))
+                if typ(x) == "ColumnReferenceExpression":
+                    p = parts(x.get("MultiPartIdentifier"))
+                    if (len(p) >= 2 and norm(p[-2]) == alias) or (len(p) == 1 and rel.find(p[0])):
+                        covered.add(norm(p[-1]))
+                continue
             if typ(term) == "BooleanComparisonExpression" and term.get("ComparisonType") == "Equals":
-                for x in (term.get("FirstExpression"), term.get("SecondExpression")):
-                    x = unparen(x)
+                pair = [unparen(term.get("FirstExpression")), unparen(term.get("SecondExpression"))]
+                mine = []
+                for x in pair:
                     if typ(x) == "ColumnReferenceExpression":
                         p = parts(x.get("MultiPartIdentifier"))
                         if (len(p) >= 2 and norm(p[-2]) == alias) or (len(p) == 1 and rel.find(p[0])):
                             covered.add(norm(p[-1]))
+                            mine.append(x)
+                for x in pair:
+                    if x not in mine and mine and typ(x) == "ColumnReferenceExpression":
+                        p = parts(x.get("MultiPartIdentifier"))
+                        if len(p) >= 2:
+                            other[norm(p[-2])].add(norm(p[-1]))
         if any({norm(k) for k in key} <= covered for key in keys):
             return
+        if not update and not merge:
+            # A join from a row's own key to child rows (order -> order lines) is meant to return
+            # one row per child: only a join where the other side repeats too is suspicious.
+            other_keys = [(a, cols, self._keys_of(aliases[a])) for a, cols in other.items()
+                          if aliases and a in aliases]
+            if not other_keys or not all(k for _, _, k in other_keys):
+                return           # the other side's keys are unknown: nothing to show
+            if any(any({norm(c) for c in key} <= cols for key in akeys) for _, cols, akeys in other_keys):
+                return
         if query is not None and not update and not merge:
             # the rest of the key is selected: the query is meant to return one row per child row
             selected = set()
@@ -681,21 +994,70 @@ class Checker:
                  certainty="possible", text_id=st.text_id)
 
     def select_assign_loops(self):
+        by_step: Dict[str, list] = defaultdict(list)
         for n in self.ctx.nodes:
-            if n.op != "select-assign" or not n.keeps_previous or not n.step:
+            if n.op == "select-assign" and n.keeps_previous and n.step:
+                st = self.ctx.step_by_id[n.step]
+                if any(c.branch == "loop" for c in st.conditions):
+                    by_step[st.id].append(n)
+        for sid, assigned in by_step.items():
+            st = self.ctx.step_by_id[sid]
+            # the value from the previous iteration must be able to come round to this SELECT:
+            # a reset (SET @x = NULL) later in the loop body, or before the SELECT, stops it
+            stale = [n for n in assigned if (self.flow["IN"].get(sid, 0) >> self.flow["bit"][n.id]) & 1]
+            if not stale or self._rowcount_checked(sid):
                 continue
-            st = self.ctx.step_by_id[n.step]
-            if any(c.branch == "loop" for c in st.conditions):
-                rel = self.ctx.relations[n.rel]
-                self.add("variable-kept-in-loop", "medium",
-                         f"{rel.name} can keep the previous iteration's value (step {st.label})",
-                         f"SELECT {rel.name} = ... assigns nothing when the query returns no rows, so inside a loop "
-                         f"{rel.name} silently keeps the value from the previous iteration.",
-                         f"Reset {rel.name} to NULL before the SELECT, or use SET {rel.name} = (SELECT ...), which "
-                         f"assigns NULL when there are no rows.",
-                         steps=[st.id], spans=[n.span], columns=[f"{n.rel}|{n.col}"], text_id=st.text_id)
+            names_all = [self.ctx.relations[n.rel].name for n in assigned]
+            # WHILE @id IS NULL BEGIN SELECT @id = ... END repeats only when nothing was assigned
+            loop = [c for c in st.conditions if c.branch == "loop"][-1]
+            if any(re.search(re.escape(a) + r"\b", loop.text, re.IGNORECASE) for a in names_all):
+                continue
+            # WHILE EXISTS (SELECT 1 FROM @queue) BEGIN SELECT TOP 1 @x = ... FROM @queue ... END
+            read = {u.rel for n in assigned for u in n.uses} | {u.rel for u in st.uses}
+            read.discard("")
+            loop_st = self.ctx.step_by_id.get(loop.step)
+            if len(read) == 1 and loop_st is not None and read <= {u.rel for u in loop_st.uses} \
+                    and not (st.node.get("QueryExpression") or {}).get("WhereClause"):
+                continue
+            # SET @id = NULL; SELECT @id = ..., @x = ...; IF @id IS NULL BREAK -- a sentinel guards the rest
+            fresh = [self.ctx.relations[n.rel].name for n in assigned if n not in stale]
+            if fresh and self._tested_next(sid, fresh):
+                continue
+            names = [self.ctx.relations[n.rel].name for n in stale]
+            one = len(names) == 1
+            listed = names[0] if one else ", ".join(names[:-1]) + " and " + names[-1]
+            self.add("variable-kept-in-loop", "medium",
+                     f"{listed} can keep the previous iteration's value{'' if one else 's'} (step {st.label})",
+                     f"SELECT {names[0]} = ... assigns nothing when the query returns no rows, so inside a loop "
+                     f"{'it' if one else 'each of them'} silently keeps the value from the previous iteration.",
+                     f"Reset {'it' if one else 'them'} to NULL before the SELECT, or use SET {names[0]} = (SELECT ...), "
+                     f"which assigns NULL when there are no rows.",
+                     steps=[st.id], spans=[n.span for n in stale], columns=[f"{n.rel}|{n.col}" for n in stale],
+                     text_id=st.text_id)
+
+    def _tested_next(self, sid: str, names: List[str]) -> bool:
+        for nxt in self.succ.get(sid, ()):
+            st = self.ctx.step_by_id.get(nxt)
+            if st is not None and st.kind in ("if", "while"):
+                pred = st.detail.get("predicate") or ""
+                if any(re.search(re.escape(a) + r"\b", pred, re.IGNORECASE) for a in names):
+                    return True
+        return False
+
+    def _rowcount_checked(self, sid: str) -> bool:
+        """IF @@ROWCOUNT = 0 BREAK (or SET @n = @@ROWCOUNT) right after the SELECT handles 'no rows'."""
+        for nxt in self.succ.get(sid, ()):
+            st = self.ctx.step_by_id.get(nxt)
+            if st is None:
+                continue
+            text = (st.detail.get("predicate") or "") if st.kind in ("if", "while") else \
+                (st.detail.get("expression") or "") if st.kind in ("set", "select-assign") else ""
+            if "@@ROWCOUNT" in text.upper() or "ROWCOUNT_BIG()" in text.upper():
+                return True
+        return False
 
     def truncation(self):
+        found: Dict[Tuple[str, str, str, str], list] = {}
         for n in self.ctx.nodes:
             if not n.step or n.op not in ("insert", "update", "merge-update", "merge-insert", "set"):
                 continue
@@ -717,15 +1079,24 @@ class Checker:
                 sc = src.find(u.col) if u.col != VALUE else None
             stype = sc.type if sc else (src.data_type if src is not None and u.col == VALUE else "")
             slen = _length(stype)
-            if slen and slen > tlen:
-                st = self.ctx.step_by_id[n.step]
-                self.add("possible-truncation", "medium",
-                         f"{rel.name}.{n.col} ({ttype}) receives {stype} (step {st.label})",
-                         f"Values longer than {tlen} characters fail with a truncation error (or are cut off when "
-                         f"ANSI_WARNINGS is OFF).",
-                         "Widen the target column, or make the truncation explicit with LEFT() so it is intended.",
-                         steps=[st.id], spans=[n.span], columns=[f"{n.rel}|{n.col}"], certainty="possible",
-                         text_id=st.text_id)
+            # (max) only says the type is unbounded, not that long values occur: compare real lengths
+            if slen and slen > tlen and slen < 10 ** 9:
+                found.setdefault((n.rel, n.col, ttype, stype), []).append(n)
+        for (rk, col, ttype, stype), nodes in found.items():
+            rel = self.ctx.relations[rk]
+            steps = [self.ctx.step_by_id[n.step] for n in nodes]
+            what = rel.name if col == VALUE else f"{rel.name}.{col}"
+            at = "step" + ("s " if len(steps) > 1 else " ") + ", ".join(st.label for st in steps)
+            # a declared table column is a fact about the data; a temp column or variable only a guess
+            from_table = any(self.ctx.relations.get(u.rel) is not None and
+                             self.ctx.relations[u.rel].kind in ("table", "view", "remote", "system")
+                             for n in nodes for u in n.uses if u.direct)
+            self.add("possible-truncation", "medium" if from_table else "low", f"{what} ({ttype}) receives {stype} ({at})",
+                     f"Values longer than {_length(ttype)} characters fail with a truncation error (or are cut off "
+                     f"when ANSI_WARNINGS is OFF).",
+                     "Widen the target column, or make the truncation explicit with LEFT() so it is intended.",
+                     steps=[st.id for st in steps], spans=[n.span for n in nodes], columns=[f"{rk}|{col}"],
+                     certainty="possible", text_id=steps[0].text_id)
 
     def unreachable(self):
         dead = [st for st in self.ctx.steps if st.id not in self.flow["reachable"]
@@ -757,11 +1128,15 @@ class Checker:
                      "cached plan can be slow for them (parameter sniffing).",
                      "Only if performance varies between calls: consider OPTION (RECOMPILE) or OPTIMIZE FOR on the "
                      "affected statements.", steps=steps, certainty="possible")
-        for st in recompile:
-            self.add("option-recompile", "info", f"OPTION (RECOMPILE) at step {st.label}",
-                     "The statement is compiled on every run: good for very different parameter values, costly when "
-                     "called very often.", "No action needed unless the procedure runs many times a second.",
-                     steps=[st.id], spans=[st.span])
+        if recompile:
+            n = len(recompile)
+            at = (f"step {recompile[0].label}" if n == 1 else
+                  f"{n} statements (steps {', '.join(st.label for st in recompile[:5])}{', …' if n > 5 else ''})")
+            self.add("option-recompile", "info", f"OPTION (RECOMPILE) on {at}",
+                     "Each such statement is compiled on every run: good for very different parameter values, costly "
+                     "when the procedure is called very often.",
+                     "No action needed unless the procedure runs many times a second.",
+                     steps=[st.id for st in recompile], spans=[st.span for st in recompile[:5]])
 
     def divide_by_zero(self):
         for st in self.ctx.steps:

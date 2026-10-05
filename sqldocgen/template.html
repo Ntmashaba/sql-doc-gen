@@ -1249,7 +1249,14 @@ function defaultTraceKey() {
   const width = {};
   pool.forEach(o => width[o.rel] = (width[o.rel] || 0) + 1);
   const main = Object.keys(width).sort((a, b) => width[b] - width[a] || relName(a).localeCompare(relName(b)))[0];
-  return pool.filter(o => o.rel === main).sort((a, b) => b.steps.length - a.steps.length)[0].key;
+  const cols = pool.filter(o => o.rel === main);
+  // open on the column the most serious finding is about, when the main table has one by that name
+  for (const i of DATA.issues.filter(x => x.severity === "high" || x.severity === "medium")) {
+    const names = (i.columns || []).map(c => c.split("|")[1]).filter(Boolean).map(c => c.toLowerCase());
+    const hit = cols.find(o => names.includes(o.col.toLowerCase()));
+    if (hit) return hit.key;
+  }
+  return cols.sort((a, b) => b.steps.length - a.steps.length)[0].key;
 }
 function pickList() {
   const order = r => { const k = (REL[r] || {}).kind; return ["table", "view", "remote", "global-temp", "temp", "dynamic"].includes(k) ? 0 : k === "result" ? 1 : 2; };

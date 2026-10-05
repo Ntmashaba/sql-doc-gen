@@ -11,10 +11,10 @@ its path is. The page's JavaScript runs the same walk; tests keep the two in ste
 from __future__ import annotations
 
 from collections import deque
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from .engine import Ctx
-from .model import ROWS, VALUE
+from .model import ROWS
 
 OUTPUT_KINDS = {"table", "view", "remote", "global-temp", "function"}
 
@@ -72,7 +72,6 @@ def backward(ctx: Ctx, starts: List[int], indirect: bool = True, limit: int = 20
     for s in starts:
         seen[s] = {"direct": True, "depth": 0, "role": "start"}
         q.append(s)
-    cond_cache: Dict[str, List] = {}
 
     def visit(nid: int, direct: bool, depth: int, role: str):
         if ctx.nodes[nid].op == "create":

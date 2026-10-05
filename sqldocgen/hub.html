@@ -61,6 +61,7 @@ const DOCS = /*__DOCS__*/[];
 const BATCH = /*__BATCH__*/null;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const pl = (n, w, p) => `${(n || 0).toLocaleString()} ${n === 1 ? w : (p || w + "s")}`;
 let VIEW = "procs", Q = "";
 const MODE = {procedure: ["b-info", "procedure only"], schema: ["b-ok", "with schema"], project: ["b-ok", "project"]};
 function hay(d) { return [d.title, d.file, d.database, d.schema, d.what, ...Object.values(d.details || {}), ...(d.objects || []).map(o => o.name), ...(d.calls || [])].join(" ").toLowerCase(); }
@@ -71,10 +72,10 @@ function card(d) {
   return `<div class="card"><h2><a href="${d.href}">${esc(d.title)}</a></h2>
     ${who ? `<div>${esc(who)}</div>` : `<div class="mut">No owner recorded</div>`}
     <p class="what">${md(d.what || "")}</p>
-    <div class="stats"><span>${c.statements} statements</span><span>${c.inputs} inputs</span><span>${c.outputs} outputs</span><span>${c.temp} temp objects</span>${c.dynamic ? `<span>${c.dynamic} dynamic SQL</span>` : ""}</div>
+    <div class="stats"><span>${pl(c.statements, "statement")}</span><span>${pl(c.inputs, "input")}</span><span>${pl(c.outputs, "output")}</span><span>${pl(c.temp, "temp object")}</span>${c.dynamic ? `<span>${c.dynamic} dynamic SQL</span>` : ""}</div>
     <span class="badge ${m[0]}">${esc(m[1])}</span>
     ${i.high ? `<span class="badge b-bad">${i.high} high</span>` : ""}${i.medium ? `<span class="badge b-warn">${i.medium} medium</span>` : ""}${i.low ? `<span class="badge b-info">${i.low} low</span>` : ""}
-    ${d.unresolved ? `<span class="badge b-warn">${d.unresolved} unresolved columns</span>` : ""}
+    ${d.unresolved ? `<span class="badge b-warn">${pl(d.unresolved, "unresolved column")}</span>` : ""}
     <p class="mut" style="margin:.5rem 0 0">${esc(d.source || d.file)} · generated ${esc(d.generated)}</p>
     ${det.runbook ? `<p class="mut" style="margin:.2rem 0 0">Runbook: ${esc(det.runbook)}</p>` : ""}</div>`;
 }

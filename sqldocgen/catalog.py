@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from .model import CatalogObject, Column
-from .syntax import Text, data_type_text, ident, obj_name, parts, typ, walk
+from .syntax import Text, data_type_text, ident, obj_name, parts, typ
 
 TABLE_STATEMENTS = ("CreateTableStatement",)
 VIEW_STATEMENTS = ("CreateViewStatement", "CreateOrAlterViewStatement", "AlterViewStatement")
@@ -38,10 +38,14 @@ class Catalog:
     # ------------------------------------------------------------------ building
     def add(self, obj: CatalogObject) -> CatalogObject:
         key = _k(obj.schema or "dbo", obj.name)
-        existing = [o for o in self._by_name.get(key, []) if o.database.lower() == obj.database.lower()]
+        # an object named without a database is the same as one in the database the inputs describe
+        # (a DACPAC lists a view with its database; its CREATE VIEW script names none)
+        existing = [o for o in self._by_name.get(key, [])
+                    if not o.database or not obj.database or o.database.lower() == obj.database.lower()]
         for o in existing:
             if o.kind == obj.kind or {o.kind, obj.kind} <= {"table", "view"}:
                 # a later definition of the same object (ALTER, a second script) replaces the earlier
+                o.database = o.database or obj.database
                 if obj.columns or not o.columns:
                     o.columns = obj.columns or o.columns
                 o.keys = obj.keys or o.keys
@@ -251,7 +255,9 @@ def _rel(el, name):
 
 
 def _type_spec(el) -> str:
-    rel = _rel(el, "TypeSpecifier") or _rel(el, "Type")
+    rel = _rel(el, "TypeSpecifier")
+    if rel is None:                  # (an Element with no children is falsy: test against None)
+        rel = _rel(el, "Type")
     if rel is None:
         return ""
     spec = rel.find(f"{_NS}Entry/{_NS}Element")
@@ -260,6 +266,8 @@ def _type_spec(el) -> str:
         return ".".join(_split_name(ref.get("Name"))) if ref is not None else ""
     tref = spec.find(f"{_NS}Relationship[@Name='Type']/{_NS}Entry/{_NS}References")
     base = ".".join(_split_name(tref.get("Name"))) if tref is not None else ""
+    if base.lower().startswith("sys."):
+        base = base[4:]                      # [sys].[sysname] -> sysname
     if _prop(spec, "IsMax") == "True":
         return f"{base}(max)"
     length, prec, scale = _prop(spec, "Length"), _prop(spec, "Precision"), _prop(spec, "Scale")
@@ -292,7 +300,12 @@ def load_dacpac(path: Path, catalog: Catalog) -> List[Tuple[str, str, str]]:
     root_model = model.find(f"{_NS}Model")
     if root_model is None:
         return scripts
-    for el in root_model.findall(f"{_NS}Element"):
+    elements = root_model.findall(f"{_NS}Element")
+    # model.xml lists elements sorted by type, so primary keys (SqlPrimaryKeyConstraint) come
+    # before the tables they belong to: read tables first
+    order = {"SqlTable": 0, "SqlView": 0, "SqlTableType": 0}
+    elements.sort(key=lambda el: order.get(el.get("Type"), 1))
+    for el in elements:
         etype, name = el.get("Type"), el.get("Name")
         np = _split_name(name)
         if etype in ("SqlTable", "SqlView", "SqlTableType") and len(np) >= 2:

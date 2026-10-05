@@ -11,3 +11,4 @@ documentation/
 tests/.public/
 tests/out/
 *.docx
+.public-sql/

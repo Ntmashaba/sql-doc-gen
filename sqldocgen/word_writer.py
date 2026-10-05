@@ -156,14 +156,14 @@ def build_document(payload: dict) -> str:
     if ins:
         a(table(["Object", "Kind", "Columns used", "Read at steps"],
                 [[r["name"], r["kind"], ", ".join(k for k in (r.get("colReads") or {}) if k != "value")[:400],
-                  " ".join(v.label(s) for s in r["reads"][:30])] for r in ins], [0.3, 0.15, 0.35, 0.2]))
+                  _steps(v, r["reads"])] for r in ins], [0.3, 0.15, 0.35, 0.2]))
     else:
         a(para(run("Reads no tables.", italic=True)))
     a(heading("Outputs", 1))
     outs = [r for r in payload["relations"] if r["role"] in ("output", "both")]
     if outs:
         a(table(["Output", "Kind", "How", "Written at steps"],
-                [[r["name"], r["kind"], ", ".join(r["ops"]) or "", " ".join(v.label(s) for s in r["writes"][:30])]
+                [[r["name"], r["kind"], ", ".join(r["ops"]) or "", _steps(v, r["writes"])]
                  for r in outs], [0.35, 0.15, 0.25, 0.25]))
     mids = [r for r in payload["relations"] if r["role"] == "intermediate" and r["kind"] != "variable"]
     if mids:
@@ -176,7 +176,7 @@ def build_document(payload: dict) -> str:
                "conditions those steps depend on, and how completely it could be traced.", color=MUTED)))
     a(table(["Column", "Status", "Computed from", "Steps", "Conditions"],
             [[v.col_name(o["rel"], o["col"]), o["status"], ", ".join(v.col_name(r, c) for r, c in o["direct"]) or "constants / row counts",
-              " ".join(v.label(s) for s in o["steps"]), "; ".join(("NOT " if c["branch"] == "else" else "") + c["text"] for c in o["conditions"])]
+              _steps(v, o["steps"]), "; ".join(("NOT " if c["branch"] == "else" else "") + c["text"] for c in o["conditions"])]
              for o in payload["outputs"] if o["col"] != ROWS], [0.25, 0.1, 0.3, 0.15, 0.2]))
     a(heading("Review issues", 1))
     if payload["issues"]:
@@ -185,7 +185,7 @@ def build_document(payload: dict) -> str:
             a(para(run(i["why"])))
             a(para(run("Next step: ", bold=True) + run(i["next"])))
             if i["steps"]:
-                a(para(run("Steps: " + ", ".join(v.label(s) for s in i["steps"][:20]), color=MUTED, size=9)))
+                a(para(run("Steps: " + _steps(v, i["steps"], 20), color=MUTED, size=9)))
     else:
         a(para(run("No findings.", italic=True)))
     a(heading("Steps", 1))
@@ -203,6 +203,14 @@ def build_document(payload: dict) -> str:
             '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
             'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             f"<w:body>{''.join(b)}{sect}</w:body></w:document>")
+
+
+def _steps(v, ids, limit: int = 12) -> str:
+    """'35 38 42 … (24 steps)': long step lists stay readable in a table cell."""
+    labels = [v.label(x) for x in ids]
+    if len(labels) <= limit:
+        return " ".join(labels)
+    return " ".join(labels[:limit - 2]) + f" … {labels[-1]} ({len(labels)} steps)"
 
 
 def write_docx(payload: dict, path: Path) -> Path:

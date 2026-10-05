@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import Dict, List, Set, Tuple
 
 from .engine import Ctx
-from .model import ROWS, VALUE, ColNode, Use
+from .model import ROWS, VALUE
 from .program import ENTRY, EXIT, reverse_postorder
 
 # relation kinds whose contents exist before the procedure runs

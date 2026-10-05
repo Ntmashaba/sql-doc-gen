@@ -13,7 +13,7 @@ from .model import ROWS, Step
 
 OPS = {"insert": "INSERT", "update": "UPDATE", "merge-update": "MERGE", "merge-insert": "MERGE", "merge-delete": "MERGE",
        "delete": "DELETE", "truncate": "TRUNCATE", "select-into": "SELECT INTO", "output-into": "OUTPUT INTO",
-       "create": "CREATE", "default": "ALTER"}
+       "create": "CREATE", "alter-add": "ALTER"}       # "default" (columns an INSERT leaves out) is part of the INSERT
 
 
 def q(name: str) -> str:
@@ -132,6 +132,13 @@ def summarize(ctx: Ctx, st: Step, dynamic: Dict[str, dict]) -> str:
     if k in ("close-cursor", "deallocate-cursor"):
         return ("Closes" if k == "close-cursor" else "Releases") + " the cursor."
     if k == "set":
+        op = d.get("operator")
+        if op == "+=" and d.get("text_variable"):
+            return f"Appends {d.get('expression', '')} to {q(d.get('variable', ''))}."
+        if op == "+=":
+            return f"Adds {d.get('expression', '')} to {q(d.get('variable', ''))}."
+        if op:
+            return f"Sets {q(d.get('variable', ''))} {op} {d.get('expression', '')}."
         return f"Sets {q(d.get('variable', ''))} = {d.get('expression', '')}."
     if k == "if":
         return f"If {d.get('predicate', '')}"

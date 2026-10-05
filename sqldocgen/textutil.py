@@ -143,10 +143,12 @@ _KV_SECRET = re.compile(
     r"(?P<key>\b(?:password|pwd|passwd|secret|accountkey|account\s+key|sharedaccesskey|"
     r"shared\s+access\s+key|sig|client_secret|api[_-]?key|token)\s*=\s*)(?P<val>[^;'\"\s][^;'\"]*)",
     re.IGNORECASE)
-_STATEMENT_SECRET = re.compile(
-    r"(?P<lead>\b(?:PASSWORD|SECRET|DECRYPTION\s+BY\s+PASSWORD|ENCRYPTION\s+BY\s+PASSWORD)\s*=\s*N?)"
+_STATEMENT_SECRET = re.compile(        # PASSWORD = '...', OLD_PASSWORD = '...', SECRET = '...'
+    r"(?P<lead>(?:\b|(?<=_))(?:PASSWORD|SECRET)\s*=\s*N?)"
     r"(?P<lit>'(?:[^']|'')*')",
     re.IGNORECASE)
+# PASSWORD = 0x0200A1... HASHED (scripted logins): the hash is a secret too
+_HASHED_SECRET = re.compile(r"(?P<lead>\bPASSWORD\s*=\s*0x)(?P<hex>[0-9A-F]+)", re.IGNORECASE)
 _PROC_SECRET = re.compile(
     r"(?P<lead>@(?:rmtpassword|password|new_password|passwd|secret)\s*=\s*N?)(?P<lit>'(?:[^']|'')*')",
     re.IGNORECASE)
@@ -158,6 +160,7 @@ _POSITIONAL_PROCS = {
     "sp_change_users_login": None,
 }
 _BEARER = re.compile(r"(?P<lead>\bBearer\s+)(?P<val>[A-Za-z0-9._~+/=-]{12,})", re.IGNORECASE)
+_COMMENT_HINT = re.compile(r"pass|pwd|secret|key|sig|token|bearer|sp_add", re.IGNORECASE)
 
 
 def _mask(chars: list, start: int, end: int) -> bool:
@@ -169,38 +172,47 @@ def _mask(chars: list, start: int, end: int) -> bool:
     return changed
 
 
-def mask_secrets(text: str) -> Tuple[str, int]:
+def mask_secrets(text: str, _depth: int = 0) -> Tuple[str, int]:
     """Mask passwords, keys and tokens found in the text. Returns (masked text, count).
 
     Only the secret value is masked (same length, '*'), so names, structure and every
     position are kept. Connection-string pairs are looked for inside string literals;
     statement options such as ``PASSWORD = '...'`` and procedure arguments such as
-    ``@rmtpassword = '...'`` anywhere outside comments.
+    ``@rmtpassword = '...'`` anywhere outside comments, and all of these again inside
+    string literals that hold dynamic SQL (where the inner quotes are doubled).
     """
     chars = list(text)
     count = 0
-    literals = [(s, e) for kind, s, e in scan_tokens(text) if kind == "string"]
-    for s, e in literals:
-        lit = text[s:e]
-        for m in _KV_SECRET.finditer(lit):
-            if _mask(chars, s + m.start("val"), s + m.end("val")):
-                count += 1
-        for m in _BEARER.finditer(lit):
-            if _mask(chars, s + m.start("val"), s + m.end("val")):
-                count += 1
-    comment_spans = [(s, e) for kind, s, e in scan_tokens(text) if kind == "comment"]
+    tokens = list(scan_tokens(text))
+    literals = [(s, e) for kind, s, e in tokens if kind == "string"]
+    comment_spans = [(s, e) for kind, s, e in tokens if kind == "comment"]
+
+    def value_span(s: int, e: int) -> Tuple[int, int]:
+        # the characters between the quotes of the literal text[s:e] (N'...' or '...')
+        start = s + (2 if text[s] in "Nn" else 1)
+        return start, (e - 1 if e - 1 >= start and text[e - 1] == "'" else e)
+
+    def inside(spans, pos: int) -> bool:
+        k = bisect.bisect_right(spans, (pos, 10 ** 12)) - 1
+        return k >= 0 and spans[k][0] <= pos < spans[k][1]
 
     def in_comment(pos: int) -> bool:
-        k = bisect.bisect_right(comment_spans, (pos, 10 ** 12)) - 1
-        return k >= 0 and comment_spans[k][0] <= pos < comment_spans[k][1]
+        # also skips matches that start inside a string literal: dynamic SQL is handled below,
+        # on the literal's own value, where its doubled quotes are single again
+        return inside(comment_spans, pos) or inside(literals, pos)
 
     for rx in (_STATEMENT_SECRET, _PROC_SECRET):
         for m in rx.finditer(text):
             if in_comment(m.start()):
                 continue
-            lit_s, lit_e = m.start("lit"), m.end("lit")
-            if _mask(chars, lit_s + 1, lit_e - 1):
+            if _mask(chars, *value_span(m.start("lit"), m.end("lit"))):
                 count += 1
+    for m in _HASHED_SECRET.finditer(text):
+        if in_comment(m.start()) or set(m.group("hex")) <= {"0"}:
+            continue
+        for k in range(m.start("hex"), m.end("hex")):
+            chars[k] = "0"          # zeros keep a valid binary literal, so the statement still parses
+        count += 1
     # positional password arguments: EXEC sp_addlinkedsrvlogin 'srv', 'false', NULL, 'user', 'pw'
     for name, position in _POSITIONAL_PROCS.items():
         if position is None:
@@ -213,7 +225,10 @@ def mask_secrets(text: str) -> Tuple[str, int]:
             seq, prev = [], m.end()
             for s, e in args:
                 gap = text[prev:s]
-                if not re.fullmatch(r"[\s,]*(?:(?:NULL|@\w+\s*=\s*N?|N)\s*,?\s*)*", gap, re.IGNORECASE):
+                if re.search(r"@\w+\s*=", gap):
+                    seq = []            # named arguments: @rmtpassword = '...' is matched above
+                    break
+                if not re.fullmatch(r"[\s,]*(?:NULL\s*,?\s*)*", gap, re.IGNORECASE):
                     break
                 seq.append((s, e, gap))
                 prev = e
@@ -225,9 +240,69 @@ def mask_secrets(text: str) -> Tuple[str, int]:
                     hit = (s, e)
                     break
                 pos_idx += 1
-            if hit and _mask(chars, hit[0] + 1, hit[1] - 1):
+            if hit and _mask(chars, *value_span(*hit)):
                 count += 1
+    # connection strings and tokens inside literals (after the passes above, so a value they
+    # already masked is not counted twice)
+    for s, e in literals:
+        lit = text[s:e]
+        for m in _KV_SECRET.finditer(lit):
+            if _mask(chars, s + m.start("val"), s + m.end("val")):
+                count += 1
+        for m in _BEARER.finditer(lit):
+            if _mask(chars, s + m.start("val"), s + m.end("val")):
+                count += 1
+    # Dynamic SQL: a literal that is itself SQL holds literals of its own, with doubled
+    # quotes. Mask its value the same way and copy the result back character by character.
+    if _depth < 2:
+        cur = "".join(chars)
+        # a commented-out statement is still a leaked password: read comment text as SQL too,
+        # and look for key=value pairs anywhere in it
+        for kind, s, e in tokens:
+            if kind != "comment":
+                continue
+            body_s = s + 2
+            body_e = e - 2 if (cur.startswith("/*", s) and e - s >= 4 and cur.startswith("*/", e - 2)) else e
+            body = cur[body_s:body_e]
+            if not _COMMENT_HINT.search(body):
+                continue
+            inner, n = mask_secrets(body, _depth + 1)
+            masked = list(inner)
+            for m in _KV_SECRET.finditer(inner):
+                if _mask(masked, m.start("val"), m.end("val")):
+                    n += 1
+            for k, ch in enumerate(masked):
+                if ch != body[k] and chars[body_s + k] not in "\r\n":
+                    chars[body_s + k] = ch
+            count += n
+        for s, e in literals:
+            content, offs = _literal_content(cur, s, e)
+            if "'" not in content:
+                continue
+            inner, n = mask_secrets(content, _depth + 1)
+            if not n:
+                continue
+            for k, ch in enumerate(inner):
+                if ch != content[k]:
+                    width = 2 if content[k] == "'" else 1      # an escaped quote is two characters
+                    for q in range(offs[k], min(offs[k] + width, len(chars))):
+                        if chars[q] not in "\r\n":
+                            chars[q] = ch
+            count += n
     return "".join(chars), count
+
+
+def _literal_content(text: str, s: int, e: int) -> Tuple[str, List[int]]:
+    """The value of the string literal text[s:e] (doubled quotes collapsed) and the offset
+    of each of its characters in text."""
+    i = s + (2 if text[s] in "Nn" else 1)
+    end = e - 1 if e - 1 >= i and text[e - 1] == "'" else e
+    chars, offs = [], []
+    while i < end:
+        chars.append(text[i])
+        offs.append(i)
+        i += 2 if (text[i] == "'" and i + 1 < end and text[i + 1] == "'") else 1
+    return "".join(chars), offs
 
 
 def scrub_text(value: str) -> Tuple[str, int]:

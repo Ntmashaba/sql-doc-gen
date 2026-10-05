@@ -10,11 +10,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from .catalog import Catalog
-from .model import ROWS, VALUE, CatalogObject, ColNode, Column, Relation, Step, Use
-from .syntax import Text, data_type_text, ident, literal_value, obj_name, parts, typ, unparen, walk
+from .model import ROWS, VALUE, ColNode, Column, Relation, Step, Use
+from .syntax import ObjName, Text, data_type_text, ident, obj_name, parts, typ, unparen, walk
 
 LITERALS = {"IntegerLiteral", "StringLiteral", "NumericLiteral", "RealLiteral", "MoneyLiteral", "BinaryLiteral",
             "NullLiteral", "DefaultLiteral", "MaxLiteral", "OdbcLiteral", "IdentifierLiteral"}
@@ -43,6 +43,15 @@ SYSTEM_SCHEMAS = {"sys", "information_schema"}
 
 _SYSTEM_PREFIX = re.compile(r"^(sys|dm_|fn_)", re.I)
 _PLACEHOLDER = re.compile(r"__sqldocgen_\d+__", re.I)
+
+
+def ns_label(namespace: str) -> str:
+    """'dyn@5/' -> 'dynamic SQL at step 5'; 'dbo.usp_X@4/' -> 'in dbo.usp_X, called at step 4'."""
+    last = namespace.rstrip("/").split("/")[-1]
+    what, _, at = last.rpartition("@")
+    if what == "dyn":
+        return f"dynamic SQL at step {at}"
+    return f"in {what}, called at step {at}" if what else last
 
 
 def norm(s: str) -> str:
@@ -200,7 +209,7 @@ class Ctx:
         key = self.var_key(name, namespace)
         rel = self.relations.get(key)
         if rel is None:
-            label = name if not namespace else f"{name} ({namespace.rstrip('/')})"
+            label = name if not namespace else f"{name} ({ns_label(namespace)})"
             rel = self.relation(key, kind, label, columns=[Column(VALUE, data_type)], complete=True,
                                 data_type=data_type)
         elif data_type and not rel.data_type:
@@ -210,18 +219,30 @@ class Ctx:
 
     def table_variable(self, name: str, namespace: str = "") -> Relation:
         key = f"tvar:{namespace}{norm(name)}"
-        label = name if not namespace else f"{name} ({namespace.rstrip('/')})"
+        label = name if not namespace else f"{name} ({ns_label(namespace)})"
         return self.relation(key, "table-variable", label)
 
     def table_relation(self, on, step: Optional[Step] = None) -> Relation:
         """The relation for a table name as written (temp table, permanent, remote, system...)."""
         server, database, schema, name = on
-        token = _PLACEHOLDER.search(".".join(p for p in on if p))
+        token = _PLACEHOLDER.search(".".join(p for p in (schema, name) if p))
         if token:
             label = self.placeholders.get(token.group(0), "a value known only at run time")
             key = f"dynamic:{norm(token.group(0))}"
             return self.relation(key, "dynamic", f"(object named by {label})",
                                  note="the name is built at run time from " + label)
+        where = _PLACEHOLDER.search(".".join(p for p in (server, database) if p))
+        if where:
+            # [<database chosen at run time>].sys.indexes: the object is known, its database is not
+            label = self.placeholders.get(where.group(0), "a value known only at run time")
+            if server and _PLACEHOLDER.search(server):
+                server = ""
+            if _PLACEHOLDER.search(database or ""):
+                database = ""
+            rel = self.table_relation(ObjName(server, database, schema, name), step)
+            if not rel.note:
+                rel.note = f"in the database named by {label}"
+            return rel
         if name.startswith("##"):
             return self.relation(f"temp:{norm(name)}", "global-temp", name)
         if name.startswith("#"):

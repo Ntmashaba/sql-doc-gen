@@ -144,10 +144,11 @@ def document(args: argparse.Namespace) -> int:
          f"{len(units)} procedure(s) to document")
     details = None
     if args.details:
+        from .details import validate_details
         try:
-            details = json.loads(Path(args.details).read_text(encoding="utf-8-sig"))
+            details = validate_details(json.loads(Path(args.details).read_text(encoding="utf-8-sig")))
         except (OSError, ValueError) as exc:
-            _log(f"Could not read --details: {exc}")
+            _log(f"Could not use --details: {exc}")
             return 2
 
     def inner_parse(items):

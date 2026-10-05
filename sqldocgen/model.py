@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 ROWS = "(rows)"      # pseudo-column: the set of rows in a relation
 VALUE = "value"      # the single column of a scalar variable

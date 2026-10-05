@@ -17,10 +17,10 @@ from .checks import Checker
 from .describe import overview, summarize
 from .engine import Ctx
 from .metrics import complexity
-from .model import ROWS, VALUE, Issue, Use
+from .model import ROWS, Use
 from .program import ENTRY, EXIT
 from .syntax import Text
-from .textutil import extract_comments, scrub_text
+from .textutil import extract_comments
 from .trace import backward, base_sources, column_status, output_columns, output_relations
 
 INPUT_KINDS = {"table", "view", "function", "system", "remote", "file", "table-parameter", "dynamic"}

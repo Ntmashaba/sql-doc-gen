@@ -11,7 +11,7 @@ CATCH block (any of them may fail).
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
 from .model import Condition, Scope, Step
@@ -58,12 +58,21 @@ def exec_spec_of(node) -> dict:
     return {}
 
 
+def executes_sql_through_variable(ent) -> bool:
+    """EXEC @proc @stmt = ... where @proc holds N'[db].sys.sp_executesql' (running SQL in another database)."""
+    pv = (ent.get("ProcedureReference") or {}).get("ProcedureVariable")
+    if pv is None:
+        return False
+    named = {((p.get("Variable") or {}).get("Name") or "").lower() for p in ent.get("Parameters", []) or []}
+    return "sp_executesql" in (pv.get("Name") or "").lower() or "@stmt" in named
+
+
 def is_dynamic_exec(node) -> bool:
     ent = exec_spec_of(node).get("ExecutableEntity") or {}
     if typ(ent) == "ExecutableStringList":
         return True
     name = parts(((ent.get("ProcedureReference") or {}).get("ProcedureReference") or {}).get("Name"))
-    return bool(name) and name[-1].lower() == "sp_executesql"
+    return (bool(name) and name[-1].lower() == "sp_executesql") or executes_sql_through_variable(ent)
 
 
 def step_kind(node) -> str:
@@ -304,9 +313,10 @@ class ProgramBuilder:
             self.labels[(env.namespace, name)] = step.id
             return Fragment(step.id, {step.id})
         if t == "ThrowStatement":
-            # a THROW always ends the batch, or jumps to the CATCH block (edge added by the TRY)
+            # a THROW jumps to the innermost CATCH (edge added by the TRY, also across calls and dynamic
+            # SQL, whose errors reach the caller); with no TRY around it, it ends the whole batch
             if not env.in_try:
-                self.edge(step.id, env.return_to if env.prefix else EXIT)
+                self.edge(step.id, EXIT)
             return Fragment(step.id, ())
 
         if kind in ("exec", "exec-dynamic", "insert-exec") and self.expand:

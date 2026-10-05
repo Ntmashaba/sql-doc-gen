@@ -11,8 +11,9 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Tuple
 
 from .catalog import table_definition_columns
-from .engine import Analyzer, OutCol, QueryOut, QueryScope, Source, norm
+from .engine import Analyzer, OutCol, QueryOut, QueryScope, Source, norm, ns_label
 from .model import ROWS, VALUE, Column, Relation, Use
+from .program import executes_sql_through_variable
 from .syntax import data_type_text, ident, literal_value, obj_name, parts, typ, walk
 
 AGG_PREFIX = "aggregate"
@@ -157,8 +158,13 @@ class StatementAnalyzer(Analyzer):
                 uses = list(c.uses)
                 if c.assign_kind != "Equals":
                     uses.append(Use(rel=rel.key, col=VALUE, role="value", direct=True, text=c.assign_var))
+                expr_ast = (c.node or {}).get("Expression")
+                if c.assign_kind != "Equals":
+                    # SELECT @sql += N'...' rebuilds like SET @sql = @sql + N'...'
+                    expr_ast = self._compound_ast({"AssignmentKind": c.assign_kind, "@": (c.node or {}).get("@"),
+                                                   "Expression": expr_ast}, c.assign_var)
                 self.write(rel, VALUE, "select-assign", uses, c.expr, c.span, keeps=keeps, kills=not keeps,
-                           transforms=c.transforms, ast=(c.node or {}).get("Expression"),
+                           transforms=c.transforms, ast=expr_ast,
                            note="keeps its earlier value when the query returns no rows; the last row read wins"
                            if keeps else "")
             self.add_row_uses(out.row_uses)
@@ -168,7 +174,7 @@ class StatementAnalyzer(Analyzer):
         self.ctx.results += 1
         n = self.ctx.results
         key = f"result:{self.ns}{n}"
-        rel = self.ctx.relation(key, "result", f"Result set {n}" + (f" ({self.ns.rstrip('/')})" if self.ns else ""))
+        rel = self.ctx.relation(key, "result", f"Result set {n}" + (f" ({ns_label(self.ns)})" if self.ns else ""))
         seen: Dict[str, int] = {}
         for i, c in enumerate(out.cols):
             if c.star is not None:
@@ -678,7 +684,7 @@ class StatementAnalyzer(Analyzer):
         for c in cols:
             if not rel.find(c.name):
                 rel.columns.append(c)
-            self.write(rel, c.name, "default", [], c.default or "NULL", None, transforms=["new column"],
+            self.write(rel, c.name, "alter-add", [], c.default or "NULL", None, transforms=["new column"],
                        note="column added: existing rows get its default")
         if keys:
             self.ctx.keys.setdefault(rel.key, []).extend(keys)
@@ -750,6 +756,11 @@ class StatementAnalyzer(Analyzer):
                    transforms=tf, ast=node.get("Expression") if kind == "Equals" else self._compound_ast(node, var))
         self.step.detail["variable"] = var
         self.step.detail["expression"] = self.sq(node.get("Expression"), 140)
+        if kind != "Equals":
+            self.step.detail["operator"] = tf[-1]
+            dt = (rel.data_type or "").lower()
+            self.step.detail["text_variable"] = dt.startswith(("char", "varchar", "nchar", "nvarchar", "text", "ntext",
+                                                               "sysname"))
 
     @staticmethod
     def _compound_ast(node, var):
@@ -843,7 +854,7 @@ class StatementAnalyzer(Analyzer):
     def h_ReturnStatement(self, node):
         if node.get("Expression") is not None:
             rel = self.ctx.relation(f"return:{self.ns}", "return",
-                                    "Return value" + (f" ({self.ns.rstrip('/')})" if self.ns else ""),
+                                    "Return value" + (f" ({ns_label(self.ns)})" if self.ns else ""),
                                     columns=[Column(VALUE, "int")], complete=True)
             tf: List[str] = []
             uses = self.expr(node.get("Expression"), None, "value", True, None, tf)
@@ -943,16 +954,19 @@ class StatementAnalyzer(Analyzer):
         pref = ent.get("ProcedureReference") or {}
         pr = pref.get("ProcedureReference") or {}
         on = obj_name(pr.get("Name")) if pr.get("Name") else None
+        via_variable = executes_sql_through_variable(ent)
         if on is None:
             pv = (pref.get("ProcedureVariable") or {}).get("Name") or "@procedure"
             self.step.uses.append(self.var_use(pv, "dynamic", False))
-            self.ctx.calls.append({"step": self.step.id, "kind": "procedure", "name": pv, "dynamicName": True,
-                                   "supplied": False})
-            d["callee"] = pv
-            return pv
-        name = on.display
+            if not via_variable:
+                self.ctx.calls.append({"step": self.step.id, "kind": "procedure", "name": pv, "dynamicName": True,
+                                       "supplied": False})
+                d["callee"] = pv
+                return pv
+            d["via"] = pv                 # e.g. @db_sp_executesql = QUOTENAME(@db) + N'.sys.sp_executesql'
+        name = on.display if on is not None else "sp_executesql"
         params = ent.get("Parameters", []) or []
-        if on.name.lower() == "sp_executesql":
+        if via_variable or on.name.lower() == "sp_executesql":
             stmt = params[0].get("ParameterValue") if params else None
             uses = self.expr(stmt, None, "dynamic", False, []) if stmt is not None else []
             self.step.uses.extend(uses)

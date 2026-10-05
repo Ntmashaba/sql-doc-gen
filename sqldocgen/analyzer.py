@@ -16,10 +16,10 @@ from . import dataflow
 from .catalog import PROCEDURE_STATEMENTS, Catalog, _params
 from .dynamic import parse_param_definitions, rebuild
 from .engine import Ctx, norm
-from .model import Column, Relation
-from .program import ProgramBuilder, exec_spec_of, is_dynamic_exec, step_kind
+from .model import Column
+from .program import ProgramBuilder, exec_spec_of, is_dynamic_exec
 from .statements import StatementAnalyzer
-from .syntax import Text, ident, obj_name, parts, typ, walk
+from .syntax import Text, ident, obj_name, typ, walk
 
 DDL_ONLY = {"CreateTableStatement", "CreateViewStatement", "CreateOrAlterViewStatement", "AlterViewStatement",
             "CreateFunctionStatement", "CreateOrAlterFunctionStatement", "AlterFunctionStatement",
@@ -222,38 +222,47 @@ def _analyze(unit: Unit, catalog: Catalog, parse_fn: Optional[ParseFn], project:
     dyn_steps = [s for s in ctx.steps if s.kind == "exec-dynamic" or (s.kind == "insert-exec" and is_dynamic_exec(s.node))]
     if dyn_steps:
         requests = []
+        registry: Dict[str, str] = {}          # placeholder token -> the run-time value it stands for
         for st in dyn_steps:
-            texts, status, labels = rebuild(ctx, flow, st)
+            texts, status, labels, unsafe = rebuild(ctx, flow, st, registry)
             info = {"status": status, "variants": texts, "placeholders": labels, "parsed": False, "errors": [],
-                    "step": st.label, "namespace": st.namespace}
+                    "step": st.label, "namespace": st.namespace, "unsafe": unsafe}
             dynamic[st.label] = info
             for k, t in enumerate(texts):
                 requests.append((f"dyn:{st.label}:{k + 1}", t, st, info))
         if requests and parse_fn is not None:
             results = parse_fn([(rid, t) for rid, t, _, _ in requests])
+            per_step: Dict[str, list] = {}
             for rid, t, st, info in requests:
                 res = results.get(rid) or {}
                 tree = res.get("tree")
                 errs = res.get("errors") or []
-                info["errors"].extend(e.get("message", "") for e in errs)
                 stmts = [s for b in (tree or {}).get("Batches", []) or [] for s in b.get("Statements", []) or []]
-                if stmts:
+                per_step.setdefault(st.label, []).append((rid, t, st, info, stmts, errs))
+            for label, variants in per_step.items():
+                info = variants[0][3]
+                clean = [v for v in variants if v[4] and not v[5]]
+                # analyse the variants that parse; when none parse cleanly, what ScriptDom recovered
+                use = clean or [v for v in variants if v[4]]
+                for rid, t, st, _, stmts, errs in use:
                     info["parsed"] = True
                     params = []
                     if (st.detail.get("dynamic") or {}).get("form") == "sp_executesql":
                         params = parse_param_definitions(_literal_params(st))
                     extra_texts[rid] = Text(t)
                     dyn_expansions.setdefault((st.namespace, id(st.node)), []).append((stmts, rid, {"params": params}))
-                elif not errs:
-                    info["errors"].append("nothing to run")
-                if errs and info["status"] == "resolved":
-                    info["status"] = "partial" if stmts else "unresolved"
+                for _, _, _, _, stmts, errs in variants:
+                    info["errors"].extend(e.get("message", "") for e in errs)
+                    if not stmts and not errs:
+                        info["errors"].append("nothing to run")
+                info["errors"] = list(dict.fromkeys(info["errors"]))
+                if not use:
+                    info["status"] = "unresolved"
+                elif len(clean) < len(variants) and info["status"] == "resolved":
+                    info["status"] = "partial"
+                info["variantsParsed"] = len(clean)
         if dyn_expansions:
-            tokens = {}
-            for info in dynamic.values():
-                for k, label in enumerate(info["placeholders"]):
-                    tokens[f"__sqldocgen_{k + 1}__"] = label
-            ctx, builder, flow = _one_pass(unit, catalog, project, default_db, dyn_expansions, extra_texts, tokens)
+            ctx, builder, flow = _one_pass(unit, catalog, project, default_db, dyn_expansions, extra_texts, registry)
             passes = 2
     return Analysis(unit=unit, ctx=ctx, builder=builder, flow=flow, dynamic=dynamic, passes=passes)
 

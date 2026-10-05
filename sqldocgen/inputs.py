@@ -7,7 +7,6 @@ documented only from the inputs (not from the --schema files).
 from __future__ import annotations
 
 import os
-import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
