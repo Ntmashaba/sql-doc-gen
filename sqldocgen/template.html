@@ -79,12 +79,12 @@ h3{font-size:.93rem;font-weight:650;margin:1rem 0 .4rem}
 .stat[data-go]{cursor:pointer}.stat[data-go]:hover{border-color:var(--accent)}
 .table-wrap{overflow-x:auto;max-width:100%}
 table.t{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.83rem}
-table.t th{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line);background:#E9EEF5;white-space:nowrap}
+table.t th{font-family:var(--sans);font-size:.76rem;font-weight:600;letter-spacing:0;color:var(--ink2);text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line);background:#F1F4F9;white-space:nowrap}
 table.t td{padding:.44rem .7rem;border-bottom:1px solid var(--line2);vertical-align:top;overflow-wrap:anywhere}
 table.t tr:last-child td{border-bottom:0}
 table.t tr.sel td{background:var(--accentSoft)}
 table.t tr[data-go]{cursor:pointer}table.t tr[data-go]:hover td{background:#F8FAFC}
-.badge{display:inline-block;font-family:var(--mono);font-size:.64rem;letter-spacing:.04em;padding:.1rem .5rem;border-radius:999px;white-space:nowrap;text-transform:uppercase;vertical-align:baseline}
+.badge{display:inline-block;font-family:var(--sans);font-size:.72rem;font-weight:500;letter-spacing:0;padding:.02rem .45rem;border-radius:999px;white-space:nowrap;text-transform:none;vertical-align:baseline;line-height:1.5}
 .b-ok{background:var(--okBg);color:var(--ok)}.b-warn{background:var(--warnBg);color:var(--warn)}
 .b-bad{background:var(--badBg);color:var(--bad)}.b-info{background:var(--infoBg);color:var(--info)}
 .b-src{background:var(--srcBg);color:var(--src)}.b-snk{background:var(--snkBg);color:var(--snk)}
@@ -93,14 +93,16 @@ table.t tr[data-go]{cursor:pointer}table.t tr[data-go]:hover td{background:#F8FA
 .b-high{background:var(--badBg);color:var(--bad)}.b-medium{background:var(--warnBg);color:var(--warn)}
 .b-low{background:var(--infoBg);color:var(--info)}.b-info2{background:#F1F5F9;color:#475569}
 .pill-list{display:flex;flex-wrap:wrap;gap:.3rem}
-.chipref{display:inline-flex;align-items:center;gap:.25rem;font-family:var(--mono);font-size:.74rem;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:.05rem .4rem;color:var(--ink);overflow-wrap:anywhere}
-.chipref.src{border-color:#99F6E4;background:#F0FDFA}.chipref.snk{border-color:#FDE68A;background:#FFFBEB}
-.chipref.mid{border-color:#C7D2FE;background:#EEF2FF}
-button.chipref{cursor:pointer}button.chipref:hover{border-color:var(--accent)}
+.chipref{display:inline-flex;align-items:baseline;gap:.3rem;font-family:var(--mono);font-size:.78rem;background:none;border:0;border-radius:0;padding:0 .55rem 0 0;color:var(--ink);overflow-wrap:anywhere;text-align:left}
+.chipref::before{content:"";flex:0 0 auto;width:.45rem;height:.45rem;border-radius:99px;background:#CBD5E1;align-self:center}
+.chipref.src::before{background:var(--src)}.chipref.snk::before{background:#D97706}
+.chipref.mid::before{background:#6366F1}
+button.chipref{cursor:pointer}button.chipref:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 .xl{background:none;border:0;padding:0;font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px;text-align:left}
 .xl:focus-visible,.chip:focus-visible,.subtab:focus-visible,.primary-btn:focus-visible,.ghost-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.steplink{font-family:var(--mono);font-size:.74rem;background:var(--accentSoft);color:var(--accent);border:1px solid #C7D2FE;border-radius:5px;padding:0 .35rem;cursor:pointer;text-decoration:none;white-space:nowrap}
-.steplink:hover{background:#E0E7FF}
+.steplink{font-family:var(--mono);font-size:.76rem;background:none;color:var(--accent);border:0;border-radius:0;padding:0;cursor:pointer;text-decoration:none;white-space:nowrap}
+.steps-list{color:var(--ink3);font-size:.78rem}
+.steplink:hover{text-decoration:underline;text-underline-offset:2px}
 .search{width:300px;max-width:100%;padding:.42rem .6rem;border:1px solid var(--line);border-radius:6px;font:inherit;background:var(--panel)}
 .search:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .filter-row{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem}
@@ -139,10 +141,6 @@ details>.body{padding:.3rem .9rem .9rem;border-top:1px solid var(--line2)}
 .act>.body{padding:.5rem .8rem .8rem;font-size:.84rem}
 .kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:.25rem .8rem;margin:.3rem 0}
 .kv .k{color:var(--ink2);font-size:.8rem;padding-top:.1rem}
-.kind{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;padding:.08rem .4rem;border-radius:4px;background:var(--line2);color:var(--ink2);white-space:nowrap}
-.k-w{background:var(--snkBg);color:var(--snk)}.k-r{background:var(--srcBg);color:var(--src)}
-.k-c{background:var(--ctlBg);color:var(--ctl)}.k-x{background:var(--extBg);color:var(--ext)}
-.k-t{background:var(--midBg);color:var(--mid)}.k-e{background:var(--badBg);color:var(--bad)}
 .comment{font-style:italic;color:var(--ink2);font-size:.82rem;margin:.1rem 0 .4rem;white-space:pre-wrap}
 /* code */
 .code{font-family:var(--mono);font-size:.76rem;line-height:1.55;background:var(--code);color:var(--codeInk);border-radius:8px;padding:.5rem 0;overflow-x:auto;margin:.4rem 0}
@@ -237,7 +235,7 @@ details>.body{padding:.3rem .9rem .9rem;border-top:1px solid var(--line2)}
 .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0}
 .fstep{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:.28rem .6rem;font-size:.8rem;cursor:pointer;max-width:560px;text-align:left;font-family:inherit;color:var(--ink)}
 .fstep:hover{border-color:var(--accent)}
-.fstep .sn{font-family:var(--mono);font-size:.7rem;color:var(--accent)}
+.fstep .sn{font-family:var(--mono);font-size:.7rem;color:var(--accent);white-space:nowrap;flex:0 0 auto}.fstep .kind{flex:0 0 auto}
 .fstep.w{border-left:4px solid var(--snk)}.fstep.r{border-left:4px solid var(--src)}.fstep.t{border-left:4px solid var(--ext)}
 .fstep.e{border-left:4px solid var(--bad)}.fstep.x{border-left:4px solid var(--mid)}
 .fstep.iss{box-shadow:0 0 0 2px #FECDD3}
@@ -247,7 +245,7 @@ details>.body{padding:.3rem .9rem .9rem;border-top:1px solid var(--line2)}
 .fblock .fh b{color:var(--ink)}
 .fbranches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 .fbranch{border:1px dashed var(--line);border-radius:8px;padding:.4rem .5rem;min-width:0}
-.fbranch .bl{font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+.fbranch .bl{font-size:.74rem;font-weight:600;margin-bottom:.3rem}
 .fbranch.then .bl{color:var(--ok)}.fbranch.else .bl{color:var(--ink2)}
 .fblock.loop{border-color:#A5B4FC}.fblock.loop .fh::before{content:"↻ ";color:var(--accent);font-weight:700}
 .fblock.try{border-color:#CBD5E1}.fblock.catch{border-color:#FDA4AF;background:#FFF7F8}
@@ -280,6 +278,201 @@ details>.body{padding:.3rem .9rem .9rem;border-top:1px solid var(--line2)}
 .conveyor .cell:first-child{border-radius:8px 8px 0 0;border-right-width:1.5px}.conveyor .cell:last-child{border-radius:0 0 8px 8px;border-left-width:1.5px}
 table.t{display:block;overflow-x:auto}.kv,.kvl{grid-template-columns:1fr}.grid{grid-template-columns:1fr!important}.badge{white-space:normal}}
 @media print{nav{display:none}.layout{grid-template-columns:1fr}.codefull{max-height:none}}
+/* ---------------- steps: one quiet list, the authors' sections as its spine ---------------- */
+:root{--hk:#94A3B8;--rowHover:#F6F8FC;--rowOpen:#F1F4FB}
+.id{font-family:var(--mono);font-size:.86em;color:#0F172A;overflow-wrap:anywhere}
+.kind,.kw{font-family:var(--sans);font-size:.74rem;font-weight:600;letter-spacing:0;text-transform:none;background:none;padding:0;border-radius:0;color:var(--ink3);white-space:nowrap}
+.k-w{color:var(--snk)}.k-r{color:var(--src)}.k-c{color:var(--ctl)}.k-x{color:var(--mid)}.k-t{color:var(--ext)}.k-e{color:var(--bad)}
+.kind.k-w,.kind.k-r,.kind.k-c,.kind.k-x,.kind.k-t,.kind.k-e{background:none}
+.intro{max-width:52rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;font:inherit;font-size:.82rem;padding:.38rem .8rem;cursor:pointer;color:var(--ink2)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--ink);color:#fff}
+.seg button .n{font-variant-numeric:tabular-nums;opacity:.7;margin-left:.2rem}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.filter-row .spacer{flex:1}
+.stepsgrid{display:grid;grid-template-columns:minmax(0,15.5rem) minmax(0,1fr);gap:1.4rem;align-items:start}
+.stepsgrid.notoc{grid-template-columns:minmax(0,1fr)}
+.toc{position:sticky;top:1rem;max-height:calc(100vh - 2rem);overflow:auto;font-size:.8rem;padding:.1rem .1rem 1rem 0}
+.toc-h{font-size:.78rem;font-weight:600;color:var(--ink2);margin:0 0 .3rem .45rem}
+.toc a{display:flex;gap:.45rem;align-items:baseline;padding:.2rem .45rem;border-radius:6px;color:var(--ink2);text-decoration:none;line-height:1.3}
+.toc a:hover{background:var(--panel2);color:var(--ink)}
+.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.toc a.l1{color:var(--ink);font-weight:600;margin-top:.4rem}
+.toc a.l2{padding-left:1.15rem}
+.toc .tn{font-family:var(--mono);font-size:.72rem;color:var(--accent);min-width:1.7rem;font-weight:400}
+.toc .tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc .tc{font-variant-numeric:tabular-nums;color:var(--hk);font-size:.72rem;font-weight:400}
+.toc .sev-dot{align-self:center}
+.steplist{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.35rem 0 .7rem;min-width:0}
+.shead{display:flex;align-items:baseline;gap:.55rem;padding:.75rem 1rem .3rem;scroll-margin-top:1rem}
+.shead.l1{font-size:1.02rem;font-weight:650;border-top:1px solid var(--line2);margin-top:.5rem;padding-top:1rem}
+.steplist>.shead.l1:first-child{border-top:0;margin-top:0;padding-top:.6rem}
+.shead.l2{font-size:.9rem;font-weight:600;padding-top:.65rem}
+.shead.l3{font-size:.82rem;font-weight:600;color:var(--ink2);padding-top:.45rem}
+.shead .snum{font-family:var(--mono);font-weight:400;color:var(--accent);font-size:.82em;min-width:2.3rem;text-align:right}
+.shead .stitle{min-width:0}
+.shead .smeta{margin-left:auto;font-size:.7rem;font-weight:400;color:var(--hk);white-space:nowrap;font-family:var(--mono)}
+.shead .sev-dot{align-self:center}
+.srow{display:grid;grid-template-columns:2.3rem 5.4rem minmax(0,1fr) .7rem 4.4rem;gap:.75rem;align-items:baseline;padding:.3rem 1rem;cursor:pointer;line-height:1.45}
+.srow:hover{background:var(--rowHover)}
+.srow.open{background:var(--rowOpen)}
+.srow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.srow .sn{font-family:var(--mono);font-size:.74rem;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
+.srow .sm{font-size:.86rem;color:var(--ink);min-width:0}
+.srow .sm code{font-size:.82em}
+.srow .ln{font-family:var(--mono);font-size:.7rem;color:var(--hk);text-align:right;white-space:nowrap}
+.srow .flag{align-self:center;display:flex;justify-content:center}
+.srow.hk .sn,.srow.hk .kw,.srow.hk .sm,.srow.hk .sm .id{color:#8492A6}
+.srow.unreach{opacity:.6}
+.never{font-size:.74rem;color:var(--bad);margin-left:.3rem}
+.sev-dot{display:inline-block;width:.55rem;height:.55rem;border-radius:99px;flex:0 0 auto}
+.sev-dot.high{background:var(--bad)}.sev-dot.medium{background:#D97706}.sev-dot.low{background:#94A3B8}.sev-dot.info{background:#CBD5E1}
+.fold{display:flex;align-items:baseline;gap:.6rem;padding:.12rem 1rem .12rem calc(2.3rem + .75rem + 1rem);font-size:.76rem;color:var(--hk);cursor:pointer}
+.fold .fold-n{white-space:nowrap}
+.fold .fold-n::before{content:"";display:inline-block;width:1.1rem;border-top:1px dotted #B8C2D1;vertical-align:middle;margin-right:.45rem}
+.fold .fold-why{color:#A9B4C4;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fold:hover,.fold:hover .fold-why{color:var(--accent)}
+.fold:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.foldbody{border-left:2px dotted #CBD5E1;margin-left:calc(2.3rem + .75rem + .4rem)}
+.foldbody .srow{padding-left:.6rem;grid-template-columns:5.4rem minmax(0,1fr) .7rem 4.4rem}
+.foldbody .srow .sn{display:none}
+.sblock{margin:.05rem 0 .2rem calc(2.3rem + .75rem + .4rem);border-left:2px solid var(--line2);padding:.1rem 0 .15rem}
+.sblock .srow{padding-left:.6rem}
+.sblock .shead{padding-left:.6rem}
+.sblock .fold{padding-left:calc(2.3rem + .75rem + .6rem)}
+.sblock.k-loop{border-left-color:#A5B4FC}.sblock.k-catch{border-left-color:#FDA4AF}.sblock.k-else{border-left-style:dashed}
+.sblock.k-dynamic{border-left-color:#C4B5FD}.sblock.k-call{border-left-color:#99F6E4}
+.slabel{font-size:.74rem;color:var(--ink3);padding:.12rem .6rem .1rem}
+.sdetail{padding:.55rem 1rem .9rem calc(2.3rem + 5.4rem + 2.5rem);background:var(--rowOpen);border-bottom:1px solid var(--line2);font-size:.84rem}
+.sblock .sdetail,.foldbody .sdetail{padding-left:calc(5.4rem + 1.35rem)}
+.sdetail p{margin:.15rem 0 .45rem}
+.d-comment{color:var(--ink2);font-style:italic}
+.d-when,.d-hk{color:var(--ink2)}
+.d-hk{color:#64748B}
+.d-issue{display:flex;gap:.45rem;align-items:baseline}
+.d-issue .sev-dot{align-self:center}
+.d-foot{color:var(--ink2);font-size:.8rem;margin-top:.5rem}
+.d-foot .xl{color:var(--accent)}
+.sdetail .code{margin:.35rem 0 .5rem;font-size:.75rem}
+table.cmap{width:100%;border-collapse:collapse;font-size:.8rem;margin:.2rem 0 .4rem}
+table.cmap th{text-align:left;font-weight:600;color:var(--ink2);font-size:.74rem;padding:.25rem .6rem .25rem 0;border-bottom:1px solid var(--line)}
+table.cmap td{padding:.28rem .6rem .28rem 0;border-bottom:1px solid var(--line2);vertical-align:top;overflow-wrap:anywhere}
+table.cmap tr:last-child td{border-bottom:0}
+table.cmap .c-col{white-space:nowrap;font-weight:600;width:1%}
+table.cmap .c-col .xl{text-decoration:none;color:var(--ink)}
+table.cmap .c-col .xl:hover{color:var(--accent);text-decoration:underline}
+table.cmap code{background:none;border:0;padding:0;color:#0F172A}
+table.cmap .c-from{color:var(--ink2);font-family:var(--mono);font-size:.74rem}
+.cm-note{font-size:.72rem;color:var(--ink3);margin-left:.45rem;font-family:var(--sans);white-space:nowrap}
+.steplist.filtering .fold,.steplist.filtering .foldbody{border:0}
+@media (max-width:1000px){.stepsgrid{grid-template-columns:1fr}.toc{position:static;max-height:16rem;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:.4rem}}
+@media (max-width:640px){.srow{grid-template-columns:2rem minmax(0,1fr) .7rem;gap:.5rem}.srow .kw,.srow .ln{display:none}
+.foldbody .srow{grid-template-columns:minmax(0,1fr) .7rem}.fold{padding-left:3.5rem}.sdetail,.sblock .sdetail,.foldbody .sdetail{padding-left:1rem}
+.sblock,.foldbody{margin-left:1rem}}
+
+/* ---------------- calm pass: plain labels, fewer boxes ---------------- */
+.brand{font-family:var(--sans);font-size:.76rem;font-weight:600;letter-spacing:0;text-transform:none;color:#94A3B8}
+.doc-sub{font-family:var(--sans);font-size:.76rem}
+.conveyor{font-family:var(--sans)}
+.conveyor .tag{font-size:.74rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink2);margin-bottom:.1rem}
+.conveyor .val{font-size:.95rem}
+.conveyor .sub{font-size:.76rem;line-height:1.45}
+.cv{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px}
+.cv:hover{text-decoration-color:currentColor}
+.cv:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.eyebrow{font-family:var(--sans);font-size:.8rem;letter-spacing:0;text-transform:none;color:var(--ink2)}
+.picklist .grp{font-family:var(--sans);font-size:.76rem;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink2);padding:.65rem .5rem .2rem}
+.role{font-family:var(--sans);font-size:.72rem;text-transform:none;letter-spacing:0;padding:.02rem .45rem;border-radius:99px}
+.g-col{font-family:var(--sans);font-size:12px;font-weight:600;text-transform:none;letter-spacing:0}
+.g-node .g-kind{font-family:var(--sans);font-size:10px;text-transform:none;letter-spacing:0}
+.stats{display:flex;flex-wrap:wrap;column-gap:2.4rem;row-gap:.9rem;margin:.9rem 0 1.2rem}
+.stats .stat .big{font-size:1.45rem;line-height:1.15}
+.stats .stat .lbl{font-size:.78rem}
+/* control flow: a line of statements, branches as ruled lanes rather than boxes in boxes */
+.cf{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem 1.2rem}
+.fstep{border:0;border-left:3px solid var(--line);border-radius:0 6px 6px 0;background:none;padding:.16rem .55rem;font-size:.84rem;align-items:baseline;gap:.5rem;max-width:min(680px,100%);line-height:1.4}
+.fstep:hover{border-color:inherit;background:var(--rowHover)}
+.fstep.w{border-left-color:var(--snk)}.fstep.r{border-left-color:var(--src)}.fstep.t{border-left-color:var(--ext)}
+.fstep.e{border-left-color:var(--bad)}.fstep.x{border-left-color:var(--mid)}.fstep.c{border-left-color:var(--ctl)}
+.fstep.iss{box-shadow:none;background:#FFF1F2}
+.fstep .ftxt{min-width:0;overflow-wrap:anywhere}
+.fstep.hk{color:#8492A6}
+.farrow{height:.3rem;background:none}
+.fblock,.fblock.try,.fblock.loop,.fblock.dyn,.fblock.call{border:0;border-radius:0;background:none;padding:0;margin:.1rem 0;width:100%}
+.fblock .fh{font-family:var(--sans);font-size:.84rem;color:var(--ink);margin:.15rem 0 .3rem;padding-left:calc(.55rem + 3px);display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+.fblock .fh .steplink{font-size:.72rem}
+.fblock .fh .pred{font-family:var(--mono);font-size:.78rem;color:var(--ink2);overflow-wrap:anywhere}
+.fblock.loop .fh::before{content:none}
+.fblock.loop>.fbody{border-left:2px solid #A5B4FC}
+.fblock.dyn>.fbody{border-left:2px solid #C4B5FD}.fblock.call>.fbody{border-left:2px solid #99F6E4}
+.fbody{margin-left:.9rem;padding:.1rem 0 .25rem .8rem;border-left:2px solid var(--line2)}
+.fbranches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 1.6rem;margin-left:.9rem;align-items:start}
+.fbranches.stack{grid-template-columns:minmax(0,1fr)}
+.fbranch,.fbranch.then,.fbranch.else{border:0;border-left:2px solid #86EFAC;border-radius:0;padding:.05rem 0 .25rem .8rem;min-width:0}
+.fbranch.else{border-left:2px dashed #CBD5E1}
+.fbranch.try{border-left-color:#CBD5E1}.fbranch.catch{border-left-color:#FDA4AF}
+.fbranch .bl,.fbody>.bl{font-family:var(--sans);font-size:.76rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink3);margin:0 0 .2rem}
+.fbranch.then .bl{color:#15803D}.fbranch.catch .bl{color:var(--bad)}
+.frun{margin:.05rem 0}
+.frun summary{padding:.15rem .55rem;font-size:.78rem;color:var(--ink3);font-weight:400}
+.frun>.body{padding:.1rem 0 .3rem}
+.cf-end{display:inline-block;margin-top:.2rem;font-size:.76rem;color:var(--ink3);padding-left:.55rem;border-left:3px solid var(--line)}
+@media (max-width:900px){.fbranches{grid-template-columns:minmax(0,1fr)}}
+
+/* trace: rows on a rail; the formula stays visible, the evidence opens on demand */
+.timeline{margin-left:.35rem;padding-left:1.1rem;border-left:2px solid var(--line2)}
+.tl{position:relative;margin:0}
+.tl::before{left:calc(-1.1rem - 6px);top:.66rem;width:10px;height:10px;border-width:2px;background:#fff}
+.tl.rows::before{border-color:#2DD4BF}
+.tl.cond::before{border-color:#94A3B8;border-radius:1px;width:9px;height:9px;left:calc(-1.1rem - 5.5px)}
+.tl.value::before{background:var(--accent);border-color:var(--accent)}
+.tl-row{display:grid;grid-template-columns:2.4rem 5.4rem minmax(0,1fr) 4.6rem;gap:.7rem;align-items:baseline;padding:.3rem .6rem;border-radius:8px;cursor:pointer;line-height:1.45}
+.tl-row:hover{background:var(--rowHover)}
+.tl.open>.tl-row{background:var(--rowOpen)}
+.tl-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tl-row .sn{font-family:var(--mono);font-size:.74rem;color:var(--accent);text-align:right;white-space:nowrap}
+.tl-row .tl-sum{font-size:.86rem;min-width:0}
+.tl-row .ln{font-family:var(--mono);font-size:.7rem;color:var(--hk);text-align:right;white-space:nowrap}
+.tl.rows .tl-sum,.tl.cond .tl-sum{color:#64748B}
+.tl-brief,.tl-detail{margin:0 .6rem 0 calc(2.4rem + 5.4rem + 2rem);font-size:.82rem;min-width:0}
+.tl-brief{padding:0 0 .5rem}
+.t-eq{font-family:var(--mono);font-size:.78rem;color:var(--ink);overflow-wrap:anywhere;line-height:1.55}
+.t-eq b{font-weight:600}
+.t-keep{font-family:var(--sans);font-size:.72rem;color:#B45309;margin-left:.4rem;white-space:nowrap}
+.tl-brief .d-issue{margin-top:.25rem}
+.tl-detail{padding:.15rem 0 .9rem}
+.tl-detail .t-src{margin:.15rem 0 .45rem}
+.tl-detail .t-col{font-weight:600;font-size:.8rem}
+.tl-fold{position:relative;display:flex;gap:.55rem;align-items:baseline;padding:.22rem .6rem .22rem calc(2.4rem + 1.3rem);font-size:.78rem;color:#7C8AA0;cursor:pointer;border-radius:8px}
+.tl-fold::before{content:"";position:absolute;left:calc(-1.1rem - 4px);top:.62rem;width:6px;height:6px;border-radius:99px;background:#CBD5E1}
+.tl-fold:hover{color:var(--accent);background:var(--rowHover)}
+.tl-fold:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tl-fold .ids{color:#A9B4C4;font-family:var(--mono);font-size:.72rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend .mk{display:inline-block;width:10px;height:10px;border-radius:99px;border:2px solid var(--accent);background:#fff}
+.legend .mk.v{background:var(--accent)}.legend .mk.r{border-color:#2DD4BF}.legend .mk.c{border-color:#94A3B8;border-radius:1px;transform:rotate(45deg);width:9px;height:9px}
+.ver{border:0;background:var(--panel2);border-radius:4px;padding:.02rem .35rem;color:var(--ink2)}
+.ver:hover{background:var(--accentSoft);color:var(--accent)}
+.ver.init{border:0;background:none;color:var(--ink3);font-style:italic}
+.m-w{background:rgba(245,158,11,.24);box-shadow:inset 0 -2px 0 #F59E0B;border-radius:0}
+.m-d{background:rgba(129,140,248,.26);box-shadow:inset 0 -2px 0 #818CF8;border-radius:0}
+.m-i{background:rgba(45,212,191,.16);box-shadow:inset 0 -2px 0 #2DD4BF;border-radius:0}
+.sw.w{background:rgba(245,158,11,.35);box-shadow:inset 0 -2px 0 #F59E0B}.sw.d{background:rgba(129,140,248,.4);box-shadow:inset 0 -2px 0 #818CF8}.sw.i{background:rgba(45,212,191,.3);box-shadow:inset 0 -2px 0 #2DD4BF}
+.sw{border-radius:2px}
+@media (max-width:640px){.tl-row{grid-template-columns:2rem minmax(0,1fr);gap:.5rem}.tl-row .kind,.tl-row .ln{display:none}
+.tl-brief,.tl-detail{margin-left:2.6rem;margin-right:.2rem}.tl-fold{padding-left:2.6rem}}
+.tl.open{background:var(--rowOpen);border-radius:8px}
+.tl.open>.tl-row{background:none}
+.d-issue .sev-dot,.tl-brief .d-issue .sev-dot{align-self:flex-start;margin-top:.42em}
+.d-foot .steplink{font-family:var(--sans);font-size:.8rem}
+.tl-detail .code{margin-left:calc(-5.4rem - .7rem)}
+.sdetail .code{margin-left:calc(-5.4rem - .75rem)}
+@media (max-width:640px){.tl-detail .code,.sdetail .code{margin-left:0}}
+table.t td,table.t th,.chipref{overflow-wrap:break-word}
+@media (min-width:641px){table.cmap td{overflow-wrap:break-word}}
+.nw{white-space:nowrap}
+@media (max-width:1000px){.picker{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -294,7 +487,7 @@ const DATA = /*__DATA__*/null;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num = n => (n ?? 0).toLocaleString();
 const plural = (n, w, p) => `${num(n)} ${n === 1 ? w : (p || w + "s")}`;
-const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const md = s => esc(s).replace(/`([^`]+)`/g, '<span class="id">$1</span>');
 const REL = {}; DATA.relations.forEach(r => REL[r.key] = r);
 const STEP = {}, STEP_IDX = {}; DATA.steps.forEach((s, i) => { STEP[s.id] = s; STEP_IDX[s.id] = i; });
 const NODES = DATA.nodes;
@@ -343,7 +536,11 @@ function stepLink(id, label) {
   if (!s) return "";
   return `<button class="steplink" data-go="step" data-arg="${esc(id)}" title="${esc(s.summary)}">${esc(label || "step " + s.label)}</button>`;
 }
-const stepLinks = ids => (ids || []).map(id => stepLink(id)).join(" ");
+const stepLinks = (ids, max = 20) => { ids = (ids || []).filter(id => STEP[id]); if (!ids.length) return "";
+  if (ids.length === 1) return `<span class="steps-list">step ${stepLink(ids[0], STEP[ids[0]].label)}</span>`;
+  const more = ids.length > max ? ` and ${num(ids.length - max)} more` : "";
+  const shown = ids.slice(0, max);
+  return `<span class="steps-list">steps ${shown.map((id, i) => `<span class="nw">${stepLink(id, STEP[id].label)}${i < shown.length - 1 ? "," : ""}</span>`).join(" ")}${more}</span>`; };
 function relClass(key) {
   const r = REL[key];
   if (!r) return LOCAL[key] ? "mid" : "";
@@ -358,7 +555,7 @@ const KIND_CLASS = {"insert": "w", "update": "w", "delete": "w", "merge": "w", "
   "select": "r", "select-assign": "r", "open-cursor": "r", "fetch": "r", "declare-cursor": "r",
   "if": "c", "while": "c", "return": "e", "throw": "e", "raiserror": "e", "break": "c", "continue": "c", "goto": "c",
   "begin-tran": "t", "commit": "t", "rollback": "t", "save-tran": "t", "exec": "x", "exec-dynamic": "x", "nested-end": "c"};
-const KIND_LABEL = {"select-into": "select into", "select-assign": "select @", "insert-exec": "insert exec", "exec-dynamic": "dynamic sql",
+const KIND_LABEL = {"select-into": "select into", "select-assign": "assign", "insert-exec": "insert exec", "exec-dynamic": "dynamic sql",
   "create-table": "create table", "drop-table": "drop table", "declare-table": "table var", "declare-cursor": "cursor",
   "open-cursor": "open cursor", "begin-tran": "begin tran", "set-option": "set option", "nested-end": "end", "alter-table": "alter table"};
 const kindBadge = k => `<span class="kind k-${KIND_CLASS[k] || ""}">${esc(KIND_LABEL[k] || k)}</span>`;
@@ -461,7 +658,28 @@ const SECTIONS = [
 const ins = DATA.relations.filter(r => (r.role === "input" || r.role === "both") && !["variable", "parameter"].includes(r.kind));
 const outsRel = DATA.relations.filter(r => r.role === "output" || r.role === "both");
 const mids = DATA.relations.filter(r => r.role === "intermediate");
-const outCols = DATA.outputs.filter(o => o.col !== ROWS);
+const isHK = st => !!st && st.role === "housekeeping";
+const isLog = key => !!(REL[key] && REL[key].logging);
+const SEV_RANK = {high: 0, medium: 1, low: 2, info: 3};
+const SECTION = {}; (DATA.sections || []).forEach(s => SECTION[s.id] = s);
+const SEC_STATS = (() => {                // per section: statements with logic, housekeeping, worst issue
+  const out = {};
+  (DATA.sections || []).forEach(s => out[s.id] = {logic: 0, hk: 0, sev: null});
+  DATA.steps.forEach(st => {
+    if (!st.section || st.kind === "nested-end") return;
+    for (let id = st.section; id && out[id]; id = SECTION[id].parent) {
+      const x = out[id];
+      if (!st.parent) { if (isHK(st)) x.hk++; else x.logic++; }
+      st.issues.forEach(i => { const v = DATA.issues[i] && DATA.issues[i].severity; if (v && (x.sev === null || SEV_RANK[v] < SEV_RANK[x.sev])) x.sev = v; });
+    }
+  });
+  return out;
+})();
+// business outputs first (widest tables first), then result sets and parameters, log tables last
+const OUT_WIDTH = {}; DATA.outputs.forEach(o => { if (o.col !== ROWS) OUT_WIDTH[o.rel] = (OUT_WIDTH[o.rel] || 0) + 1; });
+const outRank = rel => isLog(rel) ? 3 : (REL[rel] && ["table", "view", "remote", "global-temp", "temp", "dynamic"].includes(REL[rel].kind)) ? 0 : REL[rel] && REL[rel].kind === "result" ? 1 : 2;
+const outCols = DATA.outputs.filter(o => o.col !== ROWS).map((o, i) => [o, i])
+  .sort((a, b) => outRank(a[0].rel) - outRank(b[0].rel) || (OUT_WIDTH[b[0].rel] || 0) - (OUT_WIDTH[a[0].rel] || 0) || a[1] - b[1]).map(x => x[0]);
 const TABS = [
   {id: "overview", section: "overview", label: "Overview", avail: () => true},
   {id: "inputs", section: "data", label: "Inputs", avail: () => ins.length > 0, count: () => ins.length,
@@ -544,27 +762,30 @@ const AFTER = {};
 
 /* ============================================================ navigation targets */
 let SEL_REL = null, TRACE_KEY = null, LIN_KEY = null, LIN_SRC = null, CODE_SEL = null, ISSUE_FILTER = "all", TF_FILTER = "", TF_KIND = "";
-let TRACE_INDIRECT = true, LIN_INDIRECT = false;
+let TRACE_INDIRECT = true, LIN_INDIRECT = false, DF_LOGS = false;
 const GO = {
   section: openSection,
   view: id => switchTab(id),
   step: id => {
     switchTab("steps");
     requestAnimationFrame(() => {
-      const el = document.getElementById("st-" + slug(id));
+      const el = revealStep(id);
       if (!el) return;
-      let p = el.parentElement;
-      while (p) { if (p.tagName === "DETAILS") p.open = true; p = p.parentElement; }
-      el.open = true; flash(el);
+      toggleStep(el, true); flash(el);
     });
   },
+  stepsmode: m => { STEPS_ALL = m === "all"; switchTab(CURRENT === "control" ? "control" : "steps", true); },
+  expandall: () => document.querySelectorAll("#stepsroot .srow:not(.hide)").forEach(r => toggleStep(r, true)),
+  collapseall: () => document.querySelectorAll("#stepsroot .srow").forEach(r => toggleStep(r, false)),
+  dflogs: () => { DF_LOGS = !DF_LOGS; switchTab("dataflow", true); },
   code: arg => { const [tid, s, e, step] = arg.split("|"); CODE_SEL = {tid, s: +s, e: +e, step: step || null}; switchTab("code"); },
   codestep: id => { const st = STEP[id]; if (!st) return; CODE_SEL = {tid: st.text, s: st.span ? st.span[0] : 0, e: st.span ? st.span[1] : 0, step: id}; switchTab("code"); },
   trace: key => { TRACE_KEY = key; switchTab("trace"); },
   tracepick: key => { TRACE_KEY = key; switchTab("trace", true); },
   traceopt: () => { TRACE_INDIRECT = !TRACE_INDIRECT; switchTab("trace", true); },
   linopt: () => { LIN_INDIRECT = !LIN_INDIRECT; switchTab("lineage", true); },
-  tlstep: id => { const el = document.getElementById("tl-" + slug(id)); if (!el) return; const d = el.querySelector("details"); if (d) d.open = true; flash(el); },
+  tlstep: id => { const el = document.getElementById("tl-" + slug(id)); if (!el) return; const fb = el.closest(".tl-foldbody");
+    if (fb && fb.classList.contains("hide")) expandTlFold(fb.previousElementSibling); toggleTl(el, true); flash(el); },
   lineage: key => { LIN_KEY = key; LIN_SRC = null; switchTab("lineage"); },
   linnode: id => { const n = NODES[+id]; if (!n) return; if (n.op === "initial") { LIN_SRC = +id; LIN_KEY = null; } else { const o = DATA.outputs.find(o => o.defs.includes(+id)); if (o) { LIN_KEY = o.key; LIN_SRC = null; } else { LIN_SRC = +id; LIN_KEY = null; } } switchTab("lineage", true); },
   linsrc: id => { LIN_SRC = +id; LIN_KEY = null; switchTab("lineage", true); },
@@ -653,23 +874,23 @@ const outputOf = id => DATA.outputs.filter(o => o.defs.includes(id));
 function rOverview() {
   const c = DATA.counts, s = DATA.summary;
   const partial = DATA.outputs.filter(o => o.status !== "resolved" && o.col !== ROWS).length;
-  const banner = `<div class="conveyor" role="img" aria-label="inputs, procedure, outputs">
-    <div class="cell"><div class="tag">Inputs</div><div class="val">${plural(c.inputs, "object")} read</div><div class="sub">${plural(P.parameters.length, "parameter")} · design-time, statically derived</div></div>
-    <div class="joint">▸</div>
+  const cv = (view, label) => go("view", view, label, "cv");
+  const bizOuts = outsRel.length - (c.logging || 0), bizCols = outCols.filter(o => !isLog(o.rel)).length;
+  const inner = [cv("steps", plural(c.statements, "statement")), c.temp ? cv("intermediates", plural(c.temp, "temp object")) : "",
+    c.ctes ? cv("intermediates", plural(c.ctes, "CTE")) : "", c.branches ? cv("control", plural(c.branches, "branch", "branches")) : "",
+    c.calls ? cv("calls", plural(c.calls, "procedure call")) : "", c.dynamic ? cv("steps", plural(c.dynamic, "dynamic SQL statement")) : ""].filter(Boolean);
+  const banner = `<section class="conveyor" aria-label="What goes in and what comes out">
+    <div class="cell"><div class="tag">Inputs</div><div class="val">${cv("inputs", plural(c.inputs, "object") + " read")}</div><div class="sub">${P.parameters.length ? "and " + plural(P.parameters.length, "parameter") : "no parameters"}</div></div>
+    <div class="joint" aria-hidden="true">▸</div>
     <div class="cell mid"><div class="tag">${P.kind === "procedure" ? "Procedure" : "Script"}</div><div class="val">${esc(P.name)}</div>
-      <div class="sub">${plural(c.statements, "statement")} · ${plural(c.temp, "temp object")} · ${plural(c.branches, "branch", "branches")}</div>
+      <div class="sub">${inner.join(", ")}</div>
       <div class="sub${partial ? " partial" : ""}">${partial ? plural(partial, "output column") + " partial or unresolved" : "every output column traced"}</div></div>
-    <div class="joint">▸</div>
-    <div class="cell"><div class="tag">Outputs</div><div class="val">${plural(outsRel.length, "output")}</div><div class="sub">${plural(c.outputColumns, "column")} written or returned</div></div>
-  </div>`;
+    <div class="joint" aria-hidden="true">▸</div>
+    <div class="cell"><div class="tag">Outputs</div><div class="val">${cv("outputs", plural(bizOuts, "output"))}</div><div class="sub">${cv("columns", plural(bizCols, "column") + " written or returned")}${c.logging ? `, plus ${plural(c.logging, "log table")}` : ""}</div></div>
+  </section>`;
   const d = DETAILS;
   const owner = d.owner || d.job ? `<p class="sub">${d.owner ? "Owner: <b>" + esc(d.owner) + "</b>. " : ""}${d.job ? "Runs from: <b>" + esc(d.job) + "</b>. " : ""}${d.runbook ? "Runbook: " + esc(d.runbook) : ""} ${go("section", "details", "Edit procedure details")}</p>`
     : `<p class="sub">No owner, job or runbook recorded yet. ${go("section", "details", "Add procedure details")}</p>`;
-  const tiles = [["statements", "Statements", "steps"], ["inputs", "Inputs read", "inputs"], ["outputs", "Outputs", "outputs"],
-    ["outputColumns", "Output columns", "columns"], ["temp", "Temp tables & table variables", "intermediates"],
-    ["ctes", "CTEs", "intermediates"], ["branches", "IF / WHILE", "control"], ["dynamic", "Dynamic SQL", "steps"],
-    ["calls", "Procedure calls", "calls"]].filter(([k]) => k === "statements" || c[k])
-    .map(([k, l, v]) => `<div class="card stat" data-go="view" data-arg="${v}" tabindex="0"><div class="big">${num(c[k])}</div><div class="lbl">${l}</div></div>`).join("");
   const params = P.parameters.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Direction</th><th>Used by</th></tr></thead><tbody>
     ${P.parameters.map(p => { const key = "var:" + p.name.toLowerCase(); const r = REL[key];
       const used = r ? [...new Set([...(r.reads || [])])] : [];
@@ -694,8 +915,7 @@ function rOverview() {
   <p class="lead">${md(DATA.what)}</p>
   <div class="card honesty"><b>Design-time truth.</b> This document is derived statically from the procedure's code${DATA.mode !== "procedure" ? " and the definitions supplied with it" : ""}. It has no run history: it cannot say which branch ran, what a dynamic string held at run time, or whether a value is right — only every place that could make it wrong. A column with several possible sources lists all of them; <i>unresolved</i> means unknown, not absent.</div>
   ${owner}
-  <div class="grid c6" style="margin-top:.8rem">${tiles}</div>
-  ${outCols.length ? `<h2>Trace a column</h2><p class="sub" style="margin-bottom:.5rem">Pick an output column to see every step that can affect it, in the order they run.</p><div class="pill-list">${starts}${outCols.length > 12 ? " " + go("view", "columns", `all ${num(outCols.length)} columns`) : ""}</div>` : ""}
+  ${outCols.length ? `<h2>Trace a column</h2><p class="sub" style="margin-bottom:.5rem">Pick an output column to see every step that can affect it, in the order they run.</p><div class="pill-list">${starts}${outCols.length > 12 ? " " + go("view", "columns", "all columns") : ""}</div>` : ""}
   <h2>Signature</h2>${params}${rc}${opts}
   <h2>What this document can and cannot see</h2>${cov}
   <h2>Review first</h2>${review}`;
@@ -766,12 +986,13 @@ function rInputs() {
 }
 function rOutputs() {
   if (!SEL_REL || !REL[SEL_REL] || !outsRel.includes(REL[SEL_REL])) SEL_REL = outsRel[0] ? outsRel[0].key : null;
-  const rows = outsRel.map(r => {
+  const ordered = outsRel.map((r, i) => [r, i]).sort((a, b) => outRank(a[0].key) - outRank(b[0].key) || a[1] - b[1]).map(x => x[0]);
+  const rows = ordered.map(r => {
     const cols = DATA.outputs.filter(o => o.rel === r.key && o.col !== ROWS);
     const bad = cols.filter(o => o.status !== "resolved").length;
     return relRow(r, [
       r => `${relChip(r.key)}${where(r)}${r.note ? `<div class="mut">${esc(r.note)}</div>` : ""}`,
-      r => `<span class="badge b-snk">${esc(KIND_NAMES[r.kind] || r.kind)}</span>`,
+      r => r.logging ? `<span class="badge b-muted" title="Written only with variables, literals and system values, and never read back: progress logging">log table</span>` : `<span class="badge b-snk">${esc(KIND_NAMES[r.kind] || r.kind)}</span>`,
       r => (r.ops || []).map(o => `<span class="badge b-snk">${esc(o)}</span>`).join(" ") || (r.kind === "result" ? '<span class="badge b-info">SELECT</span>' : r.kind === "parameter" ? '<span class="badge b-info">OUTPUT</span>' : r.kind === "return" ? '<span class="badge b-info">RETURN</span>' : ""),
       r => `${num(cols.length)}${bad ? ` <span class="badge b-warn">${bad} partial</span>` : ""}`,
       r => stepLinks((r.writes || []).slice(0, 8))]);
@@ -916,7 +1137,7 @@ document.addEventListener("mouseout", ev => {
 
 /* ============================================================ data flow */
 function dataflowGraph() {
-  const keep = r => !["variable", "parameter", "system"].includes(r.kind) || r.output;
+  const keep = r => (!["variable", "parameter", "system"].includes(r.kind) || r.output) && (DF_LOGS || !r.logging);
   const edges = new Map();
   const relsOf = st => {
     const reads = new Set(st.reads.filter(k => REL[k]));
@@ -969,7 +1190,9 @@ function renderDfPanel() {
 function rDataflow() {
   const g = dataflowGraph();
   const legend = `<div class="legend"><span><i class="lg n-src"></i>input</span><span><i class="lg n-mid"></i>temp table / table variable / cursor</span><span><i class="lg n-snk"></i>output table</span><span><i class="lg n-res"></i>result set / output parameter</span><span><i class="lg n-var"></i>variable carrying a value</span><span><i class="lg e"></i>data moves (hover for steps)</span><span><i class="lg e e-cond"></i>only inside a branch or loop</span><span><i class="lg e e-dyn"></i>dynamic SQL</span></div>`;
-  return `<h1>Data flow</h1><p class="sub">Inputs on the left, staging in the middle, outputs on the right. Each arrow is one or more steps moving data; hover a box to highlight its connections, select it for its columns.</p>${legend}
+  const logs = DATA.relations.filter(r => r.logging).length;
+  const logToggle = logs ? `<label class="toggle"><input type="checkbox" data-go="dflogs"${DF_LOGS ? " checked" : ""}> show the ${plural(logs, "log table")}</label>` : "";
+  return `<h1>Data flow</h1><p class="sub">Inputs on the left, staging in the middle, outputs on the right. Each arrow is one or more steps moving data; hover a box to highlight its connections, select it for its columns.</p>${legend}${logToggle}
   <div class="graph">${svgGraph(g.nodes, g.edges, {id: "df", w: 200, label: "data flow diagram",
      fix: (n) => REL[n.id] && REL[n.id].role === "input" ? 0 : null,
      sinkLast: n => REL[n.id] && (REL[n.id].role === "output" || REL[n.id].role === "both"),
@@ -977,74 +1200,251 @@ function rDataflow() {
 }
 
 /* ============================================================ steps */
-function stepCard(st) {
-  const iss = st.issues.map(i => DATA.issues[i]).filter(Boolean);
-  const badges = iss.length ? iss.slice(0, 3).map(i => `<span class="badge b-${i.severity === "info" ? "info2" : i.severity}" title="${esc(i.title)}">${esc(i.severity)}</span>`).join(" ") : "";
-  const conds = st.conditions.length ? `<div class="kv"><div class="k">Runs when</div><div>${st.conditions.map(c => `${c.step ? stepLink(c.step) : ""} <span class="mut">${c.branch === "else" ? "NOT" : c.branch === "loop" ? "loop while" : c.branch === "catch" ? "" : ""}</span> <code>${esc(c.text)}</code>`).join("<br>")}</div></div>` : "";
-  const writes = st.nodes.map(id => NODES[id]).filter(n => n.op !== "local" && n.col !== ROWS);
-  const wrows = writes.length ? `<div class="table-wrap"><table class="t" style="margin:.4rem 0"><thead><tr><th>Writes</th><th>Value</th><th>From</th></tr></thead><tbody>
-    ${writes.slice(0, 60).map(n => `<tr><td><b>${esc(nodeLabel(n.id))}</b>${n.keeps ? ' <span class="badge b-warn" title="Rows not matched keep their earlier value">some rows</span>' : ""}${n.st ? " " + statusBadge(n.st) : ""}</td>
-      <td><code>${esc(n.expr || "")}</code>${(n.tf || []).filter(t => t !== "constant").map(t => ` <span class="badge b-mid">${esc(t)}</span>`).join("")}${n.note ? `<div class="mut">${esc(n.note)}</div>` : ""}</td>
-      <td>${(n.uses || []).filter(u => u.d).map(u => `<span class="chipref src">${esc(colName(u.rel, u.col))}</span>`).join(" ")}</td></tr>`).join("")}
-    ${writes.length > 60 ? `<tr><td colspan="3" class="mut">${writes.length - 60} more columns</td></tr>` : ""}</tbody></table></div>` : "";
-  const reads = st.reads.filter(k => REL[k] || LOCAL[k]);
-  const io = `${reads.length ? `<div class="kv"><div class="k">Reads</div><div class="pill-list">${reads.map(relChip).join("")}</div></div>` : ""}
-    ${st.writes.length ? `<div class="kv"><div class="k">Writes</div><div class="pill-list">${st.writes.filter(k => REL[k]).map(relChip).join("")}</div></div>` : ""}`;
-  const marks = [];
-  writes.forEach(n => { if (n.span && !n.text) marks.push({s: n.span[0], e: n.span[1], cls: "m-w"}); });
-  const code = st.span ? excerpt(st.text, st.head || st.span, marks) : "";
-  const dyn = st.kind === "exec-dynamic" ? (DATA.dynamic.find(d => d.step === st.label) || null) : null;
-  const dynInfo = dyn ? `<div class="callout ${dyn.status === "resolved" ? "info" : dyn.status === "partial" ? "warn" : "bad"}">Dynamic SQL: <b>${esc(dyn.status)}</b>${dyn.placeholders && dyn.placeholders.length ? ` · run-time values: ${dyn.placeholders.map(p => `<code>${esc(p)}</code>`).join(" ")}` : ""}${dyn.parsed ? " · the rebuilt statement is analysed as the nested steps below" : ""}${(dyn.errors || []).length ? `<div class="mut">${esc(dyn.errors[0])}</div>` : ""}</div>` : "";
-  const isslist = iss.length ? `<div class="kv"><div class="k">Review</div><div>${iss.map(i => `${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))}`).join("<br>")}</div></div>` : "";
-  const traceable = writes.filter(n => outputOf(n.id).length);
-  const traceLinks = traceable.length ? `<div class="kv"><div class="k">Trace</div><div class="pill-list">${[...new Set(traceable.map(n => outputOf(n.id)[0].key))].slice(0, 10).map(k => go("trace", k, esc(colName(OUT[k].rel, OUT[k].col)), "chipref snk")).join("")}</div></div>` : "";
-  return `<details class="act${st.reachable ? "" : " unreach"}" id="st-${slug(st.id)}"><summary><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span class="sm">${md(st.summary)}${!st.reachable ? ' <span class="badge b-muted">never runs</span>' : ""}</span>${badges}<span class="ln">${esc(lines(st))}</span></summary>
-    <div class="body">${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${io}${dynInfo}${isslist}${traceLinks}${wrows}${code}
-    <div class="toolbar">${st.span ? go("codestep", st.id, "Open in code", "ghost-btn") : ""}</div></div></details>`;
-}
-function scopeHtml(sid, depth = 0) {
-  const sc = SCOPE[sid];
-  let html = "";
-  sc.items.forEach(([kind, id]) => {
-    if (kind === "step") { const st = STEP[id]; if (st) html += stepCard(st); }
-    else {
-      const s = SCOPE[id];
-      const lbl = {then: "IF", else: "ELSE", loop: "LOOP", try: "TRY", catch: "CATCH", dynamic: "DYNAMIC SQL", call: "CALL"}[s.kind] || s.kind.toUpperCase();
-      const head = s.kind === "then" ? s.label.replace(/^IF /, "") : s.label;
-      const own = s.step ? stepLink(s.step) : "";
-      html += `<div class="scopehdr"><span class="sk">${esc(lbl)}</span> ${own} <span>${esc(head)}</span></div><div class="scopebody k-${s.kind}">${scopeHtml(id, depth + 1)}</div>`;
-    }
+/* The procedure statement by statement, grouped by the authors' own section comments.
+   Housekeeping (row counts, log entries, debug output, declarations, settings) is folded
+   into one quiet line per run, so the logic reads straight through; nothing is dropped. */
+let STEPS_ALL = false;
+const HK_WHY = {
+  "row count": "keeps a row count or error number that only log entries and messages use",
+  "log entry": "writes to a log table, which nothing in this procedure reads back",
+  "debug output": "runs only when a debug flag is on",
+  "declaration": "declares a variable before its first real value",
+  "setting": "a session setting",
+  "message": "a progress message",
+  "cleanup": "tidies up temp tables or cursors",
+  "timing": "records a time for the log",
+  "for logging and messages": "its value is only used by log entries and messages",
+  "only housekeeping inside": "everything inside it is housekeeping",
+  "end of nested code": "marks the end of nested code",
+  "not used": "nothing reads the value it sets",
+  "not used by any output": "nothing that reaches an output depends on it",
+};
+const stepScopes = (() => {               // step id -> the scopes it sits in, innermost last
+  const out = {};
+  const walk = (sid, trail) => SCOPE[sid].items.forEach(([k, id]) => {
+    if (k === "step") out[id] = trail; else walk(id, trail.concat(id));
   });
+  if (SCOPE.root) walk("root", []);
+  return out;
+})();
+function scopeSteps(sid) {
+  const out = [];
+  SCOPE[sid].items.forEach(([k, id]) => { if (k === "step") out.push(STEP[id]); else out.push(...scopeSteps(id)); });
+  return out.filter(Boolean);
+}
+const scopeHasLogic = sid => scopeSteps(sid).some(s => !isHK(s) && s.kind !== "nested-end");
+const shortLines = st => st && st.lines ? (st.lines[0] === st.lines[1] ? `${st.lines[0]}` : `${st.lines[0]}–${st.lines[1]}`) : "";
+function worstOf(st) {
+  let w = null;
+  st.issues.forEach(i => { const s = DATA.issues[i] && DATA.issues[i].severity; if (s && (w === null || SEV_RANK[s] < SEV_RANK[w])) w = s; });
+  return w;
+}
+function stepRow(st) {
+  const w = worstOf(st);
+  const tip = w ? st.issues.map(i => DATA.issues[i] && DATA.issues[i].title.replace(/`/g, "")).filter(Boolean).join("\n") : "";
+  return `<div class="srow${isHK(st) ? " hk" : ""}${st.reachable ? "" : " unreach"}" id="st-${slug(st.id)}" data-step="${esc(st.id)}" tabindex="0" role="button" aria-expanded="false">`
+    + `<span class="sn">${esc(st.label)}</span><span class="kw k-${KIND_CLASS[st.kind] || ""}">${esc(KIND_LABEL[st.kind] || st.kind)}</span>`
+    + `<span class="sm">${md(st.summary)}${st.reachable ? "" : ' <span class="never">never runs</span>'}</span>`
+    + `<span class="flag">${w ? `<span class="sev-dot ${w}" title="${esc(tip)}"></span>` : ""}</span>`
+    + `<span class="ln" title="source lines">${esc(shortLines(st))}</span></div>`;
+}
+function headingsTo(ctx, secId) {
+  const path = [];
+  for (let id = secId; id && SECTION[id]; id = SECTION[id].parent) path.unshift(id);
+  let k = 0;
+  while (k < path.length && k < ctx.path.length && path[k] === ctx.path[k]) k++;
+  let html = "";
+  for (let i = k; i < path.length; i++) {
+    const s = SECTION[path[i]], x = SEC_STATS[s.id] || {};
+    html += `<div class="shead l${Math.min(s.level, 3)}" id="sec-${esc(s.id)}"><span class="snum">${esc(s.number)}</span>`
+      + `<span class="stitle">${esc(s.title)}</span>${x.sev && (x.sev === "high" || x.sev === "medium") ? `<span class="sev-dot ${x.sev}" title="${esc(x.sev)} issue in this section"></span>` : ""}`
+      + `<span class="smeta">line ${num(s.line)}</span></div>`;
+  }
+  ctx.path = path;
   return html;
 }
+function itemSection(kind, x) {
+  if (kind === "step") return x.section || null;
+  const owner = x.step && STEP[x.step];
+  if (owner) return owner.section || null;
+  const first = scopeSteps(x.id)[0];
+  return first ? first.section || null : null;
+}
+function foldRow(run) {
+  const why = {};
+  let n = 0;
+  run.forEach(([k, x]) => (k === "step" ? [x] : scopeSteps(x.id)).forEach(s => {
+    if (s.kind === "nested-end") return;
+    n++; const r = s.why || "housekeeping"; why[r] = (why[r] || 0) + 1;
+  }));
+  if (!n) return "";
+  const reasons = Object.entries(why).sort((a, b) => b[1] - a[1]).map(([r]) => r).slice(0, 3).join(", ");
+  const ids = run.map(([k, x]) => (k === "step" ? "s:" : "c:") + x.id).join(" ");
+  return `<div class="fold" data-fold="${esc(ids)}" tabindex="0" role="button" aria-expanded="false" title="Show the folded statements">`
+    + `<span class="fold-n">${n === 1 ? "1 housekeeping statement" : num(n) + " housekeeping statements"}</span><span class="fold-why">${esc(reasons)}</span></div>`;
+}
+function renderSeq(sid, ctx) {
+  let html = "", run = [];
+  const flush = () => { if (run.length) { html += foldRow(run); run = []; } };
+  for (const [kind, id] of SCOPE[sid].items) {
+    const x = kind === "step" ? STEP[id] : SCOPE[id];
+    if (!x || (kind === "step" && x.kind === "nested-end")) continue;
+    const sec = ctx.noHead ? null : itemSection(kind, x);
+    if (sec && sec !== ctx.path[ctx.path.length - 1]) { flush(); html += headingsTo(ctx, sec); }
+    const hidden = !ctx.all && (kind === "step" ? isHK(x) : (x.step ? isHK(STEP[x.step]) : !scopeHasLogic(x.id)));
+    if (hidden) { run.push([kind, x]); continue; }
+    flush();
+    html += kind === "step" ? stepRow(x) : scopeBlock(x, ctx);
+  }
+  flush();
+  return html;
+}
+function scopeBlock(sc, ctx) {
+  const owner = sc.step ? STEP[sc.step] : null;
+  const label = {then: "then", else: "otherwise", loop: "each time round the loop", try: "try", catch: "if an error is raised",
+    dynamic: "the dynamic SQL, as rebuilt", call: sc.label}[sc.kind] || sc.label;
+  return `<div class="sblock k-${esc(sc.kind)}"><div class="slabel">${esc(label)}${owner && sc.kind === "call" ? "" : ""}</div>${renderSeq(sc.id, ctx)}</div>`;
+}
+function stepDetail(st) {
+  const iss = st.issues.map(i => DATA.issues[i]).filter(Boolean);
+  const sec = st.section && SECTION[st.section];
+  const comment = st.comment && !(sec && st.comment.split("\n").every(l => l.includes(sec.title)))
+    ? `<p class="d-comment">${esc(st.comment.split("\n").filter(l => !sec || !l.includes(sec.title)).join(" ") || st.comment)}</p>` : "";
+  const when = st.conditions.map(c => c.branch === "catch" ? "only if an error was raised in the TRY block"
+      : c.branch === "loop" ? `each time round the loop while <code>${esc(c.text)}</code>`
+      : c.branch === "else" ? `only when <code>${esc(c.text)}</code> is not true` : `only when <code>${esc(c.text)}</code>`);
+  const conds = when.length ? `<p class="d-when">Runs ${when.join(", and ")}${st.conditions.filter(c => c.step).length ? ` · ${st.conditions.filter(c => c.step).map(c => stepLink(c.step)).join(" ")}` : ""}</p>` : "";
+  const hk = isHK(st) ? `<p class="d-hk">Folded as housekeeping: ${esc(HK_WHY[st.why] || st.why || "housekeeping")}.</p>` : "";
+  const writes = st.nodes.map(id => NODES[id]).filter(n => n.op !== "local" && n.col !== ROWS);
+  const code = st.span ? excerpt(st.text, st.head || st.span, [], 0, 24) : "";
+  const dyn = st.kind === "exec-dynamic" ? (DATA.dynamic.find(d => d.step === st.label) || null) : null;
+  const dynInfo = dyn ? `<p class="d-when">Dynamic SQL ${dyn.status === "resolved" ? "rebuilt from the code" : dyn.status === "partial" ? "rebuilt, with values known only at run time" : "that cannot be rebuilt"}${dyn.placeholders && dyn.placeholders.length ? `: ${dyn.placeholders.map(p => `<code>${esc(p)}</code>`).join(", ")}` : ""}${dyn.parsed ? ". Its statements follow as nested steps." : "."}</p>` : "";
+  let map = "";
+  if (!isHK(st) && writes.some(n => !n.rel.startsWith("var:"))) {
+    const shown = writes.filter(n => n.op !== "default");
+    const filled = writes.filter(n => n.op === "default").map(n => NODES[n.id].col);
+    const rows = shown.slice(0, 40).map(n => {
+      const srcs = (n.uses || []).filter(u => u.d).map(u => colName(u.rel, u.col));
+      const from = srcs.length === 1 && srcs[0] === (n.expr || "").trim() ? "" : srcs.map(esc).join(", ");
+      const outs = outputOf(n.id);
+      const name = n.col === "value" ? relName(n.rel) : n.col;
+      const label = outs.length ? go("trace", outs[0].key, esc(name), "xl", "Trace this column") : esc(name);
+      const tf = (n.tf || []).filter(t => t !== "constant");
+      return `<tr><td class="c-col">${label}${n.keeps ? ' <span class="cm-note" title="Rows the statement does not touch keep their earlier value">some rows</span>' : ""}</td>`
+        + `<td class="c-val"><code>${esc(n.expr || "")}</code>${tf.length ? `<span class="cm-note">${esc(tf.join(" · "))}</span>` : ""}</td>`
+        + `<td class="c-from">${from}</td></tr>`;
+    }).join("");
+    const target = writes[0] && REL[writes[0].rel] ? relName(writes[0].rel) : "";
+    map = `<table class="cmap"><thead><tr><th>${esc(target) || "Column"}</th><th>New value</th><th>From</th></tr></thead><tbody>${rows}</tbody></table>`
+      + (shown.length > 40 ? `<p class="mut">${num(shown.length - 40)} more columns</p>` : "")
+      + (filled.length ? `<p class="mut">${esc(filled.slice(0, 6).join(", "))}${filled.length > 6 ? " and more" : ""} ${filled.length === 1 ? "is" : "are"} left to the table (identity or default).</p>` : "");
+  }
+  const isslist = iss.map(i => `<p class="d-issue"><span class="sev-dot ${esc(i.severity)}"></span>${go("issue", i.id, md(i.title))}</p>`).join("");
+  const reads = st.reads.filter(k => REL[k] || LOCAL[k]);
+  const relList = keys => keys.map(k => go("rel", k, esc(relName(k)), "xl rl")).join(", ");
+  const foot = `<p class="d-foot">${reads.length ? `Reads ${relList(reads)}` : ""}${reads.length && st.writes.length ? " · " : ""}${st.writes.filter(k => REL[k]).length ? `Writes ${relList(st.writes.filter(k => REL[k]))}` : ""}${st.span ? `${reads.length || st.writes.length ? " · " : ""}${go("codestep", st.id, "Open in code")}` : ""}</p>`;
+  return `<div class="sdetail" id="sd-${slug(st.id)}">${comment}${hk}${conds}${dynInfo}${isslist}${code}${map}${foot}</div>`;
+}
+function toggleStep(row, open) {
+  const id = row.dataset.step, st = STEP[id];
+  let d = row.nextElementSibling && row.nextElementSibling.classList.contains("sdetail") ? row.nextElementSibling : null;
+  const want = open === undefined ? !d || d.classList.contains("hide") : open;
+  if (want && !d) { row.insertAdjacentHTML("afterend", stepDetail(st)); d = row.nextElementSibling; }
+  if (d) d.classList.toggle("hide", !want);
+  row.classList.toggle("open", want);
+  row.setAttribute("aria-expanded", want ? "true" : "false");
+}
+function expandFold(f) {
+  if (!f || f.dataset.done) return;
+  const items = f.dataset.fold.split(" ").map(t => t.startsWith("s:") ? ["step", STEP[t.slice(2)]] : ["scope", SCOPE[t.slice(2)]]).filter(([, x]) => x);
+  const ctx = {all: true, noHead: true, path: []};
+  const html = items.map(([k, x]) => k === "step" ? stepRow(x) : scopeBlock(x, ctx)).join("");
+  f.insertAdjacentHTML("afterend", `<div class="foldbody">${html}</div>`);
+  f.dataset.done = "1";
+  f.classList.add("hide");
+}
+function revealStep(id) {
+  let row = document.getElementById("st-" + slug(id));
+  if (!row) {
+    const owners = new Set(["s:" + id, ...(stepScopes[id] || []).map(s => "c:" + s)]);
+    document.querySelectorAll("#stepsroot .fold").forEach(f => { if (f.dataset.fold.split(" ").some(t => owners.has(t))) expandFold(f); });
+    row = document.getElementById("st-" + slug(id));
+  }
+  return row;
+}
+function tocHtml() {
+  const secs = (DATA.sections || []).filter(s => s.level <= 2 && SEC_STATS[s.id] && (SEC_STATS[s.id].logic + SEC_STATS[s.id].hk) > 0);
+  if (secs.length < 2) return "";
+  return `<div class="toc" role="navigation" aria-label="Sections of the procedure"><p class="toc-h">Sections</p>${secs.map(s => {
+    const x = SEC_STATS[s.id];
+    const dot = x.sev === "high" || x.sev === "medium" ? `<span class="sev-dot ${x.sev}"></span>` : "";
+    return `<a href="#sec-${esc(s.id)}" class="l${s.level}" data-sec="${esc(s.id)}"><span class="tn">${esc(s.number)}</span><span class="tt">${esc(s.title)}</span>${dot}<span class="tc" title="statements with logic">${x.logic || ""}</span></a>`;
+  }).join("")}</div>`;
+}
 function rSteps() {
-  const n = DATA.counts.statements;
-  return `<h1>Steps</h1><p class="sub">${plural(n, "statement")} in the order they appear, grouped by IF / ELSE, loops, TRY / CATCH and the code they run (dynamic SQL, expanded calls). Each step lists what it reads and writes, its code and a plain-language summary.</p>
-  <div class="filter-row"><input class="search" placeholder="Filter steps…" oninput="filterSteps(this.value)"> <button class="ghost-btn" onclick="document.querySelectorAll('details.act').forEach(d=>d.open=true)">Expand all</button> <button class="ghost-btn" onclick="document.querySelectorAll('details.act').forEach(d=>d.open=false)">Collapse all</button> ${go("csv", "steps", "Download CSV", "ghost-btn")}</div>
-  <div id="stepsroot">${scopeHtml("root")}</div>`;
+  const c = DATA.counts;
+  const hk = c.housekeeping || 0, logic = c.logic != null ? c.logic : c.statements;
+  const secs = (DATA.sections || []).length;
+  const intro = hk
+    ? `${plural(c.statements, "statement")}${secs ? ", grouped by the procedure's own section comments" : " in the order they appear"}. ${plural(hk, "housekeeping statement")} (row counts, log entries, debug output, declarations) ${hk === 1 ? "is" : "are"} folded so the logic reads straight through; select a folded line to see ${hk === 1 ? "it" : "them"}.`
+    : `${plural(c.statements, "statement")}${secs ? ", grouped by the procedure's own section comments" : " in the order they appear"}. Select a step for its code, the columns it writes and where their values come from.`;
+  const seg = hk ? `<div class="seg" role="group" aria-label="Which statements"><button class="${STEPS_ALL ? "" : "on"}" data-go="stepsmode" data-arg="logic" aria-pressed="${!STEPS_ALL}">Logic <span class="n">${num(logic)}</span></button><button class="${STEPS_ALL ? "on" : ""}" data-go="stepsmode" data-arg="all" aria-pressed="${STEPS_ALL}">Every statement <span class="n">${num(c.statements)}</span></button></div>` : "";
+  const toc = tocHtml();
+  return `<h1>Steps</h1><p class="sub intro">${intro}</p>
+  <div class="filter-row">${seg}<input class="search" placeholder="Find a step, table or column…" oninput="filterSteps(this.value)" aria-label="Find a step"><span class="spacer"></span>${go("expandall", "", "Expand all")} ${go("collapseall", "", "Collapse all")} ${go("csv", "steps", "Download CSV")}</div>
+  <div class="stepsgrid${toc ? "" : " notoc"}">${toc}<div class="steplist" id="stepsroot">${renderSeq("root", {all: STEPS_ALL, path: []})}</div></div>`;
 }
 function filterSteps(q) {
-  q = q.toLowerCase();
-  document.querySelectorAll("#stepsroot details.act").forEach(d => d.classList.toggle("hide", !!q && !d.textContent.toLowerCase().includes(q)));
+  q = q.toLowerCase().trim();
+  const root = document.getElementById("stepsroot");
+  if (q) root.querySelectorAll(".fold").forEach(expandFold);
+  root.querySelectorAll(".srow").forEach(r => {
+    const hit = !q || r.textContent.toLowerCase().includes(q);
+    r.classList.toggle("hide", !hit);
+    const d = r.nextElementSibling;
+    if (d && d.classList.contains("sdetail") && !hit) d.classList.add("hide");
+  });
+  root.classList.toggle("filtering", !!q);
 }
+document.addEventListener("click", ev => {
+  if (ev.target.closest("[data-go], a, input, select, textarea")) return;
+  const row = ev.target.closest(".srow");
+  if (row) { toggleStep(row); return; }
+  const f = ev.target.closest(".fold");
+  if (f) { expandFold(f); return; }
+  const tr = ev.target.closest(".tl-row");
+  if (tr) { toggleTl(tr.parentElement); return; }
+  const tf = ev.target.closest(".tl-fold");
+  if (tf) expandTlFold(tf);
+});
+document.addEventListener("keydown", ev => {
+  if (ev.key !== "Enter" && ev.key !== " ") return;
+  const t = ev.target;
+  if (t.classList && t.classList.contains("srow")) { ev.preventDefault(); toggleStep(t); }
+  else if (t.classList && t.classList.contains("fold")) { ev.preventDefault(); expandFold(t); }
+  else if (t.classList && t.classList.contains("tl-row")) { ev.preventDefault(); toggleTl(t.parentElement); }
+  else if (t.classList && t.classList.contains("tl-fold")) { ev.preventDefault(); const nx = t.nextElementSibling; expandTlFold(t); const first = nx && nx.querySelector(".tl-row"); if (first) first.focus(); }
+});
 
 /* ============================================================ control flow */
 function fstep(st) {
   const k = KIND_CLASS[st.kind] || "";
   const iss = st.issues.some(i => DATA.issues[i] && (DATA.issues[i].severity === "high" || DATA.issues[i].severity === "medium"));
   const txt = st.summary.replace(/`/g, "");
-  return `<button class="fstep ${k}${iss ? " iss" : ""}" data-go="step" data-arg="${esc(st.id)}" title="${esc(txt)}"><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span>${esc(txt.length > 80 ? txt.slice(0, 78) + "…" : txt)}</span></button>`;
+  return `<button class="fstep ${k}${iss ? " iss" : ""}${isHK(st) ? " hk" : ""}" data-go="step" data-arg="${esc(st.id)}" title="${esc(txt)}"><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span class="ftxt">${esc(txt.length > 96 ? txt.slice(0, 94) + "…" : txt)}</span></button>`;
 }
 const PLAIN = new Set(["insert", "update", "delete", "merge", "select", "select-into", "select-assign", "set", "declare", "declare-table", "create-table", "drop-table", "truncate", "print", "set-option", "fetch", "open-cursor", "close-cursor", "deallocate-cursor", "declare-cursor", "insert-exec", "alter-table", "create-index", "other", "label"]);
-function flowSeq(sid) {
+const fhead = (id, word, pred) => `<div class="fh">${stepLink(id, STEP[id].label)}<span class="kind k-c">${word}</span><span class="pred">${esc(pred || "")}</span></div>`;
+function flowSeq(sid, depth = 0) {
   const sc = SCOPE[sid], items = sc.items;
   const out = [];
-  let run = [];
+  let run = [], hidden = 0;
+  const lanes = depth ? "fbranches stack" : "fbranches";
   const flush = () => {
     if (run.length > 5) {
       out.push(fstep(run[0]));
       const mid = run.slice(1, -1);
-      out.push(`<details class="frun"><summary>… ${mid.length} more statements (steps ${esc(mid[0].label)}–${esc(mid[mid.length - 1].label)})</summary><div class="body flow">${mid.map(fstep).join('<div class="farrow"></div>')}</div></details>`);
+      out.push(`<details class="frun"><summary>${mid.length} more statements (steps ${esc(mid[0].label)}–${esc(mid[mid.length - 1].label)})</summary><div class="body flow">${mid.map(fstep).join('<div class="farrow"></div>')}</div></details>`);
       out.push(fstep(run[run.length - 1]));
     } else run.forEach(s => out.push(fstep(s)));
     run = [];
@@ -1053,46 +1453,48 @@ function flowSeq(sid) {
     const [kind, id] = items[i];
     if (kind === "step") {
       const st = STEP[id];
+      if (!STEPS_ALL && (isHK(st) || st.kind === "nested-end")) { hidden++; continue; }
       const owned = items.filter(([k, x]) => k === "scope" && SCOPE[x].step === id).map(([, x]) => SCOPE[x]);
       if (st.kind === "if") {
         flush();
         const then = owned.find(s => s.kind === "then"), els = owned.find(s => s.kind === "else");
-        out.push(`<div class="fblock"><div class="fh">${stepLink(id)} <b>IF</b> ${esc(st.detail.predicate || "")}</div><div class="fbranches">
-          <div class="fbranch then"><div class="bl">then</div><div class="flow">${then ? flowSeq(then.id) : '<span class="mut">nothing</span>'}</div></div>
-          <div class="fbranch else"><div class="bl">${els ? "else" : "otherwise"}</div><div class="flow">${els ? flowSeq(els.id) : '<span class="mut">continues</span>'}</div></div></div></div>`);
+        const arm = (s, cls, label) => `<div class="fbranch ${cls}"><div class="bl">${label}</div><div class="flow">${s ? flowSeq(s.id, depth + 1) : '<span class="mut">nothing</span>'}</div></div>`;
+        out.push(`<div class="fblock">${fhead(id, "if", st.detail.predicate)}<div class="${els ? lanes : "fbranches stack"}">${arm(then, "then", "then")}${els ? arm(els, "else", "otherwise") : ""}</div></div>`);
       } else if (st.kind === "while") {
         flush();
         const body = owned.find(s => s.kind === "loop");
-        out.push(`<div class="fblock loop"><div class="fh">${stepLink(id)} <b>WHILE</b> ${esc(st.detail.predicate || "")}</div><div class="flow">${body ? flowSeq(body.id) : ""}</div></div>`);
+        out.push(`<div class="fblock loop">${fhead(id, "while", st.detail.predicate)}<div class="fbody"><div class="bl">each time round the loop</div><div class="flow">${body ? flowSeq(body.id, depth + 1) : ""}</div></div></div>`);
       } else if (owned.length && (st.kind === "exec" || st.kind === "exec-dynamic" || st.kind === "insert-exec")) {
         flush();
         out.push(fstep(st));
-        owned.forEach(s => out.push(`<div class="fblock ${s.kind === "dynamic" ? "dyn" : "call"}"><div class="fh"><b>${esc(s.label)}</b></div><div class="flow">${flowSeq(s.id)}</div></div>`));
+        owned.forEach(s => out.push(`<div class="fblock ${s.kind === "dynamic" ? "dyn" : "call"}"><div class="fbody"><div class="bl">${esc(s.label)}</div><div class="flow">${flowSeq(s.id, depth + 1)}</div></div></div>`));
       } else if (PLAIN.has(st.kind) && !st.issues.length) {
         run.push(st);
       } else { flush(); out.push(fstep(st)); }
     } else {
       const s = SCOPE[id];
       if (s.step) continue;
+      if (!STEPS_ALL && !scopeHasLogic(s.id)) { hidden += scopeSteps(s.id).length; continue; }
       flush();
       if (s.kind === "try") {
         const nxt = items[i + 1] && items[i + 1][0] === "scope" && SCOPE[items[i + 1][1]].kind === "catch" ? SCOPE[items[i + 1][1]] : null;
-        out.push(`<div class="fblock try"><div class="fbranches"><div class="fbranch"><div class="bl">try</div><div class="flow">${flowSeq(s.id)}</div></div>
-          <div class="fbranch" style="border-color:#FDA4AF"><div class="bl" style="color:var(--bad)">catch · on any error in try</div><div class="flow">${nxt ? flowSeq(nxt.id) : ""}</div></div></div></div>`);
+        out.push(`<div class="fblock try"><div class="fbranches stack"><div class="fbranch try"><div class="bl">try</div><div class="flow">${flowSeq(s.id, depth + 1)}</div></div>
+          ${nxt ? `<div class="fbranch catch"><div class="bl">if an error is raised</div><div class="flow">${flowSeq(nxt.id, depth + 1)}</div></div>` : ""}</div></div>`);
         if (nxt) i++;
-      } else out.push(`<div class="fblock"><div class="fh"><b>${esc(s.label)}</b></div><div class="flow">${flowSeq(s.id)}</div></div>`);
+      } else out.push(`<div class="fblock"><div class="fbody"><div class="bl">${esc(s.label)}</div><div class="flow">${flowSeq(s.id, depth + 1)}</div></div></div>`);
     }
   }
   flush();
+  if (hidden && !out.length) out.push(`<span class="mut">only housekeeping (${num(hidden)})</span>`);
   return out.join('<div class="farrow"></div>');
 }
 function rControl() {
   const ret = DATA.steps.filter(s => s.kind === "return" && !s.parent).length;
   const tr = DATA.steps.filter(s => ["begin-tran", "commit", "rollback"].includes(s.kind)).length;
-  return `<h1>Control flow</h1><p class="sub">The order statements can run in: both arms of every IF, loops, TRY / CATCH, transactions and early RETURNs. Runs of ordinary statements are folded; select any box to open the step.</p>
-  <div class="legend"><span><i class="lg" style="border-left:4px solid var(--snk)"></i>writes data</span><span><i class="lg" style="border-left:4px solid var(--src)"></i>reads data</span><span><i class="lg" style="border-left:4px solid var(--ext)"></i>transaction</span><span><i class="lg" style="border-left:4px solid var(--mid)"></i>calls code</span><span><i class="lg" style="border-left:4px solid var(--bad)"></i>return / error</span><span><i class="lg" style="box-shadow:0 0 0 2px #FECDD3"></i>has a review issue</span></div>
-  <p class="mut">${plural(DATA.counts.branches, "IF / WHILE")} · ${plural(ret, "RETURN")} · ${plural(tr, "transaction statement")}</p>
-  <div class="card"><div class="flow">${flowSeq("root")}</div><div class="farrow"></div><span class="badge b-muted">end</span></div>`;
+  return `<h1>Control flow</h1><p class="sub">The order statements can run in: both arms of every IF, loops, TRY / CATCH, transactions and early RETURNs. Runs of ordinary statements are folded; select a statement to open it in Steps.</p>
+  <div class="legend"><span><i class="lg" style="border-left:4px solid var(--snk)"></i>writes data</span><span><i class="lg" style="border-left:4px solid var(--src)"></i>reads data</span><span><i class="lg" style="border-left:4px solid var(--ext)"></i>transaction</span><span><i class="lg" style="border-left:4px solid var(--mid)"></i>calls code</span><span><i class="lg" style="border-left:4px solid var(--bad)"></i>return / error</span><span><i class="lg" style="background:#FFF1F2;border-color:#FECDD3"></i>has a review issue</span></div>
+  <div class="filter-row">${DATA.counts.housekeeping ? `<div class="seg" role="group" aria-label="Which statements"><button class="${STEPS_ALL ? "" : "on"}" data-go="stepsmode" data-arg="logic">Logic</button><button class="${STEPS_ALL ? "on" : ""}" data-go="stepsmode" data-arg="all">Every statement</button></div>` : ""}<span class="mut">${plural(DATA.counts.branches, "IF or WHILE", "IFs and WHILEs")}, ${plural(ret, "RETURN")}, ${plural(tr, "transaction statement")}</span></div>
+  <div class="cf"><div class="flow">${flowSeq("root")}</div><div class="farrow"></div><span class="cf-end">end</span></div>`;
 }
 
 /* ============================================================ transformations */
@@ -1173,23 +1575,26 @@ function tlEntry(e, model) {
   const st = STEP[e.sid];
   const sliceCols = model.cols;
   const nodes = e.nodes.map(x => ({...NODES[x.id], direct: x.direct}));
-  const roleLbl = e.role === "value" ? "writes the value" : e.role === "cond" ? "decides the branch" : "decides which rows";
   const marks = [];
-  let html = "";
+  let html = "", brief = "", keeps = "";
   const written = nodes.filter(n => n.col !== ROWS && n.op !== "local" && (e.role !== "value" || n.direct));
   const locals = nodes.filter(n => n.op === "local" && n.col !== ROWS && n.direct);
-  if (e.role === "value") written.forEach(n => {
+  if (e.role === "value") written.forEach((n, k) => {
     if (n.span && !n.text) marks.push({s: n.span[0], e: n.span[1], cls: "m-w"});
     const direct = (n.uses || []).filter(u => u.d);
     const ind = (n.uses || []).filter(u => !u.d);
     direct.forEach(u => { if (u.span) marks.push({s: u.span[0], e: u.span[1], cls: "m-d"}); });
     ind.forEach(u => { if (u.span) marks.push({s: u.span[0], e: u.span[1], cls: "m-i"}); });
-    html += `<div class="wline">Writes <b>${esc(nodeLabel(n.id))}</b> = <span class="eq">${esc(n.expr || "?")}</span>
-      ${(n.tf || []).filter(t => t !== "constant").map(t => ` <span class="badge b-mid">${esc(t)}</span>`).join("")}
-      ${n.keeps ? `<div class="callout warn">Only some rows are changed here; the rest keep the earlier value${n.note ? " (" + esc(n.note) + ")" : ""}.</div>` : (n.note ? `<div class="mut">${esc(n.note)}</div>` : "")}
+    if (k < 4) brief += `<div class="t-eq"><b>${esc(nodeLabel(n.id))}</b> = ${esc(n.expr || "?")}${n.keeps ? ' <span class="t-keep" title="Only some rows are changed here; the rest keep the earlier value">some rows</span>' : ""}</div>`;
+    if (n.keeps && !keeps) keeps = `<div class="from">Only some rows are changed here; the rest keep the earlier value${n.note ? " (" + esc(n.note) + ")" : ""}.</div>`;
+    const tf = (n.tf || []).filter(x => x !== "constant");
+    html += `<div class="t-src"><div class="t-col">${esc(nodeLabel(n.id))}${tf.length ? ` <span class="mut" style="font-weight:400">${tf.map(esc).join(", ")}</span>` : ""}</div>
+      ${!n.keeps && n.note ? `<div class="mut">${esc(n.note)}</div>` : ""}
       ${direct.length ? `<div class="from">from ${direct.map(useLine).join(", ")}</div>` : `<div class="from">from no column: a constant, a system value or a row count</div>`}
       ${ind.length ? `<div class="from">choice decided by ${ind.map(u => `${esc(ROLE_TEXT[u.role] || u.role)} ${useLine(u)}`).join(", ")}</div>` : ""}</div>`;
   });
+  if (e.role === "value" && written.length > 4) brief += `<div class="mut">and ${plural(written.length - 4, "more column")}</div>`;
+  html = keeps + html;
   if (locals.length) html += `<div class="from">Inside this statement: ${locals.map(n => `<b>${esc(nodeLabel(n.id))}</b> = <code>${esc(n.expr || "")}</code>`).join("; ")}</div>`;
   const rowUses = TRACE_INDIRECT ? st.uses : [];
   rowUses.forEach(u => { if (u.span && u.role !== "rows") marks.push({s: u.span[0], e: u.span[1], cls: "m-i"}); });
@@ -1210,15 +1615,48 @@ function tlEntry(e, model) {
   const conds = st.conditions.length ? `<div class="from">Runs only when ${st.conditions.map(c => `${c.step ? stepLink(c.step) : ""} ${c.branch === "else" ? "NOT " : ""}<code>${esc(c.text)}</code>`).join(" and ")}</div>` : "";
   // only the review issues that concern this column's path
   const iss = st.issues.map(i => DATA.issues[i]).filter(i => i && (!(i.columns || []).length || i.columns.some(c => sliceCols.has(c))));
-  const issHtml = iss.map(i => `<div class="callout ${i.severity === "high" ? "bad" : i.severity === "medium" ? "warn" : "info"}">${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))}<div class="mut">${esc(i.next)}</div></div>`).join("");
+  const issHtml = iss.map(i => `<div class="d-issue"><span class="sev-dot ${i.severity}" title="${esc(i.severity)}"></span><span>${go("issue", i.id, md(i.title))} <span class="mut">${esc(i.next)}</span></span></div>`).join("");
   const code = st.span ? excerpt(st.text, st.head || st.span, marks) : "";
-  const head = `${stepLink(e.sid, "Step " + st.label)}<span class="role ${e.role}">${roleLbl}</span>${kindBadge(st.kind)}<span class="mut">${esc(lines(st))}</span>${iss.length ? iss.map(i => sevBadge(i.severity)).join("") : ""}`;
-  if (e.role === "value") {
-    return `<div class="tl value" id="tl-${slug(e.sid)}"><div class="card"><div class="tl-head">${head}</div>
-      <div>${md(st.summary)}</div>${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${html}${rowsHtml}${issHtml}${code}</div></div>`;
-  }
-  return `<div class="tl ${e.role}" id="tl-${slug(e.sid)}"><details class="act"${iss.length ? " open" : ""}><summary><span class="sm">${head} <span>${md(st.summary)}</span></span></summary>
-    <div class="body">${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${html}${rowsHtml}${issHtml}${code}</div></details></div>`;
+  const open = iss.some(i => i.severity === "high" || i.severity === "medium");
+  const top = brief + issHtml;
+  const html_ = `<div class="tl ${e.role}${open ? " open" : ""}" id="tl-${slug(e.sid)}">
+    <div class="tl-row" tabindex="0" role="button" aria-expanded="${open}"><span class="sn">${esc(st.label)}</span>${kindBadge(st.kind)}<span class="tl-sum">${md(st.summary)}</span><span class="ln">${esc(lines(st))}</span></div>
+    ${top ? `<div class="tl-brief">${top}</div>` : ""}
+    <div class="tl-detail${open ? "" : " hide"}">${st.comment ? `<div class="comment">${esc(st.comment)}</div>` : ""}${conds}${html}${rowsHtml}${code}<div class="d-foot">${stepLink(e.sid, "Show step " + st.label + " in Steps")}</div></div>
+  </div>`;
+  return {html: html_, notable: e.role === "value" || iss.length > 0};
+}
+function tlFoldRun(run) {
+  if (run.length < 2) return run.map(x => x.html).join("");
+  const labels = run.map(x => STEP[x.e.sid].label);
+  const ids = labels.length > 10 ? labels.slice(0, 8).join(", ") + ", … " + labels[labels.length - 1] : labels.join(", ");
+  const nc = run.filter(x => x.e.role === "cond").length;
+  const what = nc === run.length ? "decide which branch runs" : nc ? "choose the rows or the branch" : "choose the rows";
+  return `<div class="tl-fold" tabindex="0" role="button" aria-expanded="false"><span>${plural(run.length, "step")} ${what}</span><span class="ids">${esc(ids)}</span></div><div class="tl-foldbody hide">${run.map(x => x.html).join("")}</div>`;
+}
+function timelineHtml(model) {
+  const out = [];
+  let run = [];
+  model.ordered.forEach(e => {
+    const x = {e, ...tlEntry(e, model)};
+    if (x.notable) { out.push(tlFoldRun(run)); run = []; out.push(x.html); } else run.push(x);
+  });
+  out.push(tlFoldRun(run));
+  return out.join("");
+}
+function toggleTl(el, open) {
+  if (!el) return;
+  const d = el.querySelector(":scope > .tl-detail"), r = el.querySelector(":scope > .tl-row");
+  const on = open == null ? !el.classList.contains("open") : open;
+  el.classList.toggle("open", on);
+  if (d) d.classList.toggle("hide", !on);
+  if (r) r.setAttribute("aria-expanded", String(on));
+}
+function expandTlFold(f) {
+  if (!f) return;
+  const b = f.nextElementSibling;
+  if (b && b.classList.contains("tl-foldbody")) b.classList.remove("hide");
+  f.remove();
 }
 function historyOf(model) {
   // versions of every column on the direct path, so overwrites are visible
@@ -1244,7 +1682,7 @@ function historyOf(model) {
 }
 function defaultTraceKey() {
   // the widest output table (the main target), then its column with the longest history
-  const tables = outCols.filter(o => REL[o.rel] && ["table", "view", "remote", "global-temp", "temp"].includes(REL[o.rel].kind));
+  const tables = outCols.filter(o => REL[o.rel] && !isLog(o.rel) && ["table", "view", "remote", "global-temp", "temp"].includes(REL[o.rel].kind));
   const pool = tables.length ? tables : outCols.length ? outCols : DATA.outputs;
   const width = {};
   pool.forEach(o => width[o.rel] = (width[o.rel] || 0) + 1);
@@ -1259,7 +1697,7 @@ function defaultTraceKey() {
   return cols.sort((a, b) => b.steps.length - a.steps.length)[0].key;
 }
 function pickList() {
-  const order = r => { const k = (REL[r] || {}).kind; return ["table", "view", "remote", "global-temp", "temp", "dynamic"].includes(k) ? 0 : k === "result" ? 1 : 2; };
+  const order = r => isLog(r) ? 3 : outRank(r);
   const groups = {};
   DATA.outputs.forEach(o => (groups[o.rel] = groups[o.rel] || []).push(o));
   const rels = Object.keys(groups).sort((a, b) => order(a) - order(b) || relName(a).localeCompare(relName(b)));
@@ -1268,6 +1706,7 @@ function pickList() {
   let html = `<input class="search" style="width:100%;margin:.2rem 0 .3rem" placeholder="Find a column…" oninput="(function(q){q=q.toLowerCase();document.querySelectorAll('.picklist button[data-q]').forEach(b=>b.classList.toggle('hide',!!q&&!b.dataset.q.includes(q)))})(this.value)">`;
   rels.filter(r => order(r) < 2).forEach(r => { html += `<div class="grp">${esc(relName(r))}</div>` + groups[r].map(o => btn(o, o.col === ROWS ? "(which rows)" : o.col)).join(""); });
   if (singles.length) html += `<div class="grp">Output parameters and return value</div>` + singles.map(r => groups[r].map(o => btn(o, relName(r))).join("")).join("");
+  rels.filter(r => order(r) === 3).forEach(r => { html += `<div class="grp">${esc(relName(r))} (log)</div>` + groups[r].map(o => btn(o, o.col === ROWS ? "(which rows)" : o.col)).join(""); });
   return html;
 }
 function rTrace() {
@@ -1278,7 +1717,7 @@ function rTrace() {
   const bases = [...new Set(model.bases.map(nodeLabel))];
   const decided = [...new Set(model.decided.map(id => NODES[id].col === ROWS ? "rows of " + relName(NODES[id].rel) : nodeLabel(id)))];
   const head = `<div class="trace-head"><div><div class="eyebrow">Column trace</div><h1>${esc(colName(o.rel, o.col))}</h1>
-    <p class="sub">${statusBadge(o.status)} · ${plural(nVal, "step writes", "steps write")} the value${TRACE_INDIRECT ? ` · ${plural(nRows, "step decides", "steps decide")} which rows or which branch (folded)` : ""} · in the order they run</p></div>
+    <p class="sub">${statusBadge(o.status)} ${plural(nVal, "step writes", "steps write")} the value${TRACE_INDIRECT && nRows ? ` and ${plural(nRows, "more decides", "more decide")} which rows or which branch` : ""}, in the order they run.</p></div>
     <div class="toolbar"><label class="toggle"><input type="checkbox" ${TRACE_INDIRECT ? "checked" : ""} data-go="traceopt"> include joins, filters and conditions</label>
     <button class="ghost-btn" data-go="copycheck">Copy checklist</button><button class="ghost-btn" data-go="exportmd">Download .md</button><button class="ghost-btn" data-go="exporthtml">Download .html</button>${go("lineage", TRACE_KEY, "Lineage graph", "ghost-btn")}</div></div>`;
   const chips = (list, cls) => list.map(b => `<span class="chipref ${cls}">${esc(b)}</span>`).join("");
@@ -1290,8 +1729,9 @@ function rTrace() {
     ${pathIssues.length ? `<div class="kv"><div class="k">Check first</div><div>${pathIssues.map(i => `<div class="callout ${i.severity === "high" ? "bad" : "warn"}">${sevBadge(i.severity)} ${go("issue", i.id, md(i.title))} ${i.steps.map(sid => `<button class="ver" data-go="tlstep" data-arg="${esc(sid)}">@${esc(STEP[sid] ? STEP[sid].label : sid)}</button>`).join(" ")}</div>`).join("")}</div></div>` : ""}
     ${o.status !== "resolved" ? `<div class="callout warn">Some sources of this column are unknown (Partial / Unresolved): supply table definitions or the called code to resolve them. Unknown is not absent.</div>` : ""}</div>`;
   const hist = historyOf(model);
-  const legend = `<div class="legend"><span><i class="sw w"></i>the value written</span><span><i class="sw d"></i>columns it is computed from</span><span><i class="sw i"></i>joins, filters and conditions that choose rows</span></div>`;
-  const tl = model.ordered.length ? `<div class="timeline">${model.ordered.map(e => tlEntry(e, model)).join("")}</div>` : `<div class="empty">Nothing writes this column.</div>`;
+  const legend = `<div class="legend"><span><i class="mk v"></i>writes the value</span><span><i class="mk r"></i>chooses the rows</span><span><i class="mk c"></i>decides the branch</span><span style="margin-left:.6rem"><i class="sw w"></i>value written</span><span><i class="sw d"></i>computed from</span><span><i class="sw i"></i>chooses rows</span></div>
+    <p class="sub" style="margin:.1rem 0 .5rem">Select a step for its code and where each value comes from.</p>`;
+  const tl = model.ordered.length ? `<div class="timeline">${timelineHtml(model)}</div>` : `<div class="empty">Nothing writes this column.</div>`;
   return `<div class="picker"><div class="picklist" role="listbox" aria-label="Output columns">${pickList()}</div><div>${head}${sum}
     ${hist ? `<h3>Versions</h3><div class="card">${hist}</div>` : ""}<h3>Steps, in execution order</h3>${legend}${tl}</div></div>`;
 }
@@ -1322,7 +1762,10 @@ function downloadTrace(kind) {
   if (kind === "md") blob = new Blob([checklistMd(TRACE_KEY)], {type: "text/markdown;charset=utf-8"});
   else {
     const css = [...document.querySelectorAll("style")].map(s => s.textContent).join("\n");
-    const body = document.querySelector(".picker > div:last-child").innerHTML.replace(/<button[^>]*class="ghost-btn"[\s\S]*?<\/button>/g, "");
+    const pane = document.querySelector(".picker > div:last-child").cloneNode(true);
+    pane.querySelectorAll(".tl-detail.hide, .tl-foldbody.hide").forEach(x => x.classList.remove("hide"));
+    pane.querySelectorAll(".tl-fold").forEach(x => x.remove());
+    const body = pane.innerHTML.replace(/<button[^>]*class="ghost-btn"[\s\S]*?<\/button>/g, "");
     blob = new Blob([`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Trace: ${esc(colName(o.rel, o.col))}</title><style>${css}</style></head><body><main style="max-width:1100px;margin:auto">${body}<p class="mut">From ${esc(DATA.title)} · ${esc(DATA.generated)} · sql-doc-gen</p></main></body></html>`], {type: "text/html;charset=utf-8"});
   }
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `trace-${base}.${kind}`; a.click();
@@ -1364,7 +1807,7 @@ function rLineage() {
 function rMatrix() {
   const rels = DATA.matrixRelations;
   const head = rels.map(r => `<th class="rot" title="${esc(relName(r))}">${esc(relName(r))}</th>`).join("");
-  const rows = outCols.map(o => `<tr><td>${go("trace", o.key, esc(colName(o.rel, o.col)))}</td>${rels.map(r => { const v = o.matrix[r] || ""; return `<td class="cell ${v}" title="${v === "D" ? "computed from it" : v === "I" ? "rows or branch decided by it" : v === "DI" ? "both" : ""}">${v === "DI" ? "D·I" : v}</td>`; }).join("")}</tr>`).join("");
+  const rows = outCols.filter(o => !isLog(o.rel)).map(o => `<tr><td>${go("trace", o.key, esc(colName(o.rel, o.col)))}</td>${rels.map(r => { const v = o.matrix[r] || ""; return `<td class="cell ${v}" title="${v === "D" ? "computed from it" : v === "I" ? "rows or branch decided by it" : v === "DI" ? "both" : ""}">${v === "DI" ? "D·I" : v}</td>`; }).join("")}</tr>`).join("");
   return `<h1>Usage matrix</h1><p class="sub">Output columns against the inputs that reach them. <b>D</b>: the value is computed from a column of that input. <b>I</b>: the input decides which rows or which branch (joins, filters, conditions).</p>
   <div class="filter-row">${go("csv", "matrix", "Download CSV", "ghost-btn")}</div>
   <div class="table-wrap"><table class="t matrix"><thead><tr><th>Output column</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
@@ -1411,12 +1854,12 @@ function rIssues() {
 function rComplexity() {
   const c = DATA.complexity;
   const tiles = [["statements", "Statements"], ["lines", "Lines"], ["codeLines", "Lines of code"], ["nesting", "Deepest nesting"], ["cyclomatic", "Cyclomatic complexity"], ["maxJoins", "Most joins in one statement"]]
-    .map(([k, l]) => `<div class="card stat"><div class="big">${num(c[k])}</div><div class="lbl">${l}</div></div>`).join("");
+    .map(([k, l]) => `<div class="stat"><div class="big">${num(c[k])}</div><div class="lbl">${l}</div></div>`).join("");
   const dec = Object.entries(c.decisions || {}).filter(([, v]) => v).map(([k, v]) => `<span class="badge b-info">${esc(k)} ${v}</span>`).join(" ");
   const longest = c.longest.filter(x => x.lines > 1).map(x => `<tr><td>${stepLink(x.step)}</td><td>${num(x.lines)}</td><td>${md(STEP[x.step].summary)}</td></tr>`).join("");
   const scopes = c.scopes.filter(s => s.steps).sort((a, b) => b.steps - a.steps).slice(0, 25).map(s => `<tr><td>${esc(s.kind)}</td><td>${esc(s.label)}</td><td>${num(s.steps)}</td><td>${s.lines ? `${s.lines[0]}–${s.lines[1]}` : ""}</td></tr>`).join("");
   return `<h1>Complexity</h1><p class="sub">Size and branching. Cyclomatic complexity is 1 + the decision points (IF, WHILE, CASE WHEN, IIF, CATCH); above 50 a procedure is hard to test thoroughly.</p>
-  <div class="grid c6">${tiles}</div><p style="margin:.6rem 0">${dec}</p>
+  <div class="stats">${tiles}</div><p style="margin:.6rem 0">${dec}</p>
   ${longest ? `<h2>Longest statements</h2><div class="table-wrap"><table class="t"><thead><tr><th>Step</th><th>Lines</th><th>Summary</th></tr></thead><tbody>${longest}</tbody></table></div>` : ""}
   <h2>Statements per scope</h2><div class="table-wrap"><table class="t"><thead><tr><th>Kind</th><th>Scope</th><th>Statements</th><th>Lines</th></tr></thead><tbody>${scopes}</tbody></table></div>`;
 }
@@ -1489,7 +1932,8 @@ function downloadCsv(name) {
   if (name === "inputs") rows = [["object", "kind", "columns_used", "read_by_steps"], ...ins.map(r => [r.name, r.kind, Object.keys(r.colReads || {}).join(" "), (r.reads || []).map(s => STEP[s].label).join(" ")])];
   else if (name === "outputs") rows = [["output", "kind", "operations", "written_by_steps"], ...outsRel.map(r => [r.name, r.kind, (r.ops || []).join(" "), (r.writes || []).map(s => STEP[s].label).join(" ")])];
   else if (name === "columns") rows = [["output", "column", "status", "direct_sources", "steps", "conditions"], ...outCols.map(o => [relName(o.rel), o.col, o.status, o.direct.map(([r, c]) => colName(r, c)).join("; "), o.steps.map(s => STEP[s].label).join(" "), o.conditions.map(c => (c.branch === "else" ? "NOT " : "") + c.text).join("; ")])];
-  else if (name === "steps") rows = [["step", "kind", "first_line", "last_line", "summary", "reads", "writes"], ...DATA.steps.map(s => [s.label, s.kind, s.lines ? s.lines[0] : "", s.lines ? s.lines[1] : "", s.summary.replace(/`/g, ""), s.reads.map(relName).join("; "), s.writes.map(relName).join("; ")])];
+  else if (name === "steps") rows = [["step", "kind", "first_line", "last_line", "summary", "reads", "writes", "section", "role", "housekeeping_reason"], ...DATA.steps.map(s => [s.label, s.kind, s.lines ? s.lines[0] : "", s.lines ? s.lines[1] : "", s.summary.replace(/`/g, ""), s.reads.map(relName).join("; "), s.writes.map(relName).join("; "),
+    SECTION[s.section] ? (SECTION[s.section].number + " " + SECTION[s.section].title).trim() : "", s.role || "logic", s.why || ""])];
   else if (name === "issues") rows = [["severity", "certainty", "rule", "title", "why", "next_step", "steps"], ...DATA.issues.map(i => [i.severity, i.certainty, i.rule, i.title, i.why, i.next, i.steps.map(s => STEP[s] ? STEP[s].label : s).join(" ")])];
   else if (name === "matrix") rows = [["output_column", ...DATA.matrixRelations.map(relName)], ...outCols.map(o => [colName(o.rel, o.col), ...DATA.matrixRelations.map(r => o.matrix[r] || "")])];
   const blob = new Blob(["\ufeff" + rows.map(r => r.map(csvCell).join(",")).join("\r\n")], {type: "text/csv;charset=utf-8"});

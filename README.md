@@ -62,17 +62,30 @@ The six sections in the dark left rail match the Power BI and ADF documentation 
 |---|---|
 | **Overview** | Banner (inputs ▸ procedure ▸ outputs), a paragraph built from facts, counts, signature, coverage, *review first* |
 | **Data & sources** | Inputs (columns used, steps that read them), Outputs (INSERT / UPDATE / MERGE / DELETE / TRUNCATE / SELECT INTO, result sets, OUTPUT parameters and clauses), Intermediates (temp tables, table variables, CTEs), Columns (sources, steps, conditions, status), Data flow diagram |
-| **Logic & steps** | Steps (numbered statements grouped by IF / WHILE / TRY / CATCH / cursor / dynamic SQL / expanded call, each with code, reads, writes and a summary), Control flow diagram, Transformations catalogue, Code (line numbers, every view links here) |
+| **Logic & steps** | Steps (one line per statement, grouped under the procedure's own section comments, with housekeeping folded; each opens to its code, a column map, reads and writes), Control flow diagram, Transformations catalogue, Code (line numbers, every view links here) |
 | **Trace & impact** | Column trace (described below), Lineage graph (upstream and downstream), Usage matrix (output columns × sources), Call graph |
 | **Review issues** | Ranked findings, each with *why it matters* and a *next step*, plus Complexity |
 | **Procedure details** | Owner, SQL Agent job, server, runbook and notes, edited in the page; *Download updated HTML* saves them into the file, and they survive regeneration |
 
 ![Overview](docs/images/overview.png)
 
+**Steps.** Long ETL procedures spend many statements on bookkeeping: `SET @Rows = @@ROWCOUNT` after
+every insert, a log row after every section, debug output, declarations. The Steps view folds these
+into one quiet line per run (*2 housekeeping statements: row count, log entry*), so the statements
+that move and decide data read straight through. *Every statement* shows them all. A statement counts
+as logic when it can affect a business output: it moves data through tables, changes what runs next,
+or feeds a value, row choice or branch that does. Log tables are recognised by name and use (written
+only from variables and literals, never read back), so they are not counted as outputs. Section
+comments such as `-- 2.1 Calendar for the load window` or a `/* ==== 3. Orders ==== */` banner become
+the outline, with a table of contents that marks the sections holding a review issue.
+
+![Steps view of the demo procedure](docs/images/steps.png)
+
 **Column trace.** Pick an output column. The view lists, in execution order:
 
-- every step that writes the value, with the expression highlighted in its code;
-- the joins, filters and branch conditions that decide which rows get which value (folded by default);
+- every step that writes the value, with its formula shown; select a step for its code, with the
+  expression highlighted, and where each input value comes from;
+- the joins, filters and branch conditions that decide which rows get which value, folded into runs;
 - each version of the intermediate tables (`#Orders.NetAmountZAR` after steps 155, 159, 174, 177), so overwrites are visible;
 - the review issues on that path.
 
@@ -220,6 +233,8 @@ statements.py one handler per statement type: reads, writes, expressions → col
 dataflow.py   reaching definitions over the CFG (partial writes do not kill earlier versions)
 dynamic.py    rebuild dynamic SQL from reaching assignments → parse → second pass as nested steps
 checks.py     review issues        trace.py / view.py   backward and forward slices
+roles.py      logic or housekeeping per statement (a slice from the business outputs); log tables
+outline.py    the procedure's section comments as an outline
 payload.py    one JSON payload  →  template.html (page), word/csv/agent/trace writers, hub.py
 ```
 
@@ -232,7 +247,7 @@ a browser test checks that they agree.
 ## Development
 
 ```bash
-python -m unittest discover -s tests -t .      # 85 tests, about 25 s
+python -m unittest discover -s tests -t .      # 99 tests, about 25 s
 python tests/regress_public.py                  # fetches pinned public code, prints the table above
 ```
 

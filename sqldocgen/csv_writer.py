@@ -47,14 +47,22 @@ def write_csv(payload: dict, folder: Path) -> List[Path]:
                     rows.append([v.node_label(d), v.version(d), v.node_label(t), v.version(t), "indirect", u["role"],
                                  st["label"]])
     out.append(_write(folder / "edges.csv", ["from", "from_version", "to", "to_version", "kind", "role", "step"], rows))
+    sections = {s["id"]: s for s in payload.get("sections") or []}
     rows = [[s["label"], s["kind"], s["lines"][0] if s["lines"] else "", s["lines"][1] if s["lines"] else "",
              plain(s["summary"]), "; ".join(v.rel_name(k) for k in s["reads"]), "; ".join(v.rel_name(k) for k in s["writes"]),
              " AND ".join(("NOT " if c["branch"] == "else" else "") + c["text"] for c in s["conditions"]),
-             s.get("origin") or "", "" if s.get("reachable", True) else "unreachable"]
+             s.get("origin") or "", "" if s.get("reachable", True) else "unreachable",
+             _section(sections, s.get("section")), s.get("role") or "logic", s.get("why") or ""]
             for s in payload["steps"]]
     out.append(_write(folder / "steps.csv", ["step", "kind", "first_line", "last_line", "summary", "reads", "writes",
-                                             "conditions", "origin", "note"], rows))
+                                             "conditions", "origin", "note", "section", "role", "housekeeping_reason"],
+                      rows))
     rows = [[i["severity"], i["certainty"], i["rule"], plain(i["title"]), i["why"], i["next"],
              " ".join(v.label(s) for s in i["steps"])] for i in payload["issues"]]
     out.append(_write(folder / "issues.csv", ["severity", "certainty", "rule", "title", "why", "next_step", "steps"], rows))
     return out
+
+
+def _section(sections: dict, sid) -> str:
+    s = sections.get(sid) if sid else None
+    return f"{s['number']} {s['title']}".strip() if s else ""

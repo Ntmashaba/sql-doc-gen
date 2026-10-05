@@ -189,9 +189,25 @@ def build_document(payload: dict) -> str:
     else:
         a(para(run("No findings.", italic=True)))
     a(heading("Steps", 1))
-    a(table(["Step", "Kind", "Lines", "Summary"],
-            [[s["label"], s["kind"], f"{s['lines'][0]}–{s['lines'][1]}" if s["lines"] else "", s["summary"]]
-             for s in payload["steps"] if s["kind"] != "nested-end"], [0.08, 0.14, 0.12, 0.66]))
+    steps = [s for s in payload["steps"] if s["kind"] != "nested-end"]
+    logic = [s for s in steps if (s.get("role") or "logic") == "logic"]
+    if len(logic) < len(steps):
+        a(para(run(f"The {len(logic)} statements that move or decide data, in the order they appear. "
+                   f"{len(steps) - len(logic)} housekeeping statements (row counts, log entries, debug output, "
+                   "declarations) are left out here; the HTML page and the CSV export list every statement.",
+                   color=MUTED, size=9)))
+    sections = {s["id"]: s for s in payload.get("sections") or []}
+    rows, last = [], None
+    for s in logic:
+        sec = sections.get(s.get("section"))
+        label = f"{sec['number']} {sec['title']}".strip() if sec and s.get("section") != last else ""
+        last = s.get("section")
+        rows.append(([label] if sections else []) + [s["label"], s["kind"],
+                    f"{s['lines'][0]}–{s['lines'][1]}" if s["lines"] else "", s["summary"]])
+    if sections:
+        a(table(["Section", "Step", "Kind", "Lines", "Summary"], rows, [0.2, 0.07, 0.11, 0.1, 0.52]))
+    else:
+        a(table(["Step", "Kind", "Lines", "Summary"], rows, [0.08, 0.14, 0.12, 0.66]))
     c = payload["complexity"]
     a(heading("Complexity", 1))
     a(table(["Measure", "Value"], [["Statements", c["statements"]], ["Lines", c["lines"]], ["Lines of code", c["codeLines"]],

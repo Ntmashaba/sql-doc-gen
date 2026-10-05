@@ -57,14 +57,22 @@ def render_agent(payload: dict, max_trace_steps: int = 40) -> str:
               f"{i['next']} (steps {' '.join(v.label(s) for s in i['steps'][:8])})")
         w("")
     w("## Steps")
-    w("| step | kind | lines | summary | conditions |")
-    w("|---|---|---|---|---|")
+    w("Role is `logic` for statements that can affect an output and `housekeeping: <reason>` for bookkeeping "
+      "(row counts, log rows, debug output, declarations). Section is the procedure's own section comment.")
+    w("")
+    sections = {s["id"]: s for s in payload.get("sections") or []}
+    w("| step | kind | lines | role | section | summary | conditions |")
+    w("|---|---|---|---|---|---|---|")
     for s in payload["steps"]:
         if s["kind"] == "nested-end":
             continue
         cond = " AND ".join(("NOT " if c["branch"] == "else" else "") + c["text"] for c in s["conditions"])
         lines = f"{s['lines'][0]}-{s['lines'][1]}" if s["lines"] else ""
-        w(f"| {s['label']} | {s['kind']} | {lines} | {plain(s['summary']).replace('|', '/')} | {cond.replace('|', '/')} |")
+        role = "logic" if (s.get("role") or "logic") == "logic" else f"housekeeping: {s.get('why') or 'other'}"
+        sec = sections.get(s.get("section"))
+        sec = f"{sec['number']} {sec['title']}".strip().replace("|", "/") if sec else ""
+        w(f"| {s['label']} | {s['kind']} | {lines} | {role} | {sec} | {plain(s['summary']).replace('|', '/')} | "
+          f"{cond.replace('|', '/')} |")
     w("")
     w("## Output column lineage")
     w("| column | status | computed from | steps | conditions |")

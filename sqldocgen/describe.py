@@ -118,6 +118,11 @@ def summarize(ctx: Ctx, st: Step, dynamic: Dict[str, dict]) -> str:
         return f"Adds {_cols(d.get('columns', []))} to {tname}."
     if k == "declare":
         vs = d.get("variables", [])
+        valued = [(ctx.relations[ctx.nodes[n].rel].name, ctx.nodes[n].expr) for n in st.nodes
+                  if ctx.nodes[n].expr not in ("", "NULL") and ctx.nodes[n].rel in ctx.relations]
+        if valued and len(vs) == 1:
+            name, expr = valued[0]
+            return f"Declares {q(name)} = {expr[:120]}."
         return f"Declares {', '.join(q(v) for v in vs[:6])}{' and more' if len(vs) > 6 else ''}."
     if k == "declare-table":
         n = len(d.get("columns", []))
@@ -195,7 +200,7 @@ def summarize(ctx: Ctx, st: Step, dynamic: Dict[str, dict]) -> str:
     return text or k
 
 
-def overview(ctx: Ctx, roles: Dict[str, str], dynamic: Dict[str, dict], unit) -> str:
+def overview(ctx: Ctx, roles: Dict[str, str], dynamic: Dict[str, dict], unit, logging=frozenset()) -> str:
     """'Reads 6 tables from `Sales` and `Ref`, stages through 3 temp tables, writes ... and returns 1 result set.'"""
     rels = ctx.relations
     inputs = [k for k, r in roles.items() if r in ("input", "both") and rels[k].kind in
@@ -226,7 +231,8 @@ def overview(ctx: Ctx, roles: Dict[str, str], dynamic: Dict[str, dict], unit) ->
     ctes = sum(len(st.detail.get("ctes", [])) for st in ctx.steps)
     if ctes:
         parts.append(f"uses {ctes} CTE{'s' if ctes != 1 else ''}")
-    writes = [k for k, r in roles.items() if r in ("output", "both") and rels[k].kind in ("table", "view", "remote", "global-temp", "temp", "dynamic")]
+    writes = [k for k, r in roles.items() if r in ("output", "both") and k not in logging and
+              rels[k].kind in ("table", "view", "remote", "global-temp", "temp", "dynamic")]
     if writes:
         ops_by: Dict[str, List[str]] = {}
         for n in ctx.nodes:
@@ -239,6 +245,10 @@ def overview(ctx: Ctx, roles: Dict[str, str], dynamic: Dict[str, dict], unit) ->
         ws = [f"{q(rels[k].name)} ({', '.join(ops_by.get(k, [])) or 'written'})" for k in writes[:4]]
         more = f" and {len(writes) - 4} more" if len(writes) > 4 else ""
         parts.append("writes " + (", ".join(ws[:-1]) + " and " + ws[-1] if len(ws) > 1 else ws[0]) + more)
+    logs = [k for k in logging if k in rels]
+    if logs:
+        names = sorted(q(rels[k].name) for k in logs)
+        parts.append("logs its progress to " + (", ".join(names[:-1]) + " and " + names[-1] if len(names) > 1 else names[0]))
     results = [k for k, r in roles.items() if r == "output" and rels[k].kind == "result"]
     if results:
         parts.append(f"returns {len(results)} result set{'s' if len(results) != 1 else ''}")

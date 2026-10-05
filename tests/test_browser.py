@@ -129,6 +129,56 @@ class InBrowser(unittest.TestCase):
         finally:
             page.close()
 
+    def test_steps_fold_housekeeping_under_sections(self):
+        page, errors = self.open("etl.usp_LoadFactRevenue")
+        try:
+            page.evaluate("switchTab('steps')")
+            n = page.evaluate("""() => ({hk: document.querySelectorAll('#stepsroot .srow.hk').length,
+                folds: document.querySelectorAll('#stepsroot .fold').length,
+                heads: document.querySelectorAll('#stepsroot .shead').length,
+                toc: document.querySelectorAll('.toc a').length})""")
+            self.assertEqual(n["hk"], 0, "housekeeping starts folded")
+            self.assertGreater(n["folds"], 20)
+            self.assertGreater(n["heads"], 20, "grouped by the procedure's own section comments")
+            self.assertGreater(n["toc"], 10)
+            # a link to a folded statement unfolds it and opens it
+            sid = page.evaluate("DATA.steps.find(s => s.role === 'housekeeping' && s.why === 'row count' && !s.parent).id")
+            page.evaluate("id => GO.step(id)", sid)
+            page.wait_for_timeout(150)
+            opened = page.evaluate("id => { const r = document.getElementById('st-' + slug(id)); return !!r && r.classList.contains('open'); }", sid)
+            self.assertTrue(opened)
+            page.evaluate("GO.stepsmode('all')")
+            self.assertGreater(page.evaluate("document.querySelectorAll('#stepsroot .srow.hk').length"), 100)
+            self.assertEqual(page.evaluate("document.querySelectorAll('#stepsroot .fold').length"), 0)
+            self.assertEqual(errors, [])
+        finally:
+            page.close()
+
+    def test_trace_timeline_folds_and_downloads_in_full(self):
+        page, errors = self.open("etl.usp_LoadFactRevenue")
+        try:
+            page.evaluate("switchTab('trace')")
+            self.assertGreater(page.evaluate("document.querySelectorAll('.timeline .tl-fold').length"), 3)
+            opened = page.evaluate("[...document.querySelectorAll('.timeline .tl.open .tl-row .sn')].map(e => e.textContent)")
+            bug = page.evaluate("DATA.issues.find(i => i.rule === 'factor-applied-twice').steps.map(s => STEP[s].label)")
+            self.assertTrue(set(bug) <= set(opened), (bug, opened))
+            # jumping to a step hidden in a fold unfolds it
+            sid = page.evaluate("""DATA.steps.map(s => s.id).find(id => { const el = document.getElementById('tl-' + slug(id));
+                return el && el.closest('.tl-foldbody.hide'); })""")
+            self.assertIsNotNone(sid)
+            page.evaluate("id => GO.tlstep(id)", sid)
+            state = page.evaluate("id => { const el = document.getElementById('tl-' + slug(id)); return [el.classList.contains('open'), !!el.closest('.tl-foldbody.hide')]; }", sid)
+            self.assertEqual(state, [True, False])
+            with page.expect_download() as dl:
+                page.evaluate("GO.exporthtml()")
+            html = Path(dl.value.path()).read_text(encoding="utf-8")
+            self.assertNotIn('class="tl-detail hide"', html, "the downloaded trace has no script, so nothing is folded")
+            self.assertNotIn("tl-foldbody hide", html)
+            self.assertIn("RateToZAR", html)
+            self.assertEqual(errors, [])
+        finally:
+            page.close()
+
     def test_details_edit_and_download(self):
         page, errors = self.open("etl.usp_TempTableChain" if "etl.usp_TempTableChain" in self.pages
                                  else "etl.usp_DynamicReprice")
