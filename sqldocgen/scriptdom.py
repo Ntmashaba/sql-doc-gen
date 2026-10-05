@@ -61,7 +61,7 @@ def find_dotnet() -> Optional[str]:
 
 def _dotnet_list(dotnet: str, what: str) -> List[str]:
     try:
-        out = subprocess.run([dotnet, what], capture_output=True, text=True, timeout=60)
+        out = subprocess.run([dotnet, what], capture_output=True, text=True, errors="replace", timeout=60)
         return [line.strip() for line in out.stdout.splitlines() if line.strip()]
     except (OSError, subprocess.SubprocessError):
         return []
@@ -131,7 +131,8 @@ def build_helper(out_dir: Path, scriptdom: Optional[Path] = None, log=None) -> N
         log("Building the ScriptDom helper (first run only)…")
     env = dict(os.environ, DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1",
                DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1")
-    proc = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=900)
+    # errors="replace": a localised build message must not crash the build report
+    proc = subprocess.run(cmd, capture_output=True, text=True, errors="replace", env=env, timeout=900)
     if proc.returncode != 0 or not (out_dir / DLL_NAME).exists():
         tail = "\n".join((proc.stdout + proc.stderr).strip().splitlines()[-15:])
         hint = ""

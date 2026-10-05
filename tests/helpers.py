@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -21,6 +22,8 @@ SCHEMA = ROOT / "examples" / "schema"
 LARGE = ROOT / "examples" / "large"
 _CACHE: Dict[str, dict] = {}
 _META: Dict[str, str] = {}
+# CI sets this: a missing parser or browser is then a failure, never a silent skip.
+STRICT = os.environ.get("SQLDOCGEN_STRICT_TESTS", "") not in ("", "0")
 
 
 def parser_available() -> bool:
@@ -32,6 +35,8 @@ def parser_available() -> bool:
 
 
 def requires_parser(cls):
+    if STRICT:
+        return cls
     return unittest.skipUnless(parser_available(), "the ScriptDom helper cannot be built here (.NET SDK missing?)")(cls)
 
 

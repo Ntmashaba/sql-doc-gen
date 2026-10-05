@@ -1,5 +1,7 @@
 # sql-doc-gen
 
+[![Tests](https://github.com/Ntmashaba/sql-doc-gen/actions/workflows/tests.yml/badge.svg)](https://github.com/Ntmashaba/sql-doc-gen/actions/workflows/tests.yml)
+
 Living documentation and column lineage for T-SQL stored procedures.
 
 Point it at a `.sql` file, a folder or an SSDT project, and it writes one self-contained HTML page per
@@ -20,7 +22,8 @@ small ScriptDom helper into your cache folder, which takes under a minute and ne
 
 ```bash
 pip install .                      # or run python generate_docs.py ... from the checkout
-sql-doc-gen --doctor               # checks .NET and builds the helper
+sql-doc-gen --build-parser         # builds the ScriptDom helper (the first run would do it anyway)
+sql-doc-gen --doctor               # shows what this machine has: Python, .NET, the helper
 
 # the demo: a 2,000-line ETL procedure with one planted bug
 sql-doc-gen examples/large/usp_LoadFactRevenue.sql --schema examples/large/schema.sql --output-dir demo
@@ -62,17 +65,30 @@ The six sections in the dark left rail match the Power BI and ADF documentation 
 |---|---|
 | **Overview** | Banner (inputs ▸ procedure ▸ outputs), a paragraph built from facts, counts, signature, coverage, *review first* |
 | **Data & sources** | Inputs (columns used, steps that read them), Outputs (INSERT / UPDATE / MERGE / DELETE / TRUNCATE / SELECT INTO, result sets, OUTPUT parameters and clauses), Intermediates (temp tables, table variables, CTEs), Columns (sources, steps, conditions, status), Data flow diagram |
-| **Logic & steps** | Steps (numbered statements grouped by IF / WHILE / TRY / CATCH / cursor / dynamic SQL / expanded call, each with code, reads, writes and a summary), Control flow diagram, Transformations catalogue, Code (line numbers, every view links here) |
+| **Logic & steps** | Steps (one line per statement, grouped under the procedure's own section comments, with housekeeping folded; each opens to its code, a column map, reads and writes), Control flow diagram, Transformations catalogue, Code (line numbers, every view links here) |
 | **Trace & impact** | Column trace (described below), Lineage graph (upstream and downstream), Usage matrix (output columns × sources), Call graph |
 | **Review issues** | Ranked findings, each with *why it matters* and a *next step*, plus Complexity |
 | **Procedure details** | Owner, SQL Agent job, server, runbook and notes, edited in the page; *Download updated HTML* saves them into the file, and they survive regeneration |
 
 ![Overview](docs/images/overview.png)
 
+**Steps.** Long ETL procedures spend many statements on bookkeeping: `SET @Rows = @@ROWCOUNT` after
+every insert, a log row after every section, debug output, declarations. The Steps view folds these
+into one quiet line per run (*2 housekeeping statements: row count, log entry*), so the statements
+that move and decide data read straight through. *Every statement* shows them all. A statement counts
+as logic when it can affect a business output: it moves data through tables, changes what runs next,
+or feeds a value, row choice or branch that does. Log tables are recognised by name and use (written
+only from variables and literals, never read back), so they are not counted as outputs. Section
+comments such as `-- 2.1 Calendar for the load window` or a `/* ==== 3. Orders ==== */` banner become
+the outline, with a table of contents that marks the sections holding a review issue.
+
+![Steps view of the demo procedure](docs/images/steps.png)
+
 **Column trace.** Pick an output column. The view lists, in execution order:
 
-- every step that writes the value, with the expression highlighted in its code;
-- the joins, filters and branch conditions that decide which rows get which value (folded by default);
+- every step that writes the value, with its formula shown; select a step for its code, with the
+  expression highlighted, and where each input value comes from;
+- the joins, filters and branch conditions that decide which rows get which value, folded into runs;
 - each version of the intermediate tables (`#Orders.NetAmountZAR` after steps 155, 159, 174, 177), so overwrites are visible;
 - the review issues on that path.
 
@@ -220,6 +236,8 @@ statements.py one handler per statement type: reads, writes, expressions → col
 dataflow.py   reaching definitions over the CFG (partial writes do not kill earlier versions)
 dynamic.py    rebuild dynamic SQL from reaching assignments → parse → second pass as nested steps
 checks.py     review issues        trace.py / view.py   backward and forward slices
+roles.py      logic or housekeeping per statement (a slice from the business outputs); log tables
+outline.py    the procedure's section comments as an outline
 payload.py    one JSON payload  →  template.html (page), word/csv/agent/trace writers, hub.py
 ```
 
@@ -232,14 +250,19 @@ a browser test checks that they agree.
 ## Development
 
 ```bash
-python -m unittest discover -s tests -t .      # 85 tests, about 25 s
+python -m unittest discover -s tests -t .      # 99 tests, about 25 s
 python tests/regress_public.py                  # fetches pinned public code, prints the table above
 ```
 
 `tests/test_browser.py` needs Playwright (`pip install playwright && playwright install chromium`).
 It opens every view at desktop and phone width, checks for script errors and sideways scrolling, and
 compares the in-page trace with the Python one. It is skipped when Playwright is missing, and the
-parser-based tests are skipped when the helper cannot be built.
+parser-based tests are skipped when the helper cannot be built. Set `SQLDOCGEN_STRICT_TESTS=1` to make
+those skips failures instead.
+
+GitHub Actions runs the whole suite on every pull request and every push to `main`
+(`.github/workflows/tests.yml`), in strict mode. It covers Ubuntu with Python 3.9 and 3.13, and
+Windows with Python 3.13. Each job builds the helper from nuget.org and installs Chromium.
 
 Third-party: Microsoft ScriptDom (`Microsoft.SqlServer.TransactSql.ScriptDom`) is MIT-licensed and is
 downloaded at build time, not vendored. The public procedures in the regression run are fetched from

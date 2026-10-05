@@ -118,6 +118,11 @@ class AllOutputs(unittest.TestCase):
         for name in ("edges.csv", "steps.csv"):
             with (folder / name).open(encoding="utf-8-sig", newline="") as f:
                 self.assertGreater(len(list(csv.reader(f))), 10, name)
+        with (folder / "steps.csv").open(encoding="utf-8-sig", newline="") as f:
+            steps = list(csv.DictReader(f))
+        self.assertEqual({r["role"] for r in steps}, {"logic", "housekeeping"})
+        self.assertIn("row count", {r["housekeeping_reason"] for r in steps})
+        self.assertTrue(any(r["section"].startswith("5 Conversion to rand") for r in steps))
 
     def test_word_document_is_valid(self):
         with zipfile.ZipFile(self.out / "etl.usp_LoadFactRevenue.docx") as z:
@@ -129,11 +134,14 @@ class AllOutputs(unittest.TestCase):
             body = z.read("word/document.xml").decode("utf-8")
         self.assertIn("etl.usp_LoadFactRevenue", body)
         self.assertIn("multiplied by #FxDaily.RateToZAR again", body, "the review issues are in the handover")
+        self.assertIn("housekeeping statements (row counts, log entries", body, "the step list leaves bookkeeping out")
+        self.assertNotIn("Keeps the row count in", body)
 
     def test_agent_markdown(self):
         text = (self.out / "etl.usp_LoadFactRevenue.agent.md").read_text(encoding="utf-8")
         for heading in ("## Claims and limits (read first)", "## Review issues (ranked)", "## Output column lineage"):
             self.assertIn(heading, text)
+        self.assertIn("| housekeeping: row count |", text, "agents see every statement, with its role")
         self.assertIn("agent context ~", self.stderr)
 
     def test_trace_export(self):

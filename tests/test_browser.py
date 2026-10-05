@@ -1,7 +1,7 @@
 """The page in a real browser: every view renders without script errors or sideways scrolling,
 the in-page trace walk agrees with the Python one, and edited details download correctly.
 
-Skipped when Playwright or Chromium is not available.
+Skipped when Playwright or Chromium is not available, unless SQLDOCGEN_STRICT_TESTS is set (as in CI).
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ WALKS = """() => {
 }"""
 
 
-@unittest.skipUnless(sync_playwright, "Playwright is not installed")
+@unittest.skipUnless(sync_playwright or h.STRICT, "Playwright is not installed")
 @h.requires_parser
 class InBrowser(unittest.TestCase):
     @classmethod
@@ -54,11 +54,15 @@ class InBrowser(unittest.TestCase):
             p = {k: v for k, v in p.items() if k != "_analysis"}
             cls.payloads[name] = p
             cls.pages[name] = render_html(p, root / f"{name}.html")
+        if sync_playwright is None:
+            raise RuntimeError("Playwright is required when SQLDOCGEN_STRICT_TESTS is set")
         cls.pw = sync_playwright().start()
         try:
             cls.browser = cls.pw.chromium.launch()
         except Exception as exc:       # pragma: no cover
             cls.pw.stop()
+            if h.STRICT:
+                raise
             raise unittest.SkipTest(f"Chromium cannot start here: {exc}")
 
     @classmethod
@@ -125,6 +129,56 @@ class InBrowser(unittest.TestCase):
             self.assertIn("NetAmountZAR", text)
             self.assertIn("RateToZAR", text)
             self.assertIn("Check first", text, "the column's own review issue is surfaced on its trace")
+            self.assertEqual(errors, [])
+        finally:
+            page.close()
+
+    def test_steps_fold_housekeeping_under_sections(self):
+        page, errors = self.open("etl.usp_LoadFactRevenue")
+        try:
+            page.evaluate("switchTab('steps')")
+            n = page.evaluate("""() => ({hk: document.querySelectorAll('#stepsroot .srow.hk').length,
+                folds: document.querySelectorAll('#stepsroot .fold').length,
+                heads: document.querySelectorAll('#stepsroot .shead').length,
+                toc: document.querySelectorAll('.toc a').length})""")
+            self.assertEqual(n["hk"], 0, "housekeeping starts folded")
+            self.assertGreater(n["folds"], 20)
+            self.assertGreater(n["heads"], 20, "grouped by the procedure's own section comments")
+            self.assertGreater(n["toc"], 10)
+            # a link to a folded statement unfolds it and opens it
+            sid = page.evaluate("DATA.steps.find(s => s.role === 'housekeeping' && s.why === 'row count' && !s.parent).id")
+            page.evaluate("id => GO.step(id)", sid)
+            page.wait_for_timeout(150)
+            opened = page.evaluate("id => { const r = document.getElementById('st-' + slug(id)); return !!r && r.classList.contains('open'); }", sid)
+            self.assertTrue(opened)
+            page.evaluate("GO.stepsmode('all')")
+            self.assertGreater(page.evaluate("document.querySelectorAll('#stepsroot .srow.hk').length"), 100)
+            self.assertEqual(page.evaluate("document.querySelectorAll('#stepsroot .fold').length"), 0)
+            self.assertEqual(errors, [])
+        finally:
+            page.close()
+
+    def test_trace_timeline_folds_and_downloads_in_full(self):
+        page, errors = self.open("etl.usp_LoadFactRevenue")
+        try:
+            page.evaluate("switchTab('trace')")
+            self.assertGreater(page.evaluate("document.querySelectorAll('.timeline .tl-fold').length"), 3)
+            opened = page.evaluate("[...document.querySelectorAll('.timeline .tl.open .tl-row .sn')].map(e => e.textContent)")
+            bug = page.evaluate("DATA.issues.find(i => i.rule === 'factor-applied-twice').steps.map(s => STEP[s].label)")
+            self.assertTrue(set(bug) <= set(opened), (bug, opened))
+            # jumping to a step hidden in a fold unfolds it
+            sid = page.evaluate("""DATA.steps.map(s => s.id).find(id => { const el = document.getElementById('tl-' + slug(id));
+                return el && el.closest('.tl-foldbody.hide'); })""")
+            self.assertIsNotNone(sid)
+            page.evaluate("id => GO.tlstep(id)", sid)
+            state = page.evaluate("id => { const el = document.getElementById('tl-' + slug(id)); return [el.classList.contains('open'), !!el.closest('.tl-foldbody.hide')]; }", sid)
+            self.assertEqual(state, [True, False])
+            with page.expect_download() as dl:
+                page.evaluate("GO.exporthtml()")
+            html = Path(dl.value.path()).read_text(encoding="utf-8")
+            self.assertNotIn('class="tl-detail hide"', html, "the downloaded trace has no script, so nothing is folded")
+            self.assertNotIn("tl-foldbody hide", html)
+            self.assertIn("RateToZAR", html)
             self.assertEqual(errors, [])
         finally:
             page.close()

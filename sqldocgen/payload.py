@@ -18,7 +18,9 @@ from .describe import overview, summarize
 from .engine import Ctx
 from .metrics import complexity
 from .model import ROWS, Use
+from .outline import outline
 from .program import ENTRY, EXIT
+from .roles import classify, housekeeping_summary
 from .syntax import Text
 from .textutil import extract_comments
 from .trace import backward, base_sources, column_status, output_columns, output_relations
@@ -187,6 +189,13 @@ def build(analysis: Analysis, *, title: str, mode: str, source_path: str, inputs
     roles = relation_roles(ctx, flow)
     for st in ctx.steps:
         st.summary = summarize(ctx, st, analysis.dynamic)
+    # what each statement is for, and the authors' own section headings
+    step_roles, logging = classify(ctx, roles)
+    for st in ctx.steps:
+        role, why = step_roles.get(st.id, ("logic", ""))
+        if role == "housekeeping":
+            st.summary = housekeeping_summary(ctx, st, why, logging) or st.summary
+    sections, step_section = outline(analysis.unit, ctx)
     comments = {}
     for tid in ctx.texts:
         comments.update(_comments(ctx.texts[tid], ctx.steps, tid))
@@ -249,7 +258,7 @@ def build(analysis: Analysis, *, title: str, mode: str, source_path: str, inputs
             "definedIn": cat.source if cat is not None else "",
             "keys": (cat.keys if cat is not None else []) + ctx.keys.get(key, []),
             "dataType": rel.data_type or None, "output": rel.output or None, "default": rel.default or None,
-            "starFrom": rel.star_from or None,
+            "starFrom": rel.star_from or None, "logging": key in logging or None,
         })
 
     # ------------------------------------------------------------------ steps, scopes, nodes
@@ -266,6 +275,8 @@ def build(analysis: Analysis, *, title: str, mode: str, source_path: str, inputs
             "reads": st.reads, "writes": st.writes, "summary": st.summary, "comment": comments.get(st.id, ""),
             "nodes": st.nodes, "uses": [_use(u, ts, st.text_id) for u in st.uses],
             "origin": st.origin or None, "parent": st.parent, "issues": step_issues.get(st.id, []),
+            "role": step_roles.get(st.id, ("logic", ""))[0], "why": step_roles.get(st.id, ("", ""))[1] or None,
+            "section": step_section.get(st.id),
             "reachable": st.id in reachable or st.kind == "nested-end",
             "inTry": st.in_try or None,
             "detail": {k: d[k] for k in ("where", "on", "joins", "columns", "callee", "args", "actions", "predicate",
@@ -455,6 +466,11 @@ def build(analysis: Analysis, *, title: str, mode: str, source_path: str, inputs
         "variables": sum(1 for r in relations if r["kind"] == "variable"),
         "parameters": len(unit.params),
         "outputColumns": sum(1 for o in outs if o["col"] != ROWS),
+        "logic": sum(1 for st in ctx.steps if not st.parent and st.kind != "nested-end"
+                     and step_roles.get(st.id, ("logic",))[0] == "logic"),
+        "housekeeping": sum(1 for st in ctx.steps if not st.parent and st.kind != "nested-end"
+                            and step_roles.get(st.id, ("logic",))[0] == "housekeeping"),
+        "logging": len(logging),
         "calls": sum(1 for c in calls if c["kind"] == "procedure"),
     }
     issue_counts = Counter(i.severity for i in issues)
@@ -504,7 +520,8 @@ def build(analysis: Analysis, *, title: str, mode: str, source_path: str, inputs
         "summary": summary,
         "counts": counts,
         "coverage": coverage,
-        "what": overview(ctx, roles, dyn, unit),
+        "what": overview(ctx, roles, dyn, unit, logging),
+        "sections": sections,
         "texts": ts.export(),
         "relations": relations,
         "steps": steps,
