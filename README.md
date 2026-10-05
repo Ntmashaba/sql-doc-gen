@@ -1,5 +1,7 @@
 # sql-doc-gen
 
+[![Tests](https://github.com/Ntmashaba/sql-doc-gen/actions/workflows/tests.yml/badge.svg)](https://github.com/Ntmashaba/sql-doc-gen/actions/workflows/tests.yml)
+
 Living documentation and column lineage for T-SQL stored procedures.
 
 Point it at a `.sql` file, a folder or an SSDT project, and it writes one self-contained HTML page per
@@ -20,7 +22,8 @@ small ScriptDom helper into your cache folder, which takes under a minute and ne
 
 ```bash
 pip install .                      # or run python generate_docs.py ... from the checkout
-sql-doc-gen --doctor               # checks .NET and builds the helper
+sql-doc-gen --build-parser         # builds the ScriptDom helper (the first run would do it anyway)
+sql-doc-gen --doctor               # shows what this machine has: Python, .NET, the helper
 
 # the demo: a 2,000-line ETL procedure with one planted bug
 sql-doc-gen examples/large/usp_LoadFactRevenue.sql --schema examples/large/schema.sql --output-dir demo
@@ -254,7 +257,12 @@ python tests/regress_public.py                  # fetches pinned public code, pr
 `tests/test_browser.py` needs Playwright (`pip install playwright && playwright install chromium`).
 It opens every view at desktop and phone width, checks for script errors and sideways scrolling, and
 compares the in-page trace with the Python one. It is skipped when Playwright is missing, and the
-parser-based tests are skipped when the helper cannot be built.
+parser-based tests are skipped when the helper cannot be built. Set `SQLDOCGEN_STRICT_TESTS=1` to make
+those skips failures instead.
+
+GitHub Actions runs the whole suite on every pull request and every push to `main`
+(`.github/workflows/tests.yml`), in strict mode. It covers Ubuntu with Python 3.9 and 3.13, and
+Windows with Python 3.13. Each job builds the helper from nuget.org and installs Chromium.
 
 Third-party: Microsoft ScriptDom (`Microsoft.SqlServer.TransactSql.ScriptDom`) is MIT-licensed and is
 downloaded at build time, not vendored. The public procedures in the regression run are fetched from

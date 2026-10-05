@@ -1,0 +1,76 @@
+# Builds the ScriptDom helper from nuget.org and runs the whole test suite, browser tests
+# included. SQLDOCGEN_STRICT_TESTS turns a missing parser or browser into a failure, so the
+# run can never pass by skipping.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }}, Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # the oldest Python the package supports, on a pinned image that still offers it
+          - os: ubuntu-24.04
+            python: "3.9"
+          - os: ubuntu-latest
+            python: "3.13"
+          # most T-SQL developers work on Windows: CRLF checkouts, %LOCALAPPDATA% cache
+          - os: windows-latest
+            python: "3.13"
+    env:
+      SQLDOCGEN_STRICT_TESTS: "1"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('sqldocgen/parser/*.csproj') }}
+
+      - name: Install Playwright and Chromium
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            python -m playwright install --with-deps chromium
+          else
+            python -m playwright install chromium
+          fi
+
+      - name: Build the ScriptDom helper
+        run: python generate_docs.py --build-parser
+
+      - name: Show the toolchain
+        run: python generate_docs.py --doctor
+
+      - name: Run the tests
+        run: python -m unittest discover -s tests -t . -v

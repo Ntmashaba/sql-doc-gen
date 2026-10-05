@@ -1,7 +1,7 @@
 """The page in a real browser: every view renders without script errors or sideways scrolling,
 the in-page trace walk agrees with the Python one, and edited details download correctly.
 
-Skipped when Playwright or Chromium is not available.
+Skipped when Playwright or Chromium is not available, unless SQLDOCGEN_STRICT_TESTS is set (as in CI).
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ WALKS = """() => {
 }"""
 
 
-@unittest.skipUnless(sync_playwright, "Playwright is not installed")
+@unittest.skipUnless(sync_playwright or h.STRICT, "Playwright is not installed")
 @h.requires_parser
 class InBrowser(unittest.TestCase):
     @classmethod
@@ -54,11 +54,15 @@ class InBrowser(unittest.TestCase):
             p = {k: v for k, v in p.items() if k != "_analysis"}
             cls.payloads[name] = p
             cls.pages[name] = render_html(p, root / f"{name}.html")
+        if sync_playwright is None:
+            raise RuntimeError("Playwright is required when SQLDOCGEN_STRICT_TESTS is set")
         cls.pw = sync_playwright().start()
         try:
             cls.browser = cls.pw.chromium.launch()
         except Exception as exc:       # pragma: no cover
             cls.pw.stop()
+            if h.STRICT:
+                raise
             raise unittest.SkipTest(f"Chromium cannot start here: {exc}")
 
     @classmethod
